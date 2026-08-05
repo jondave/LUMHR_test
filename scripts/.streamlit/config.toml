@@ -1,7 +1,7 @@
 [server]
 headless = true
 fileWatcherType = "none"
-runOnSave = false
+runOnSave = true
 
 [browser]
 gatherUsageStats = false
