@@ -61,7 +61,7 @@ def render() -> None:
     with st.expander("Method Summary", expanded=False):
         st.markdown(
             """
-            This Index proportionally allocates GP-level QOF registers to LSOAs using the patient registration matrix.
+            This Index proportionally allocates GP-level QOF registers to LSOAs using the GP patient registration data.
 
             Allocation equations:
             - GP total mapped patients: sum of NUMBER_OF_PATIENTS across all mapped LSOAs for each GP.
@@ -74,6 +74,12 @@ def render() -> None:
             - Depression prevalence, SMI prevalence, antidepressant items per patient, and SAMHI are min-max normalized to [0,1].
             - Need Index = (Depression_Normalized * w_dep) + (SMI_Normalized * w_smi)
               + (Prescribing_Normalized * w_rx) + (SAMHI_Normalized * w_samhi)
+
+            Data sources:
+            - [GP Patient Registration](https://digital.nhs.uk/data-and-information/publications/statistical/patients-registered-at-a-gp-practice/july-2026)
+            - [QOF Depression and SMI prevalence](https://digital.nhs.uk/data-and-information/publications/statistical/quality-and-outcomes-framework-achievement-prevalence-and-exceptions-data/2024-25)
+            - [Antidepressant items per patient](https://openprescribing.net/analyse/#org=practice&orgIds=71E&numIds=4.3&denom=nothing&selectedTab=map)
+            - [SAMHI](https://pldr.org/dataset/small-area-mental-health-index-samhi-2noyv)
             """
         )
 
@@ -336,14 +342,14 @@ def render() -> None:
             )
 
         if qof_without_mapping > 0:
-            st.info(f"There are {qof_without_mapping} QOF practices with no mapping rows in the registration matrix.")
+            st.info(f"There are {qof_without_mapping} QOF practices with no mapping rows in the GP registration data.")
 
         if gp_locations_without_qof > 0:
             st.info(f"There are {gp_locations_without_qof} GP location records without matching QOF records.")
 
         if len(bundle["out_of_area_lsoa_codes"]) > 0:
             st.info(
-                "The registration matrix includes out-of-Lincolnshire LSOAs that are not in the boundary file. "
+                "The GP registration data includes out-of-Lincolnshire LSOAs that are not in the boundary file. "
                 f"Distinct out-of-area LSOAs: {len(bundle['out_of_area_lsoa_codes']):,}. "
                 f"Patient records in those LSOAs: {bundle['out_of_area_patients']:,.0f}. "
                 "They are retained in GP allocation weights but excluded from Lincolnshire map polygons."
