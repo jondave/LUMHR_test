@@ -201,6 +201,24 @@ def render() -> None:
     scored_lsoa["Depression_Prevalence_Pct"] = (scored_lsoa["Depression_Prevalence"] * 100).round(2)
     scored_lsoa["SMI_Prevalence_Pct"] = (scored_lsoa["SMI_Prevalence"] * 100).round(2)
 
+    # Merge the live score columns onto the cached, map-ready geometry base.
+    map_lsoa = bundle["lsoa_map_base"].merge(
+        scored_lsoa[
+            [
+                "LSOA_CODE",
+                "Need_Score",
+                "Depression_Prevalence",
+                "Depression_Prevalence_Pct",
+                "SMI_Prevalence",
+                "SMI_Prevalence_Pct",
+                "Antidepressant_Items_Per_Patient",
+                "SAMHI_Selected",
+            ]
+        ],
+        on="LSOA_CODE",
+        how="left",
+    )
+
     normalized_weights = normalize_weights(
         {
             "dep_weight": dep_weight,
@@ -237,6 +255,11 @@ def render() -> None:
         if not metric_series.empty:
             threshold_value = float(np.nanpercentile(metric_series, filter_percentile))
             display_lsoa = display_lsoa[display_lsoa[filter_metric] >= threshold_value].copy()
+
+    # Keep the map data aligned with the active filter without recomputing geometry.
+    map_display_lsoa = map_lsoa
+    if filter_enabled and threshold_value is not None:
+        map_display_lsoa = map_display_lsoa[map_display_lsoa[filter_metric] >= threshold_value].copy()
 
     active_view = st.radio("View", options=["Interactive Map", "Data Explorer"], horizontal=True, index=0)
 
@@ -289,19 +312,38 @@ def render() -> None:
                 f"SAMHI: {normalized_weights['samhi_weight']:.2f}",
             ]
 
-            fmap = build_choropleth_map(
-                display_lsoa,
-                metric_layers=metric_layers,
-                tooltip_fields=tooltip_fields,
-                tooltip_aliases=tooltip_aliases,
-                show_gps=show_gps,
-                gp_marker_df=bundle["gp_marker_df"],
-                weight_legend_lines=weight_lines,
+            map_key = (
+                dep_weight,
+                smi_weight,
+                prescribing_weight,
+                samhi_weight,
+                samhi_year,
+                show_gps,
+                filter_enabled,
+                filter_metric,
+                filter_percentile,
             )
+
+            if st.session_state.get("need_map_key") != map_key:
+                # The Folium object is rebuilt only when the actual map inputs change.
+                # Zoom/pan reruns reuse the same cached map object to reduce flicker.
+                st.session_state.need_map_obj = build_choropleth_map(
+                    map_display_lsoa,
+                    metric_layers=metric_layers,
+                    tooltip_fields=tooltip_fields,
+                    tooltip_aliases=tooltip_aliases,
+                    show_gps=show_gps,
+                    gp_marker_df=bundle["gp_marker_df"],
+                    weight_legend_lines=weight_lines,
+                )
+                st.session_state.need_map_key = map_key
+
+            fmap = st.session_state.need_map_obj
             st_folium(
                 fmap,
                 key="need_map",
                 height=700,
+                returned_objects=[],
                 use_container_width=True,
             )
 

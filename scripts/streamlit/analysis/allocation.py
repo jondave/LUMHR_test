@@ -180,7 +180,21 @@ def prepare_lsoa_geography(gdf: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     if out.crs is None:
         out = out.set_crs("EPSG:4326")
 
+    out = out.to_crs(epsg=27700)
+    out["geometry"] = out.geometry.simplify(tolerance=15, preserve_topology=True)
+    out = out.to_crs(epsg=4326)
+
     return out
+
+
+def prepare_lsoa_map_base(gdf: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+    # The geography helper now returns the cached, simplified WGS84 geometry.
+    return prepare_lsoa_geography(gdf)
+
+
+@st.cache_data(show_spinner=False)
+def prepare_lsoa_map_base_cached(_gdf: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+    return prepare_lsoa_geography_cached(_gdf)
 
 
 @st.cache_data(show_spinner=False)

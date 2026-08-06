@@ -79,10 +79,8 @@ def build_choropleth_map(
     folium.map.CustomPane("lsoa_pane", z_index=400).add_to(fmap)
     folium.map.CustomPane("gp_pane", z_index=650).add_to(fmap)
 
-    # Reuse one simplified geometry frame across all layers; only the color scale changes.
-    base_draw = lsoa_gdf.to_crs(epsg=27700)
-    base_draw["geometry"] = base_draw.geometry.simplify(tolerance=15, preserve_topology=True)
-    base_draw = base_draw.to_crs(epsg=4326)
+    # `lsoa_gdf` is expected to be the cached, map-ready geometry base.
+    base_draw = lsoa_gdf
 
     for layer in metric_layers:
         metric_key = str(layer["key"])

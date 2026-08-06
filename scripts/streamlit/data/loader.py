@@ -15,6 +15,7 @@ from analysis.allocation import (
     prepare_gp_locations,
     prepare_lsoa_geography,
     prepare_lsoa_geography_cached,
+    prepare_lsoa_map_base_cached,
     prepare_mapping_from_sex_split,
     prepare_prescribing,
     prepare_smi,
@@ -104,6 +105,7 @@ def get_prepared_bundle_cached(base_dir_str: str) -> dict[str, object]:
     gp_loc_df = prepare_gp_locations(raw["gp_loc_raw"])
     # Cache the static polygon preprocessing separately from the rest of the bundle.
     lsoa_gdf = prepare_lsoa_geography_cached(raw["lsoa_raw"])
+    lsoa_map_base = prepare_lsoa_map_base_cached(raw["lsoa_raw"])
     samhi_df = prepare_samhi(raw["samhi_raw"])
 
     in_area_lsoa_codes = set(lsoa_gdf["LSOA_CODE"].dropna().unique())
@@ -128,6 +130,7 @@ def get_prepared_bundle_cached(base_dir_str: str) -> dict[str, object]:
         "gp_loc_df": gp_loc_df,
         "gp_master": gp_master,
         "lsoa_metrics": lsoa_metrics,
+        "lsoa_map_base": lsoa_map_base,
         "gp_marker_df": gp_marker_df,
         "mismatch_summary": mismatch_summary,
         "out_of_area_lsoa_codes": out_of_area_lsoa_codes,
