@@ -9,8 +9,7 @@ st.markdown(
 This dashboard contains:
 
 - Lincolnshire Mental Health Need Index
-- Small Area Mental Health Index (SAMHI) 
-- ComparisonBetween Need Index and SAMHI
+- Small Area Mental Health Index (SAMHI)
 
 Use the page selector in the sidebar to navigate.
 """

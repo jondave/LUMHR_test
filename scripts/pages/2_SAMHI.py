@@ -31,13 +31,16 @@ def init_session_state() -> None:
 def render() -> None:
     st.title("Small Area Mental Health Index (SAMHI)")
 
-    st.markdown("""
-    The **Small Area Mental Health Index (SAMHI)** estimates the relative level
-    of mental health need for each Lower Layer Super Output Area (LSOA) in
-    England. It combines several indicators associated with mental health need
-    into a single standardised index, allowing comparisons between
-    neighbourhoods and across years.
-    """)
+    st.markdown(
+        """
+        The <strong><a href="https://pldr.org/dataset/small-area-mental-health-index-samhi-2noyv"
+        target="_blank" rel="noopener noreferrer">Small Area Mental Health Index (SAMHI)</a></strong>
+        estimates the relative level of mental health need for each Lower Layer Super Output Area (LSOA)
+        in England. It combines several indicators associated with mental health need into a single
+        standardised index, allowing comparisons between neighbourhoods and across years.
+        """,
+        unsafe_allow_html=True,
+    )
 
     with st.expander("About the SAMHI data"):
         st.markdown("""
@@ -174,6 +177,7 @@ def render() -> None:
 
         display_df["SAMHI_Value"] = pd.to_numeric(display_df[metric_col], errors="coerce")
         value_col = "SAMHI_Value"
+        map_value_col = value_col
         map_label = f"SAMHI {mode} ({year})"
         map_scale = "YlGnBu_09" if mode == "Index" else "YlOrRd_09"
         value_title = f"SAMHI {mode} ({year})"
@@ -194,22 +198,25 @@ def render() -> None:
         display_df["SAMHI_From"] = pd.to_numeric(display_df[from_col], errors="coerce")
         display_df["SAMHI_To"] = pd.to_numeric(display_df[to_col], errors="coerce")
         display_df["SAMHI_Change"] = display_df["SAMHI_To"] - display_df["SAMHI_From"]
+        # For mapping only, invert sign so decreases (improvement) render in blue and increases in red.
+        display_df["SAMHI_Change_Map"] = -display_df["SAMHI_Change"]
         value_col = "SAMHI_Change"
+        map_value_col = "SAMHI_Change_Map"
         map_label = f"SAMHI {mode} Change ({to_year} - {from_year})"
         map_scale = "RdYlBu_11"
         value_title = f"SAMHI {mode} Change ({to_year} - {from_year})"
         sort_ascending = False
 
-    display_df = display_df.dropna(subset=[value_col]).copy()
+    display_df = display_df.dropna(subset=[value_col, map_value_col]).copy()
     if display_df.empty:
         st.warning("No SAMHI values available for the selected view.")
         st.stop()
 
     metric_layers = [
         {
-            "key": value_col,
+            "key": map_value_col,
             "label": map_label,
-            "value_col": value_col,
+            "value_col": map_value_col,
             "scale": map_scale,
             "default": True,
         }
@@ -226,6 +233,7 @@ def render() -> None:
             f"SAMHI {mode} ({to_year}):",
             f"Change ({to_year} - {from_year}):",
         ]
+        st.caption("Change map colors: blue = lower estimated need than baseline year, red = higher estimated need.")
 
     fmap = build_choropleth_map(
         display_df,
