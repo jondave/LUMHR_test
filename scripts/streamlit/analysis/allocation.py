@@ -1,6 +1,7 @@
 import geopandas as gpd
 import numpy as np
 import pandas as pd
+import streamlit as st
 
 from analysis.common import (
     clean_text,
@@ -182,6 +183,13 @@ def prepare_lsoa_geography(gdf: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     return out
 
 
+@st.cache_data(show_spinner=False)
+def prepare_lsoa_geography_cached(_gdf: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+    # The LSOA geometry file is static for this app, so we cache the expensive
+    # normalization and simplification step once per session.
+    return prepare_lsoa_geography(_gdf)
+
+
 def get_lsoa_centroids(gdf: gpd.GeoDataFrame) -> pd.DataFrame:
     projected = gdf.to_crs(epsg=27700)
     cent = projected.copy()
@@ -190,6 +198,12 @@ def get_lsoa_centroids(gdf: gpd.GeoDataFrame) -> pd.DataFrame:
     cent["lon"] = cent.geometry.x
     cent["lat"] = cent.geometry.y
     return cent[["LSOA_CODE", "lat", "lon"]]
+
+
+@st.cache_data(show_spinner=False)
+def get_lsoa_centroids_cached(_gdf: gpd.GeoDataFrame) -> pd.DataFrame:
+    # Centroid generation is deterministic and expensive enough to cache.
+    return get_lsoa_centroids(_gdf)
 
 
 def prepare_gp_locations(df: pd.DataFrame) -> pd.DataFrame:

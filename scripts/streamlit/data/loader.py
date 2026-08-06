@@ -10,9 +10,11 @@ from analysis.allocation import (
     build_gp_marker_df,
     build_gp_master,
     get_lsoa_centroids,
+    get_lsoa_centroids_cached,
     prepare_depression,
     prepare_gp_locations,
     prepare_lsoa_geography,
+    prepare_lsoa_geography_cached,
     prepare_mapping_from_sex_split,
     prepare_prescribing,
     prepare_smi,
@@ -22,13 +24,14 @@ from analysis.samhi import join_samhi, prepare_samhi
 
 def resolve_base_dir(script_file: Path) -> Path:
     script_dir = script_file.resolve().parent
-    candidates = [script_dir, script_dir.parent, script_dir.parent.parent]
+    candidates = [script_dir, *script_dir.parents]
     for candidate in candidates:
         if (candidate / "datasets").exists():
             return candidate
+    searched = "\n".join(str(candidate / "datasets") for candidate in candidates)
     raise FileNotFoundError(
-        "Could not locate the datasets directory. Expected it under either the script directory "
-        "or its parent directory."
+        "Could not locate the datasets directory. Searched:\n"
+        f"{searched}"
     )
 
 
@@ -99,7 +102,8 @@ def get_prepared_bundle_cached(base_dir_str: str) -> dict[str, object]:
     prescribing_df = prepare_prescribing(raw["prescribing_raw"])
     mapping_df = prepare_mapping_from_sex_split(raw["mapping_male_raw"], raw["mapping_female_raw"])
     gp_loc_df = prepare_gp_locations(raw["gp_loc_raw"])
-    lsoa_gdf = prepare_lsoa_geography(raw["lsoa_raw"])
+    # Cache the static polygon preprocessing separately from the rest of the bundle.
+    lsoa_gdf = prepare_lsoa_geography_cached(raw["lsoa_raw"])
     samhi_df = prepare_samhi(raw["samhi_raw"])
 
     in_area_lsoa_codes = set(lsoa_gdf["LSOA_CODE"].dropna().unique())
@@ -113,7 +117,7 @@ def get_prepared_bundle_cached(base_dir_str: str) -> dict[str, object]:
     lsoa_metrics = lsoa_gdf.merge(mapped_lsoa, on="LSOA_CODE", how="left")
     lsoa_metrics = join_samhi(lsoa_metrics, samhi_df)
 
-    lsoa_centroids = get_lsoa_centroids(lsoa_gdf)
+    lsoa_centroids = get_lsoa_centroids_cached(lsoa_gdf)
     gp_marker_df = build_gp_marker_df(gp_loc_df, gp_master, mapping_df, lsoa_centroids, in_area_lsoa_codes)
 
     return {

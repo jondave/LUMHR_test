@@ -4,11 +4,17 @@ import time
 import numpy as np
 import pandas as pd
 import streamlit as st
-from streamlit_folium import folium_static
+from streamlit_folium import st_folium
 
 from analysis.samhi import SAMHI_YEARS, get_samhi_columns
 from data.loader import get_prepared_bundle_cached, resolve_base_dir
 from maps.folium_map import build_choropleth_map
+
+st.set_page_config(
+    page_title="Small Area Mental Health Index (SAMHI)",
+    page_icon="assets/favicon.ico",    
+    layout="wide"
+)
 
 def init_session_state() -> None:
     defaults = {
@@ -161,6 +167,18 @@ def render() -> None:
             disabled=(analysis_mode == "Change Between Years"),
         )
 
+        st.sidebar.divider()
+
+        st.sidebar.caption(
+            """
+            © 2026 [University of Lincoln](https://www.lincoln.ac.uk/)
+
+            [Lincolnshire Unit for Mental Health Research (LUMHR)](https://lumhr.org.uk/)
+
+            Lincolnshire Mental Health Need Index v1.0
+            """
+        )
+
     analysis_mode = str(st.session_state.samhi_explorer_analysis_mode)
     year = int(st.session_state.samhi_explorer_year)
     mode = str(st.session_state.samhi_explorer_mode)
@@ -242,7 +260,13 @@ def render() -> None:
         tooltip_aliases=tooltip_aliases,
         show_gps=False,
     )
-    folium_static(fmap, width=None, height=700)
+    st_folium(
+        fmap,
+        key="samhi_map",
+        height=700,
+        width=None,
+        use_container_width=True,
+    )
 
     series = display_df[value_col].dropna()
     c1, c2, c3, c4 = st.columns(4)

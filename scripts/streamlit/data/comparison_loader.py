@@ -9,13 +9,14 @@ from analysis.samhi import join_samhi, prepare_samhi
 
 def resolve_base_dir(script_file: Path) -> Path:
     script_dir = script_file.resolve().parent
-    candidates = [script_dir, script_dir.parent, script_dir.parent.parent]
+    candidates = [script_dir, *script_dir.parents]
     for candidate in candidates:
         if (candidate / "datasets").exists():
             return candidate
+    searched = "\n".join(str(candidate / "datasets") for candidate in candidates)
     raise FileNotFoundError(
-        "Could not locate the datasets directory. Expected it under either the script directory "
-        "or its parent directory."
+        "Could not locate the datasets directory. Searched:\n"
+        f"{searched}"
     )
 
 

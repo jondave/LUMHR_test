@@ -7,6 +7,11 @@ from analysis.need_index import WEIGHT_KEYS, apply_need_score, normalize_weights
 from analysis.samhi import SAMHI_YEARS, get_samhi_columns
 from data.comparison_loader import get_comparison_bundle_cached, resolve_base_dir
 
+st.set_page_config(
+    page_title="Small Area Mental Health Index (SAMHI)",
+    page_icon="assets/favicon.ico",    
+    layout="wide"
+)
 
 def init_session_state() -> None:
     defaults = {
@@ -78,7 +83,19 @@ def render() -> None:
             help="Weight points (0-100). Final contribution is normalized with the other three controls.",
         )
         year = st.slider("SAMHI Year", min_value=min(SAMHI_YEARS), max_value=max(SAMHI_YEARS), value=2022, step=1)
-        mode = st.radio("Mode", options=["Need vs SAMHI", "Difference"], index=0)
+        mode = st.radio("Mode", options=["Need vs SAMHI", "Difference"], index=0)        
+
+        st.sidebar.divider()
+
+        st.sidebar.caption(
+            """
+            © 2026 [University of Lincoln](https://www.lincoln.ac.uk/)
+
+            [Lincolnshire Unit for Mental Health Research (LUMHR)](https://lumhr.org.uk/)
+
+            Lincolnshire Mental Health Need Index v1.0
+            """
+        )
 
     dep_weight = float(st.session_state.dep_weight)
     smi_weight = float(st.session_state.smi_weight)

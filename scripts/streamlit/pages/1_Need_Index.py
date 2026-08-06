@@ -2,12 +2,24 @@ from pathlib import Path
 
 import numpy as np
 import streamlit as st
-from streamlit_folium import folium_static
+from streamlit_folium import st_folium
 
-from analysis.need_index import WEIGHT_KEYS, apply_need_score, normalize_weights, rebalance_weight_points
+from analysis.need_index import (
+    WEIGHT_KEYS,
+    apply_need_score,
+    normalize_weights,
+    rebalance_weight_points,
+)
+
 from analysis.samhi import SAMHI_YEARS, get_samhi_columns
 from data.loader import get_prepared_bundle_cached, resolve_base_dir
 from maps.folium_map import build_choropleth_map
+
+st.set_page_config(
+    page_title="Lincolnshire Mental Health Need Index",
+    page_icon="assets/favicon.ico",
+    layout="wide"
+)
 
 def init_session_state() -> None:
     defaults = {
@@ -75,9 +87,18 @@ def render() -> None:
 
     init_session_state()
 
+    filter_options = [
+        "Need_Score",
+        "Depression_Prevalence",
+        "SMI_Prevalence",
+        "Antidepressant_Items_Per_Patient",
+        "SAMHI_Selected",
+    ]
+
     with st.sidebar:
         st.header("Need Index Controls")
         st.caption("Weight points always sum to 100.")
+
         st.slider(
             "Depression Weight Points",
             min_value=0.0,
@@ -118,9 +139,14 @@ def render() -> None:
             args=("samhi_weight", WEIGHT_KEYS),
             help="Weight points (0-100). Final contribution is normalized with the other three controls.",
         )
-        st.slider("SAMHI Year", min_value=min(SAMHI_YEARS), max_value=max(SAMHI_YEARS), step=1, key="samhi_year")
+        st.slider(
+            "SAMHI Year",
+            min_value=min(SAMHI_YEARS),
+            max_value=max(SAMHI_YEARS),
+            step=1,
+            key="samhi_year",
+        )
 
-    with st.sidebar.form("controls_form"):
         st.header("Map Layers")
         st.toggle("Show GP Locations Overlay", key="show_gps")
         st.caption("Choropleth metric is selected in the map key using radio buttons.")
@@ -129,13 +155,7 @@ def render() -> None:
         st.toggle("Filter to Areas Above Percentile", key="filter_enabled")
         st.selectbox(
             "Filter Metric",
-            options=[
-                "Need_Score",
-                "Depression_Prevalence",
-                "SMI_Prevalence",
-                "Antidepressant_Items_Per_Patient",
-                "SAMHI_Selected",
-            ],
+            options=filter_options,
             key="filter_metric",
             format_func=lambda x: {
                 "Need_Score": "Need Index",
@@ -145,8 +165,13 @@ def render() -> None:
                 "SAMHI_Selected": "SAMHI Index",
             }[x],
         )
-        st.slider("Percentile Threshold", min_value=50, max_value=99, step=1, key="filter_percentile")
-        st.form_submit_button("Apply")
+        st.slider(
+            "Percentile Threshold",
+            min_value=50,
+            max_value=99,
+            step=1,
+            key="filter_percentile",
+        )
 
     dep_weight = float(st.session_state.dep_weight)
     smi_weight = float(st.session_state.smi_weight)
@@ -186,6 +211,17 @@ def render() -> None:
         f"SMI {normalized_weights['smi_weight'] * 100:.1f}% | "
         f"Prescribing {normalized_weights['prescribing_weight'] * 100:.1f}% | "
         f"SAMHI {normalized_weights['samhi_weight'] * 100:.1f}%"
+    )
+
+    st.sidebar.divider()
+    st.sidebar.caption(
+        """
+        © 2026 [University of Lincoln](https://www.lincoln.ac.uk/)
+
+        [Lincolnshire Unit for Mental Health Research (LUMHR)](https://lumhr.org.uk/)
+
+        Lincolnshire Mental Health Need Index v1.0
+        """
     )
 
     display_lsoa = scored_lsoa.copy()
@@ -256,7 +292,12 @@ def render() -> None:
                 gp_marker_df=bundle["gp_marker_df"],
                 weight_legend_lines=weight_lines,
             )
-            folium_static(fmap, width=None, height=700)
+            st_folium(
+                fmap,
+                key="need_map",
+                height=700,
+                use_container_width=True,
+            )
 
         c1, c2, c3, c4 = st.columns(4)
         c1.metric("LSOAs Displayed", f"{display_lsoa['LSOA_CODE'].nunique():,}")

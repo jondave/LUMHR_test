@@ -19,6 +19,49 @@ def normalize_weights(weight_values: dict[str, float]) -> dict[str, float]:
     return {k: float(v) for k, v in zip(WEIGHT_KEYS, values)}
 
 
+def rebalance_weight_values(
+    weight_values: dict[str, float],
+    changed_key: str,
+    keys: list[str] | None = None,
+    total_points: float = 100.0,
+) -> dict[str, float]:
+    """Return a balanced copy of the weight values without touching session state.
+
+    This keeps the changed slider value fixed and redistributes the remaining
+    points across the other controls, matching the interactive behavior used by
+    the original page.
+    """
+
+    keys = keys or WEIGHT_KEYS
+    if changed_key not in keys:
+        return {k: float(weight_values.get(k, 0.0)) for k in keys}
+
+    balanced = {k: max(float(weight_values.get(k, 0.0)), 0.0) for k in keys}
+    changed_val = min(max(float(balanced[changed_key]), 0.0), total_points)
+    balanced[changed_key] = changed_val
+
+    other_keys = [k for k in keys if k != changed_key]
+    other_vals = [float(balanced[k]) for k in other_keys]
+    other_sum = sum(other_vals)
+    remaining = max(0.0, total_points - changed_val)
+
+    if np.isclose(other_sum, 0.0):
+        for k in other_keys:
+            balanced[k] = remaining / len(other_keys)
+    else:
+        scale = remaining / other_sum
+        for k in other_keys:
+            balanced[k] = float(balanced[k]) * scale
+
+    for k in keys:
+        balanced[k] = round(float(balanced[k]), 1)
+
+    total = sum(float(balanced[k]) for k in keys)
+    diff = round(total_points - total, 1)
+    balanced[other_keys[-1]] = round(float(balanced[other_keys[-1]]) + diff, 1)
+    return balanced
+
+
 def rebalance_weight_points(changed_key: str, keys: list[str] | None = None, total_points: float = 100.0) -> None:
     keys = keys or WEIGHT_KEYS
     if changed_key not in keys:
@@ -29,28 +72,14 @@ def rebalance_weight_points(changed_key: str, keys: list[str] | None = None, tot
 
     st.session_state["_weight_rebalancing"] = True
     try:
-        changed_val = float(st.session_state.get(changed_key, 0.0))
-        changed_val = min(max(changed_val, 0.0), total_points)
-        st.session_state[changed_key] = changed_val
-
-        other_keys = [k for k in keys if k != changed_key]
-        other_vals = [float(st.session_state.get(k, 0.0)) for k in other_keys]
-        other_sum = sum(other_vals)
-        remaining = max(0.0, total_points - changed_val)
-
-        if np.isclose(other_sum, 0.0):
-            for k in other_keys:
-                st.session_state[k] = remaining / len(other_keys)
-        else:
-            scale = remaining / other_sum
-            for k in other_keys:
-                st.session_state[k] = float(st.session_state.get(k, 0.0)) * scale
-
-        for k in keys:
-            st.session_state[k] = round(float(st.session_state[k]), 1)
-        total = sum(float(st.session_state[k]) for k in keys)
-        diff = round(total_points - total, 1)
-        st.session_state[other_keys[-1]] = round(float(st.session_state[other_keys[-1]]) + diff, 1)
+        balanced = rebalance_weight_values(
+            {k: float(st.session_state.get(k, 0.0)) for k in keys},
+            changed_key=changed_key,
+            keys=keys,
+            total_points=total_points,
+        )
+        for k, value in balanced.items():
+            st.session_state[k] = value
     finally:
         st.session_state["_weight_rebalancing"] = False
 

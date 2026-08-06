@@ -65,7 +65,7 @@ def build_choropleth_map(
     zoom_start: int = 9,
 ) -> folium.Map:
     default_col = str(metric_layers[0]["value_col"])
-    valid_geo = lsoa_gdf.dropna(subset=[default_col]).copy()
+    valid_geo = lsoa_gdf.dropna(subset=[default_col])
 
     if valid_geo.empty:
         center_lat, center_lon = 53.23, -0.54
@@ -79,7 +79,8 @@ def build_choropleth_map(
     folium.map.CustomPane("lsoa_pane", z_index=400).add_to(fmap)
     folium.map.CustomPane("gp_pane", z_index=650).add_to(fmap)
 
-    base_draw = lsoa_gdf.copy().to_crs(epsg=27700)
+    # Reuse one simplified geometry frame across all layers; only the color scale changes.
+    base_draw = lsoa_gdf.to_crs(epsg=27700)
     base_draw["geometry"] = base_draw.geometry.simplify(tolerance=15, preserve_topology=True)
     base_draw = base_draw.to_crs(epsg=4326)
 
@@ -97,8 +98,6 @@ def build_choropleth_map(
 
         color_scale = _resolve_scale(scale_name)
         colormap = color_scale.scale(min_val, max_val)
-        draw_df = base_draw.copy()
-        draw_df["fill_color"] = draw_df[metric_col].apply(lambda x: colormap(x) if pd.notna(x) else "#d9d9d9")
 
         group = folium.FeatureGroup(
             name=label,
@@ -107,10 +106,14 @@ def build_choropleth_map(
             show=bool(layer.get("default", metric_key == metric_layers[0]["key"])),
         )
         folium.GeoJson(
-            draw_df,
+            base_draw,
             pane="lsoa_pane",
-            style_function=lambda feature: {
-                "fillColor": feature["properties"].get("fill_color", "#d9d9d9"),
+            # Compute the layer color directly from the feature properties to avoid
+            # building a throwaway DataFrame copy for every metric layer.
+            style_function=lambda feature, metric_col=metric_col, colormap=colormap: {
+                "fillColor": colormap(feature["properties"].get(metric_col))
+                if pd.notna(feature["properties"].get(metric_col))
+                else "#d9d9d9",
                 "color": "#666666",
                 "weight": 0.4,
                 "fillOpacity": 0.8,
