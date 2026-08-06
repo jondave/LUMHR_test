@@ -265,6 +265,8 @@ def render() -> None:
         key="samhi_map",
         height=700,
         width=None,
+        returned_objects=[],
+        render=False,
         use_container_width=True,
     )
 

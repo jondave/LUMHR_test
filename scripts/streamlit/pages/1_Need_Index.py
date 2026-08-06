@@ -344,6 +344,7 @@ def render() -> None:
                 key="need_map",
                 height=700,
                 returned_objects=[],
+                render=False,
                 use_container_width=True,
             )
 
