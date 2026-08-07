@@ -1,0 +1,409 @@
+{% extends "base.html" %}
+
+{% block title %}Lincolnshire SAMHI | LUMHR{% endblock %}
+
+{% block content %}
+<div class="page">
+  <aside class="sidebar">
+    <h1>Lincolnshire SAMHI</h1>
+    <p class="muted">
+      The <strong><a href="https://pldr.org/dataset/small-area-mental-health-index-samhi-2noyv" target="_blank" rel="noopener noreferrer">Small Area Mental Health Index (SAMHI)</a></strong>
+      estimates the relative level of mental health need for each Lower Layer Super Output Area (LSOA) in England.
+      It combines several indicators associated with mental health need into a single standardised index,
+      allowing comparisons between neighbourhoods and across years.
+    </p>
+
+    <details class="control">
+      <summary><strong>About the SAMHI data</strong></summary>
+      <div class="muted" style="margin-top:0.6rem;">
+        <p style="margin:0 0 0.35rem;"><strong>What does the SAMHI Index mean?</strong></p>
+        <ul style="margin-top:0; padding-left:1.1rem;">
+          <li><strong>0</strong> = Average estimated mental health need across England.</li>
+          <li><strong>Positive values</strong> = Higher-than-average estimated mental health need.</li>
+          <li><strong>Negative values</strong> = Lower-than-average estimated mental health need.</li>
+        </ul>
+        <p style="margin:0.35rem 0 0.35rem;"><strong>What do the deciles mean?</strong></p>
+        <ul style="margin-top:0; padding-left:1.1rem;">
+          <li><strong>1</strong> = Lowest 10% of estimated mental health need.</li>
+          <li><strong>10</strong> = Highest 10% of estimated mental health need.</li>
+        </ul>
+        <p style="margin:0;"><strong>Note:</strong> SAMHI measures <strong>relative estimated need</strong>, not diagnosed mental illness.</p>
+      </div>
+    </details>
+
+    <div class="control">
+      <label>Analysis Mode</label>
+      <div class="radio-group" id="analysis_mode_group">
+        <label><input type="radio" name="analysis_mode" value="Single Year" checked> Single Year</label>
+        <label><input type="radio" name="analysis_mode" value="Change Between Years"> Change Between Years</label>
+      </div>
+    </div>
+
+    <div class="control">
+      <label>Mode</label>
+      <div class="radio-group" id="mode_group">
+        <label><input type="radio" name="mode" value="Index" checked> Index</label>
+        <label><input type="radio" name="mode" value="Decile"> Decile</label>
+      </div>
+    </div>
+
+    <div class="control" id="year_control">
+      <label for="year">Year <output id="year_val">{{ default_year }}</output></label>
+      <input id="year" type="range" min="{{ min_year }}" max="{{ max_year }}" step="1" value="{{ default_year }}">
+    </div>
+
+    <div class="control" id="from_year_control" style="display:none;">
+      <label for="from_year">From Year <output id="from_year_val">{{ min_year }}</output></label>
+      <input id="from_year" type="range" min="{{ min_year }}" max="{{ max_year }}" step="1" value="{{ min_year }}">
+    </div>
+
+    <div class="control" id="to_year_control" style="display:none;">
+      <label for="to_year">To Year <output id="to_year_val">{{ max_year }}</output></label>
+      <input id="to_year" type="range" min="{{ min_year }}" max="{{ max_year }}" step="1" value="{{ max_year }}">
+    </div>
+
+    <div class="control">
+      <button id="play_pause" type="button">Play</button>
+    </div>
+
+    <div class="legend" id="status">Loading map and initial SAMHI scores...</div>
+
+    <div class="legend" style="margin-top:0.9rem;">
+      &copy; 2026 <a href="https://www.lincoln.ac.uk/" target="_blank" rel="noopener noreferrer">University of Lincoln</a><br>
+      <a href="https://lumhr.org.uk/" target="_blank" rel="noopener noreferrer">Lincolnshire Unit for Mental Health Research (LUMHR)</a><br>
+      Lincolnshire Mental Health Need Index v1.0
+    </div>
+  </aside>
+
+  <section class="map-shell">
+    <div id="map"></div>
+  </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const geojsonUrl = "/datasets/{{ geojson_rel_path }}";
+  const MIN_YEAR = {{ min_year }};
+  const MAX_YEAR = {{ max_year }};
+
+  let map;
+  let geojsonLayer;
+  let currentScores = {};
+  let samhiDetails = {};
+  let samhiMeta = {};
+  let minScore = 0;
+  let maxScore = 1;
+  let fillOpacity = 0.82;
+  let timerId = null;
+
+  function getAnalysisMode() {
+    const checked = document.querySelector('input[name="analysis_mode"]:checked');
+    return checked ? checked.value : "Single Year";
+  }
+
+  function getMode() {
+    const checked = document.querySelector('input[name="mode"]:checked');
+    return checked ? checked.value : "Index";
+  }
+
+  function getCode(feature) {
+    return feature?.properties?.CODE ?? feature?.properties?.LSOA_CODE ?? null;
+  }
+
+  function isChangeMode() {
+    return getAnalysisMode() === "Change Between Years";
+  }
+
+  function currentScaleColor(value) {
+    if (value === null || value === undefined || !Number.isFinite(value)) {
+      return "#d9d9d9";
+    }
+
+    const span = (maxScore - minScore) || 1;
+    const t = Math.max(0, Math.min(1, (value - minScore) / span));
+
+    if (isChangeMode()) {
+      return chroma.scale("RdYlBu")(1 - t).hex();
+    }
+
+    if (getMode() === "Decile") {
+      return chroma.scale("YlOrRd")(t).hex();
+    }
+
+    return chroma.scale("YlGnBu")(t).hex();
+  }
+
+  function styleFeature(feature) {
+    const code = getCode(feature);
+    const score = code ? currentScores[code] : null;
+
+    return {
+      color: "#4a4a4a",
+      weight: 0.5,
+      fillColor: currentScaleColor(score),
+      fillOpacity
+    };
+  }
+
+  function formatLegendNumber(value) {
+    if (value === null || value === undefined || !Number.isFinite(value)) {
+      return "N/A";
+    }
+    return Math.abs(value) >= 100 ? value.toFixed(2) : value.toFixed(4);
+  }
+
+  function getScaleGradientCSS() {
+    if (isChangeMode()) {
+      return "linear-gradient(to right, #4575b4 0%, #ffffbf 50%, #d73027 100%)";
+    }
+    if (getMode() === "Decile") {
+      return "linear-gradient(to right, #ffffcc 0%, #fd8d3c 55%, #800026 100%)";
+    }
+    return "linear-gradient(to right, #ffffd9 0%, #41b6c4 55%, #081d58 100%)";
+  }
+
+  function getLegendTitle() {
+    const mode = samhiMeta.mode || getMode();
+    if (!isChangeMode()) {
+      const year = samhiMeta.year ?? Number(document.getElementById("year").value);
+      return `SAMHI ${mode} (${year})`;
+    }
+    const fromYear = samhiMeta.from_year ?? Number(document.getElementById("from_year").value);
+    const toYear = samhiMeta.to_year ?? Number(document.getElementById("to_year").value);
+    return `SAMHI ${mode} Change (${toYear} - ${fromYear})`;
+  }
+
+  function updateColorBar() {
+    const bar = document.getElementById("samhi_colorbar_gradient");
+    const minEl = document.getElementById("samhi_colorbar_min");
+    const maxEl = document.getElementById("samhi_colorbar_max");
+    const titleEl = document.getElementById("samhi_colorbar_title");
+    if (!bar || !minEl || !maxEl || !titleEl) {
+      return;
+    }
+    bar.style.background = getScaleGradientCSS();
+    titleEl.textContent = getLegendTitle();
+    minEl.textContent = formatLegendNumber(minScore);
+    maxEl.textContent = formatLegendNumber(maxScore);
+  }
+
+  function addMapLegendControl() {
+    const legendControl = L.control({ position: "topright" });
+    legendControl.onAdd = function onAdd() {
+      const container = L.DomUtil.create("div", "leaflet-bar");
+      container.style.background = "#ffffff";
+      container.style.padding = "10px";
+      container.style.minWidth = "245px";
+      container.style.boxShadow = "0 2px 8px rgba(0,0,0,0.15)";
+      container.style.borderRadius = "6px";
+      container.style.border = "1px solid #d7e2e8";
+      container.innerHTML = `
+        <div id="samhi_colorbar_title" style="font-weight:700; margin-bottom:6px;">SAMHI Index</div>
+        <div id="samhi_colorbar_gradient" style="height:12px; border-radius:4px; border:1px solid #d0d9df;"></div>
+        <div style="display:flex; justify-content:space-between; font-size:11px; color:#4f5f69; margin-top:3px;">
+          <span id="samhi_colorbar_min">0.0000</span>
+          <span id="samhi_colorbar_max">1.0000</span>
+        </div>
+        <div style="border-top:1px solid #e4ecef; padding-top:8px; margin-top:6px;">
+          <label for="samhi_opacity_slider" style="display:block; font-weight:600; margin-bottom:4px;">Overlay Transparency</label>
+          <input id="samhi_opacity_slider" type="range" min="0.1" max="1" step="0.05" value="0.82" style="width:100%;">
+          <div id="samhi_opacity_value" style="font-size:11px; color:#4f5f69; margin-top:2px;">Opacity: 0.82</div>
+        </div>
+      `;
+      L.DomEvent.disableClickPropagation(container);
+      L.DomEvent.disableScrollPropagation(container);
+      return container;
+    };
+
+    legendControl.addTo(map);
+
+    const opacitySlider = document.getElementById("samhi_opacity_slider");
+    const opacityValue = document.getElementById("samhi_opacity_value");
+    if (opacitySlider && opacityValue) {
+      opacitySlider.addEventListener("input", () => {
+        fillOpacity = Number(opacitySlider.value);
+        opacityValue.textContent = `Opacity: ${fillOpacity.toFixed(2)}`;
+        if (geojsonLayer) {
+          geojsonLayer.setStyle(styleFeature);
+        }
+      });
+    }
+  }
+
+  function updateControlVisibility() {
+    const change = isChangeMode();
+    document.getElementById("year_control").style.display = change ? "none" : "block";
+    document.getElementById("from_year_control").style.display = change ? "block" : "none";
+    document.getElementById("to_year_control").style.display = change ? "block" : "none";
+    document.getElementById("play_pause").disabled = change;
+
+    if (change) {
+      stopPlayback();
+    }
+  }
+
+  function formatValue(value, mode) {
+    if (value === null || value === undefined) return "N/A";
+
+    const num = Number(value);
+
+    return mode.toLowerCase() === "decile"
+        ? Math.round(num).toString()
+        : num.toFixed(4);
+    }
+
+    function refreshTooltips() {
+    if (!geojsonLayer) {
+        return;
+    }
+
+    geojsonLayer.eachLayer((layer) => {
+        const feature = layer.feature;
+        const code = getCode(feature) ?? "Unknown";
+        const name = feature?.properties?.NAME ?? "";
+        const details = samhiDetails[code] || {};
+        const mode = samhiMeta.mode || getMode();
+        const displayName = details.lsoa_name || name || "N/A";
+
+        let popupHtml = `<strong>LSOA:</strong> ${code}<br><strong>LSOA Name:</strong> ${displayName}<br>`;
+
+        if (!isChangeMode()) {
+        const year = samhiMeta.year ?? Number(document.getElementById("year").value);
+        popupHtml += `<strong>SAMHI ${mode} (${year}):</strong> ${formatValue(details.value, mode)}`;
+        } else {
+        const fromYear = samhiMeta.from_year ?? Number(document.getElementById("from_year").value);
+        const toYear = samhiMeta.to_year ?? Number(document.getElementById("to_year").value);
+
+        popupHtml +=
+            `<strong>SAMHI ${mode} (${fromYear}):</strong> ${formatValue(details.from_value, mode)}<br>` +
+            `<strong>SAMHI ${mode} (${toYear}):</strong> ${formatValue(details.to_value, mode)}<br>` +
+            `<strong>Change (${toYear} - ${fromYear}):</strong> ${formatValue(details.change, mode)}`;
+        }
+
+        layer.bindPopup(popupHtml, { maxWidth: 360 });
+        layer.setTooltipContent(`${code}${name ? ` | ${name}` : ""}`);
+    });
+    }
+
+  function updateYearLabels() {
+    document.getElementById("year_val").textContent = document.getElementById("year").value;
+    document.getElementById("from_year_val").textContent = document.getElementById("from_year").value;
+    document.getElementById("to_year_val").textContent = document.getElementById("to_year").value;
+  }
+
+  async function updateMap() {
+    updateYearLabels();
+
+    const params = new URLSearchParams({
+      analysis_mode: getAnalysisMode(),
+      mode: getMode(),
+      year: document.getElementById("year").value,
+      from_year: document.getElementById("from_year").value,
+      to_year: document.getElementById("to_year").value
+    });
+
+    const resp = await fetch(`/api/samhi-scores?${params.toString()}`);
+    if (!resp.ok) {
+      document.getElementById("status").textContent = "Failed to fetch SAMHI scores.";
+      return;
+    }
+
+    const payload = await resp.json();
+    currentScores = payload.scores || {};
+    samhiDetails = payload.details || {};
+    samhiMeta = payload.meta || {};
+    const values = Object.values(currentScores).map(Number).filter(Number.isFinite);
+    minScore = values.length ? Math.min(...values) : 0;
+    maxScore = values.length ? Math.max(...values) : 1;
+    updateColorBar();
+
+    if (geojsonLayer) {
+      geojsonLayer.setStyle(styleFeature);
+      refreshTooltips();
+    }
+
+    document.getElementById("status").textContent = `Updated ${values.length} LSOA scores.`;
+  }
+
+  function stopPlayback() {
+    if (timerId) {
+      clearInterval(timerId);
+      timerId = null;
+    }
+    document.getElementById("play_pause").textContent = "Play";
+  }
+
+  function startPlayback() {
+    if (timerId || isChangeMode()) {
+      return;
+    }
+
+    document.getElementById("play_pause").textContent = "Pause";
+    timerId = setInterval(async () => {
+      const yearSlider = document.getElementById("year");
+      let year = Number(yearSlider.value);
+      year = year >= MAX_YEAR ? MIN_YEAR : year + 1;
+      yearSlider.value = String(year);
+      await updateMap();
+    }, 900);
+  }
+
+  function togglePlayback() {
+    if (timerId) {
+      stopPlayback();
+      return;
+    }
+    startPlayback();
+  }
+
+  async function init() {
+    map = L.map("map", {
+      zoomControl: true,
+      preferCanvas: true
+    }).setView([53.22, -0.54], 9);
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution: "&copy; OpenStreetMap contributors"
+    }).addTo(map);
+
+    const resp = await fetch(geojsonUrl);
+    const geojson = await resp.json();
+
+    geojsonLayer = L.geoJSON(geojson, {
+      style: styleFeature,
+      onEachFeature: (feature, layer) => {
+        const code = getCode(feature) ?? "Unknown";
+        const name = feature?.properties?.NAME ?? "";
+        layer.bindTooltip(`${code}${name ? ` | ${name}` : ""}`);
+      }
+    }).addTo(map);
+
+    addMapLegendControl();
+    map.fitBounds(geojsonLayer.getBounds());
+
+    for (const radio of document.querySelectorAll('input[name="analysis_mode"]')) {
+      radio.addEventListener("change", async () => {
+        updateControlVisibility();
+        await updateMap();
+      });
+    }
+
+    for (const radio of document.querySelectorAll('input[name="mode"]')) {
+      radio.addEventListener("change", updateMap);
+    }
+
+    for (const id of ["year", "from_year", "to_year"]) {
+      document.getElementById(id).addEventListener("input", updateMap);
+    }
+
+    document.getElementById("play_pause").addEventListener("click", togglePlayback);
+
+    updateControlVisibility();
+    await updateMap();
+  }
+
+  window.addEventListener("load", init);
+</script>
+{% endblock %}

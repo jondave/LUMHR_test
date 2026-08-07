@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}LUMHR Flask Dashboard{% endblock %}</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    >
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+      defer
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/chroma-js@2.4.2/chroma.min.js" defer></script>
+    <style>
+      :root {
+        --bg: #f4f7f9;
+        --panel: #ffffff;
+        --nav: #0f2d3a;
+        --nav-hover: #174456;
+        --text: #1b2a33;
+        --accent: #0c7da0;
+        --muted: #6a7c86;
+        --border: #dde5ea;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        color: var(--text);
+        background: linear-gradient(180deg, #eef4f7 0%, #f9fbfc 100%);
+      }
+
+      .top-nav {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        background: var(--nav);
+        border-bottom: 3px solid #0a212c;
+      }
+
+      .top-nav a {
+        color: #eaf4f8;
+        text-decoration: none;
+        padding: 0.5rem 0.8rem;
+        border-radius: 0.5rem;
+        font-weight: 600;
+      }
+
+      .top-nav a:hover {
+        background: var(--nav-hover);
+      }
+
+      .top-nav a.active {
+        background: #eaf4f8;
+        color: #10303e;
+      }
+
+      .page {
+        display: grid;
+        grid-template-columns: 340px 1fr;
+        gap: 1rem;
+        padding: 1rem;
+        min-height: calc(100vh - 68px);
+      }
+
+      .sidebar {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 0.8rem;
+        padding: 1rem;
+        overflow-y: auto;
+      }
+
+      .map-shell {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 0.8rem;
+        overflow: hidden;
+        min-height: 70vh;
+      }
+
+      #map {
+        width: 100%;
+        height: 78vh;
+      }
+
+      h1 {
+        margin: 0 0 0.3rem;
+        font-size: 1.2rem;
+      }
+
+      p.muted {
+        margin: 0 0 1rem;
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
+
+      .control {
+        margin-bottom: 0.9rem;
+      }
+
+      .control label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 0.35rem;
+      }
+
+      .control input[type="range"],
+      .control select,
+      .control button {
+        width: 100%;
+      }
+
+      .control output {
+        display: inline-block;
+        margin-left: 0.45rem;
+        font-size: 0.9rem;
+        color: var(--accent);
+        font-weight: 700;
+      }
+
+      button {
+        padding: 0.55rem 0.7rem;
+        border: 1px solid #9ec4d2;
+        border-radius: 0.55rem;
+        background: #dff3fa;
+        color: #083443;
+        cursor: pointer;
+        font-weight: 700;
+      }
+
+      button:hover {
+        background: #ccecf8;
+      }
+
+      button:disabled {
+        background: #e4e8ea;
+        border-color: #cfd5d9;
+        color: #7b878f;
+        cursor: not-allowed;
+      }
+
+      .sidebar a {
+        color: #0d5f7a;
+      }
+
+      .radio-group {
+        display: flex;
+        gap: 0.8rem;
+        flex-wrap: wrap;
+      }
+
+      .radio-group label {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-weight: 500;
+      }
+
+      details > summary {
+        cursor: pointer;
+        color: #173b4a;
+      }
+
+      .legend {
+        margin-top: 0.8rem;
+        font-size: 0.86rem;
+        color: var(--muted);
+      }
+
+      @media (max-width: 1024px) {
+        .page {
+          grid-template-columns: 1fr;
+        }
+
+        #map {
+          height: 68vh;
+        }
+      }
+    </style>
+    {% block head_extra %}{% endblock %}
+  </head>
+  <body>
+    <nav class="top-nav">
+      <a href="/" class="{% if request.path == '/' %}active{% endif %}">Need Index</a>
+      <a href="/samhi" class="{% if request.path == '/samhi' %}active{% endif %}">SAMHI</a>
+    </nav>
+    {% block content %}{% endblock %}
+    {% block scripts %}{% endblock %}
+  </body>
+</html>
