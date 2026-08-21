@@ -303,7 +303,7 @@
       to_year: document.getElementById("to_year").value
     });
 
-    const resp = await fetch(`/api/samhi-scores?${params.toString()}`);
+    const resp = await fetch(`/api/samhi_scores?${params.toString()}`);
     if (!resp.ok) {
       document.getElementById("status").textContent = "Failed to fetch SAMHI scores.";
       return;

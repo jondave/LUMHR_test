@@ -21,6 +21,7 @@ def prepare_depression(df: pd.DataFrame) -> pd.DataFrame:
     list_col = find_column(df, ["List size aged 18+ 2425", "List Size", "List size"])
     prev_col = find_column(df, ["Prevalence (%) 2425", "Prevalence"])
     pca_col = find_column(df, ["Overall PCA Rate (%) 2425", "Overall PCA Rate (%)"], required=False)
+    dep004_col = find_prefix_column(df, "DEP004", required=False)
 
     out = pd.DataFrame(
         {
@@ -30,6 +31,7 @@ def prepare_depression(df: pd.DataFrame) -> pd.DataFrame:
             "Dep_List_Size": parse_numeric(df[list_col]),
             "Dep_Prevalence_Pct": parse_numeric(df[prev_col]),
             "Dep_Exception_Rate_Pct": optional_numeric(df, pca_col),
+            "DEP004_Pct": optional_numeric(df, dep004_col),
         }
     )
 
@@ -52,6 +54,7 @@ def prepare_smi(df: pd.DataFrame) -> pd.DataFrame:
     mh007_col = find_prefix_column(df, "MH007", required=False)
     mh011_col = find_prefix_column(df, "MH011", required=False)
     mh012_col = find_prefix_column(df, "MH012", required=False)
+    mh021_col = find_prefix_column(df, "MH021", required=False)
     pca_col = find_column(df, ["Overall PCA Rate (%) 2425", "Overall PCA Rate (%)"], required=False)
 
     out = pd.DataFrame(
@@ -67,6 +70,7 @@ def prepare_smi(df: pd.DataFrame) -> pd.DataFrame:
             "MH007_Pct": optional_numeric(df, mh007_col),
             "MH011_Pct": optional_numeric(df, mh011_col),
             "MH012_Pct": optional_numeric(df, mh012_col),
+            "MH021_Pct": optional_numeric(df, mh021_col),
             "SMI_Exception_Rate_Pct": optional_numeric(df, pca_col),
         }
     )
@@ -227,6 +231,40 @@ def allocate_registers_to_lsoa(mapping_df: pd.DataFrame, gp_df: pd.DataFrame) ->
     )
 
     return lsoa, mismatch_summary
+
+
+ACCESS_RATE_COLUMNS = {
+    "MH002_Pct": "MH002_Access_Pct",
+    "MH021_Pct": "MH021_Access_Pct",
+    "SMI_Exception_Rate_Pct": "MH_PCA_Access_Pct",
+    "Dep_Exception_Rate_Pct": "Dep_PCA_Access_Pct",
+    "DEP004_Pct": "DEP004_Access_Pct",
+}
+
+
+def allocate_access_rates_to_lsoa(mapping_df: pd.DataFrame, gp_df: pd.DataFrame) -> pd.DataFrame:
+    """Patient-weighted average of GP-level QOF intervention/PCA rates, rolled up to LSOA."""
+    rate_source_cols = [c for c in ACCESS_RATE_COLUMNS if c in gp_df.columns]
+    alloc = mapping_df.merge(
+        gp_df[["PRACTICE_CODE", *rate_source_cols]],
+        on="PRACTICE_CODE",
+        how="left",
+    )
+
+    rows = []
+    for lsoa_code, group in alloc.groupby("LSOA_CODE"):
+        row: dict[str, object] = {"LSOA_CODE": lsoa_code}
+        for src_col in rate_source_cols:
+            out_col = ACCESS_RATE_COLUMNS[src_col]
+            valid = group.dropna(subset=[src_col])
+            weight_sum = valid["NUMBER_OF_PATIENTS"].sum()
+            if weight_sum > 0:
+                row[out_col] = float((valid[src_col] * valid["NUMBER_OF_PATIENTS"]).sum() / weight_sum)
+            else:
+                row[out_col] = np.nan
+        rows.append(row)
+
+    return pd.DataFrame(rows)
 
 
 def prepare_gp_locations(df: pd.DataFrame) -> pd.DataFrame:

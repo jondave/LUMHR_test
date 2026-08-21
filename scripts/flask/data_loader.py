@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 
 from core.allocation import (
+    allocate_access_rates_to_lsoa,
     allocate_registers_to_lsoa,
     build_gp_master,
     build_gp_marker_df,
@@ -19,6 +20,7 @@ from core.allocation import (
 )
 from core.common import normalize_code
 from core.samhi import join_samhi, prepare_samhi
+from core.travel import build_2011_to_2021_lookup, prepare_rural_urban, prepare_travel_times
 
 
 def resolve_base_dir(script_file: Path) -> Path:
@@ -55,6 +57,23 @@ def get_paths(base_dir: Path) -> dict[str, Path]:
         "gp_locations": base_dir / "datasets" / "gp_locations" / "Lincolnshire_ICB_GPs.csv",
         "lsoa_geo": base_dir / "datasets" / "lincolnshire_lsoa" / "lower-super-output-areas-2021-5RrVTw.geojson",
         "samhi": base_dir / "datasets" / "samhi" / "samhi_lincolnshire_2021_lsoa.csv",
+        "gp_travel_time": base_dir
+        / "datasets"
+        / "journey_time_statistics"
+        / "jts0505 LSOA Travel Time to GPs_sheet_2019.csv",
+        "hospital_travel_time": base_dir
+        / "datasets"
+        / "journey_time_statistics"
+        / "jts0506 LSOA Travel Time to Hospitals_sheet_2019.csv",
+        "rural_urban": base_dir
+        / "datasets"
+        / "rural_urban_classification_2021_lsoa"
+        / "lincolnshire_rural_urban_2021.csv",
+        "lsoa_2011_2021_lookup": base_dir
+        / "datasets"
+        / "lincolnshire_lsoa"
+        / "lsoa_2011_to_2021_lookup"
+        / "LSOA_(2011)_to_LSOA_(2021)_to_Local_Authority_District_(2022)_Exact_Fit_Lookup_for_EW_(V3).csv",
     }
 
 
@@ -157,6 +176,10 @@ def load_raw_data(base_dir_str: str) -> dict[str, object]:
         "mapping_female_raw": pd.read_csv(paths["mapping_female"]),
         "gp_loc_raw": pd.read_csv(paths["gp_locations"]),
         "samhi_raw": pd.read_csv(paths["samhi"]),
+        "gp_travel_time_raw": pd.read_csv(paths["gp_travel_time"]),
+        "hospital_travel_time_raw": pd.read_csv(paths["hospital_travel_time"]),
+        "rural_urban_raw": pd.read_csv(paths["rural_urban"]),
+        "lsoa_2011_2021_lookup_raw": pd.read_csv(paths["lsoa_2011_2021_lookup"]),
         "lsoa_codes": lsoa_codes_df,
         "lsoa_centroids": lsoa_centroids_df,
     }
@@ -186,6 +209,18 @@ def get_prepared_bundle_cached(base_dir_str: str) -> dict[str, object]:
 
     lsoa_metrics = lsoa_codes_df.merge(mapped_lsoa, on="LSOA_CODE", how="left")
     lsoa_metrics = join_samhi(lsoa_metrics, samhi_df)
+
+    access_lsoa = allocate_access_rates_to_lsoa(mapping_df, gp_master)
+    lsoa_metrics = lsoa_metrics.merge(access_lsoa, on="LSOA_CODE", how="left")
+
+    lookup_map = build_2011_to_2021_lookup(raw["lsoa_2011_2021_lookup_raw"])
+    travel_times_df = prepare_travel_times(
+        raw["gp_travel_time_raw"], raw["hospital_travel_time_raw"], lookup_map
+    )
+    lsoa_metrics = lsoa_metrics.merge(travel_times_df, on="LSOA_CODE", how="left")
+
+    rural_urban_df = prepare_rural_urban(raw["rural_urban_raw"])
+    lsoa_metrics = lsoa_metrics.merge(rural_urban_df, on="LSOA_CODE", how="left")
 
     gp_marker_df = build_gp_marker_df(gp_loc_df, gp_master, mapping_df, lsoa_centroids_df, in_area_lsoa_codes)
 

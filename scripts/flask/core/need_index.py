@@ -20,7 +20,7 @@ def normalize_weights(weight_values: dict[str, float]) -> dict[str, float]:
     return {k: float(v) for k, v in zip(WEIGHT_KEYS, values)}
 
 
-def apply_need_score(
+def apply_need_index(
     lsoa_df: pd.DataFrame,
     dep_weight: float,
     smi_weight: float,
@@ -43,7 +43,7 @@ def apply_need_score(
     out["SMI_Normalized"] = minmax_scale(out["SMI_Prevalence"])
     out["Prescribing_Normalized"] = minmax_scale(out["Antidepressant_Items_Per_Patient"])
     out["SAMHI_Normalized"] = minmax_scale(out["SAMHI_Selected"])
-    out["Need_Score"] = (
+    out["Need_Index"] = (
         out["Depression_Normalized"].fillna(0) * normalized_weights["dep_weight"]
         + out["SMI_Normalized"].fillna(0) * normalized_weights["smi_weight"]
         + out["Prescribing_Normalized"].fillna(0) * normalized_weights["prescribing_weight"]

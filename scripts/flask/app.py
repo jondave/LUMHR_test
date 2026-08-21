@@ -5,7 +5,8 @@ from pathlib import Path
 import pandas as pd
 from flask import Flask, jsonify, render_template, request, send_from_directory
 
-from core.need_index import apply_need_score
+from core.need_index import apply_need_index
+from core.access_index import apply_access_index
 from core.samhi import SAMHI_YEARS, get_samhi_columns
 from data_loader import get_prepared_bundle_cached, resolve_base_dir
 
@@ -83,12 +84,38 @@ def samhi_page() -> str:
     )
 
 
+@app.get("/access_index")
+def access_index_page() -> str:
+    out_lsoa_count = len(BUNDLE["out_of_area_lsoa_codes"])
+    out_patients = int(round(float(BUNDLE["out_of_area_patients"])))
+    return render_template(
+        "access_index.html",
+        geojson_rel_path=GEOJSON_REL_PATH,
+        out_of_area_lsoa_count_fmt=f"{out_lsoa_count:,}",
+        out_of_area_patients_fmt=f"{out_patients:,}",
+    )
+
+
+@app.get("/access_gap_index")
+def access_gap_index_page() -> str:
+    out_lsoa_count = len(BUNDLE["out_of_area_lsoa_codes"])
+    out_patients = int(round(float(BUNDLE["out_of_area_patients"])))
+    return render_template(
+        "access_gap_index.html",
+        geojson_rel_path=GEOJSON_REL_PATH,
+        out_of_area_lsoa_count_fmt=f"{out_lsoa_count:,}",
+        out_of_area_patients_fmt=f"{out_patients:,}",
+        min_year=min(SAMHI_YEARS),
+        max_year=max(SAMHI_YEARS),
+    )
+
+
 @app.get("/datasets/<path:filename>")
 def dataset_files(filename: str):
     return send_from_directory(DATASETS_DIR, filename)
 
 
-@app.get("/api/gp-locations")
+@app.get("/api/gp_locations")
 def gp_locations_api():
     cols = [
         "PRACTICE_CODE",
@@ -105,6 +132,10 @@ def gp_locations_api():
         "MH002_Pct",
         "Physical_Health_Review_Avg_Pct",
         "Exception_Rate_Pct",
+        "MH021_Pct",
+        "Dep_Exception_Rate_Pct",
+        "SMI_Exception_Rate_Pct",
+        "DEP004_Pct",
         "Effective_LSOA",
     ]
     available_cols = [c for c in cols if c in GP_MARKER_DF.columns]
@@ -130,6 +161,10 @@ def gp_locations_api():
             "mh002_pct": _num_or_none(row.get("MH002_Pct")),
             "physical_health_review_avg_pct": _num_or_none(row.get("Physical_Health_Review_Avg_Pct")),
             "exception_rate_pct": _num_or_none(row.get("Exception_Rate_Pct")),
+            "mh021_pct": _num_or_none(row.get("MH021_Pct")),
+            "mh_pca_pct": _num_or_none(row.get("SMI_Exception_Rate_Pct")),
+            "dep_pca_pct": _num_or_none(row.get("Dep_Exception_Rate_Pct")),
+            "dep004_pct": _num_or_none(row.get("DEP004_Pct")),
             "effective_lsoa": str(row.get("Effective_LSOA", "") or ""),
         }
         markers.append(marker)
@@ -137,7 +172,7 @@ def gp_locations_api():
     return jsonify(markers)
 
 
-@app.get("/api/need-scores")
+@app.get("/api/need_scores")
 def need_scores_api():
     try:
         dep = _parse_float_arg("dep", 25.0)
@@ -155,7 +190,7 @@ def need_scores_api():
     if samhi_index_col not in LSOA_METRICS.columns:
         return jsonify({"error": f"Missing SAMHI column: {samhi_index_col}"}), 400
 
-    scored = apply_need_score(
+    scored = apply_need_index(
         LSOA_METRICS,
         dep,
         smi,
@@ -167,7 +202,7 @@ def need_scores_api():
     scored["SMI_Prevalence_Pct"] = pd.to_numeric(scored["SMI_Prevalence"], errors="coerce") * 100.0
 
     layers = {
-        "Need_Score": _scores_to_dict(scored, "Need_Score"),
+        "Need_Index": _scores_to_dict(scored, "Need_Index"),
         "Depression_Prevalence": _scores_to_dict(scored, "Depression_Prevalence"),
         "SMI_Prevalence": _scores_to_dict(scored, "SMI_Prevalence"),
         "Antidepressant_Items_Per_Patient": _scores_to_dict(scored, "Antidepressant_Items_Per_Patient"),
@@ -178,7 +213,7 @@ def need_scores_api():
 
     detail_cols = [
         "LSOA_CODE",
-        "Need_Score",
+        "Need_Index",
         "Depression_Prevalence_Pct",
         "SMI_Prevalence_Pct",
         "Antidepressant_Items_Per_Patient",
@@ -194,7 +229,7 @@ def need_scores_api():
             continue
         lsoa_details[code] = {
             "lsoa_name": str(row.get(lsoa_name_col, "") or "") if lsoa_name_col else "",
-            "need_score": _num_or_none(row.get("Need_Score")),
+            "need_index": _num_or_none(row.get("Need_Index")),
             "depression_prevalence_pct": _num_or_none(row.get("Depression_Prevalence_Pct")),
             "smi_prevalence_pct": _num_or_none(row.get("SMI_Prevalence_Pct")),
             "antidepressant_items_per_patient": _num_or_none(row.get("Antidepressant_Items_Per_Patient")),
@@ -213,7 +248,184 @@ def need_scores_api():
     )
 
 
-@app.get("/api/samhi-scores")
+@app.get("/api/access_scores")
+def access_scores_api():
+    try:
+        mh002 = _parse_float_arg("mh002", 20.0)
+        mh021 = _parse_float_arg("mh021", 20.0)
+        mh_pca = _parse_float_arg("mh_pca", 20.0)
+        dep_pca = _parse_float_arg("dep_pca", 20.0)
+        dep004 = _parse_float_arg("dep004", 20.0)
+        gp_pt = _parse_float_arg("gp_pt", 10.0)
+        gp_car = _parse_float_arg("gp_car", 10.0)
+        hosp_pt = _parse_float_arg("hosp_pt", 10.0)
+        hosp_car = _parse_float_arg("hosp_car", 10.0)
+        rural = _parse_float_arg("rural", 10.0)
+    except ValueError as exc:
+        return jsonify({"error": str(exc)}), 400
+
+    required_cols = [
+        "MH002_Access_Pct",
+        "MH021_Access_Pct",
+        "MH_PCA_Access_Pct",
+        "Dep_PCA_Access_Pct",
+        "DEP004_Access_Pct",
+        "GP_PT_Time",
+        "GP_Car_Time",
+        "Hosp_PT_Time",
+        "Hosp_Car_Time",
+        "Rural_Access",
+    ]
+    missing = [c for c in required_cols if c not in LSOA_METRICS.columns]
+    if missing:
+        return jsonify({"error": f"Missing access columns: {', '.join(missing)}"}), 400
+
+    scored = apply_access_index(
+        LSOA_METRICS, mh002, mh021, mh_pca, dep_pca, dep004, gp_pt, gp_car, hosp_pt, hosp_car, rural
+    )
+
+    layers = {
+        "Access_Index": _scores_to_dict(scored, "Access_Index"),
+        "MH002_Access_Pct": _scores_to_dict(scored, "MH002_Access_Pct"),
+        "MH021_Access_Pct": _scores_to_dict(scored, "MH021_Access_Pct"),
+        "MH_PCA_Access_Pct": _scores_to_dict(scored, "MH_PCA_Access_Pct"),
+        "Dep_PCA_Access_Pct": _scores_to_dict(scored, "Dep_PCA_Access_Pct"),
+        "DEP004_Access_Pct": _scores_to_dict(scored, "DEP004_Access_Pct"),
+        "GP_PT_Time": _scores_to_dict(scored, "GP_PT_Time"),
+        "GP_Car_Time": _scores_to_dict(scored, "GP_Car_Time"),
+        "Hosp_PT_Time": _scores_to_dict(scored, "Hosp_PT_Time"),
+        "Hosp_Car_Time": _scores_to_dict(scored, "Hosp_Car_Time"),
+        "Rural_Access": _scores_to_dict(scored, "Rural_Access"),
+    }
+
+    lsoa_name_col = _get_lsoa_name_column(scored)
+
+    detail_cols = [
+        "LSOA_CODE",
+        "Access_Index",
+        "RUC21NM",
+        *required_cols,
+    ]
+    if lsoa_name_col:
+        detail_cols.insert(1, lsoa_name_col)
+    details_df = scored[[c for c in detail_cols if c in scored.columns]].copy()
+    lsoa_details: dict[str, dict[str, object]] = {}
+    for row in details_df.to_dict(orient="records"):
+        code = str(row.get("LSOA_CODE", "") or "")
+        if not code:
+            continue
+        lsoa_details[code] = {
+            "lsoa_name": str(row.get(lsoa_name_col, "") or "") if lsoa_name_col else "",
+            "access_index": _num_or_none(row.get("Access_Index")),
+            "mh002_pct": _num_or_none(row.get("MH002_Access_Pct")),
+            "mh021_pct": _num_or_none(row.get("MH021_Access_Pct")),
+            "mh_pca_pct": _num_or_none(row.get("MH_PCA_Access_Pct")),
+            "dep_pca_pct": _num_or_none(row.get("Dep_PCA_Access_Pct")),
+            "dep004_pct": _num_or_none(row.get("DEP004_Access_Pct")),
+            "gp_pt_time": _num_or_none(row.get("GP_PT_Time")),
+            "gp_car_time": _num_or_none(row.get("GP_Car_Time")),
+            "hosp_pt_time": _num_or_none(row.get("Hosp_PT_Time")),
+            "hosp_car_time": _num_or_none(row.get("Hosp_Car_Time")),
+            "rural_access": _num_or_none(row.get("Rural_Access")),
+            "ruc21nm": str(row.get("RUC21NM", "") or ""),
+        }
+
+    return jsonify(
+        {
+            "layers": layers,
+            "lsoa_details": lsoa_details,
+        }
+    )
+
+
+@app.get("/api/access_gap_scores")
+def access_gap_scores_api():
+    try:
+        dep = _parse_float_arg("dep", 25.0)
+        smi = _parse_float_arg("smi", 25.0)
+        prescribing = _parse_float_arg("prescribing", 25.0)
+        samhi_weight = _parse_float_arg("samhi", 25.0)
+        samhi_year = _parse_int_arg("samhi_year", max(SAMHI_YEARS))
+        mh002 = _parse_float_arg("mh002", 20.0)
+        mh021 = _parse_float_arg("mh021", 20.0)
+        mh_pca = _parse_float_arg("mh_pca", 20.0)
+        dep_pca = _parse_float_arg("dep_pca", 20.0)
+        dep004 = _parse_float_arg("dep004", 20.0)
+        gp_pt = _parse_float_arg("gp_pt", 10.0)
+        gp_car = _parse_float_arg("gp_car", 10.0)
+        hosp_pt = _parse_float_arg("hosp_pt", 10.0)
+        hosp_car = _parse_float_arg("hosp_car", 10.0)
+        rural = _parse_float_arg("rural", 10.0)
+    except ValueError as exc:
+        return jsonify({"error": str(exc)}), 400
+
+    if samhi_year not in SAMHI_YEARS:
+        return jsonify({"error": f"samhi_year must be one of {SAMHI_YEARS}"}), 400
+
+    samhi_index_col, _ = get_samhi_columns(samhi_year)
+    if samhi_index_col not in LSOA_METRICS.columns:
+        return jsonify({"error": f"Missing SAMHI column: {samhi_index_col}"}), 400
+
+    access_required_cols = [
+        "MH002_Access_Pct",
+        "MH021_Access_Pct",
+        "MH_PCA_Access_Pct",
+        "Dep_PCA_Access_Pct",
+        "DEP004_Access_Pct",
+        "GP_PT_Time",
+        "GP_Car_Time",
+        "Hosp_PT_Time",
+        "Hosp_Car_Time",
+        "Rural_Access",
+    ]
+    missing = [c for c in access_required_cols if c not in LSOA_METRICS.columns]
+    if missing:
+        return jsonify({"error": f"Missing access columns: {', '.join(missing)}"}), 400
+
+    need_scored = apply_need_index(LSOA_METRICS, dep, smi, prescribing, samhi_weight, samhi_index_col)
+    access_scored = apply_access_index(
+        LSOA_METRICS, mh002, mh021, mh_pca, dep_pca, dep004, gp_pt, gp_car, hosp_pt, hosp_car, rural
+    )
+
+    combined = need_scored[["LSOA_CODE", "Need_Index"]].merge(
+        access_scored[["LSOA_CODE", "Access_Index"]], on="LSOA_CODE", how="outer"
+    )
+    combined["Access_Gap_Index"] = combined["Need_Index"] - combined["Access_Index"]
+
+    lsoa_name_col = _get_lsoa_name_column(LSOA_METRICS)
+    if lsoa_name_col:
+        combined = combined.merge(LSOA_METRICS[["LSOA_CODE", lsoa_name_col]], on="LSOA_CODE", how="left")
+
+    layers = {
+        "Access_Gap_Index": _scores_to_dict(combined, "Access_Gap_Index"),
+        "Need_Index": _scores_to_dict(combined, "Need_Index"),
+        "Access_Index": _scores_to_dict(combined, "Access_Index"),
+    }
+
+    lsoa_details: dict[str, dict[str, object]] = {}
+    for row in combined.to_dict(orient="records"):
+        code = str(row.get("LSOA_CODE", "") or "")
+        if not code:
+            continue
+        lsoa_details[code] = {
+            "lsoa_name": str(row.get(lsoa_name_col, "") or "") if lsoa_name_col else "",
+            "access_gap_index": _num_or_none(row.get("Access_Gap_Index")),
+            "need_index": _num_or_none(row.get("Need_Index")),
+            "access_index": _num_or_none(row.get("Access_Index")),
+        }
+
+    return jsonify(
+        {
+            "layers": layers,
+            "lsoa_details": lsoa_details,
+            "meta": {
+                "samhi_year": samhi_year,
+            },
+        }
+    )
+
+
+@app.get("/api/samhi_scores")
 def samhi_scores_api():
     mode = str(request.args.get("mode", "Index")).strip()
     analysis_mode = str(request.args.get("analysis_mode", "Single Year")).strip()

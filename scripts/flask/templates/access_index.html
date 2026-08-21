@@ -1,29 +1,31 @@
 {% extends "base.html" %}
 
-{% block title %}Lincolnshire Mental Health Need Index | LUMHR{% endblock %}
+{% block title %}Lincolnshire Mental Health Access Index | LUMHR{% endblock %}
 
 {% block content %}
 <div class="page">
   <aside class="sidebar">
-    <h1>Lincolnshire Mental Health Need Index</h1>
+    <h1>Lincolnshire Mental Health Access Index</h1>
+    <p class="muted">Adjust weights to recalculate LSOA access scores without reloading the map.</p>
 
     <details class="control">
       <summary><strong>Method Summary</strong></summary>
       <p class="muted" style="margin-top:0.6rem;">
-        This Index proportionally allocates GP-level QOF registers to LSOAs using the GP patient registration data.
+        The Access Index is a composite index that normalises and combines GP-level QOF service-accessibility
+        indicators, rolled up to LSOA level using patient-weighted averages from the GP patient registration data.
       </p>
       <p class="muted" style="margin-top:0.45rem; margin-bottom:0.25rem;"><strong>Allocation equations:</strong></p>
       <ul class="muted" style="margin-top:0; padding-left:1.1rem;">
-        <li>GP total mapped patients: sum of NUMBER_OF_PATIENTS across all mapped LSOAs for each GP.</li>
-        <li>Weight(i,j): NUMBER_OF_PATIENTS(i,j) / GP_Total_Mapped_Patients(j)</li>
-        <li>Allocated register(i,j): GP_Register(j) * Weight(i,j)</li>
-        <li>LSOA register(i): sum of allocated registers across all GPs.</li>
-        <li>LSOA prevalence(i): LSOA_Register(i) / LSOA_Total_List(i)</li>
+        <li>Weight(i,j): NUMBER_OF_PATIENTS(i,j) / GP_Total_Mapped_Patients(j) for LSOA i, GP j.</li>
+        <li>LSOA rate(i): patient-weighted average of each GP rate across GPs mapped to LSOA i.</li>
       </ul>
-      <p class="muted" style="margin-top:0.45rem; margin-bottom:0.25rem;"><strong>Need Index:</strong></p>
+      <p class="muted" style="margin-top:0.45rem; margin-bottom:0.25rem;"><strong>Access Index:</strong></p>
       <ul class="muted" style="margin-top:0; padding-left:1.1rem;">
-        <li>Depression prevalence, SMI prevalence, antidepressant items per patient, and SAMHI are min-max normalized to [0,1].</li>
-        <li>Need Index = (Depression_Normalized * w_dep) + (SMI_Normalized * w_smi) + (Prescribing_Normalized * w_rx) + (SAMHI_Normalized * w_samhi)</li>
+        <li>MH002 and MH021 intervention rates and DEP004 intervention rate are min-max normalized to [0,1] (higher = better access).</li>
+        <li>Mental Health and Depression Overall PCA (exception) rates are min-max normalized then inverted (1 - normalized), since a higher exception rate reduces effective access.</li>
+        <li>GP and Hospital travel times (Public Transport/Walking and Car, 2019) are min-max normalized then inverted, since longer journeys reduce effective access.</li>
+        <li>Rural Access is derived from the ONS Rural Urban Classification (2021): each LSOA's remoteness category is mapped to an isolation scale from 0 (Urban: Nearer to a major town or city) to 5 (Smaller rural: Further from a major town or city), min-max normalized, then inverted so higher = better access.</li>
+        <li>Access Index = (MH002_Normalized * w_mh002) + (MH021_Normalized * w_mh021) + (MH_PCA_Inverted * w_mh_pca) + (Dep_PCA_Inverted * w_dep_pca) + (DEP004_Normalized * w_dep004) + (GP_PT_Inverted * w_gp_pt) + (GP_Car_Inverted * w_gp_car) + (Hosp_PT_Inverted * w_hosp_pt) + (Hosp_Car_Inverted * w_hosp_car) + (Rural_Access * w_rural)</li>
       </ul>
     </details>
 
@@ -31,35 +33,60 @@
       <summary><strong>Data Sources</strong></summary>
       <ul class="muted" style="margin-top:0.6rem; padding-left:1.1rem;">
         <li><a href="https://digital.nhs.uk/data-and-information/publications/statistical/patients-registered-at-a-gp-practice/july-2026" target="_blank" rel="noopener noreferrer">GP Patient Registration</a></li>
-        <li><a href="https://digital.nhs.uk/data-and-information/publications/statistical/quality-and-outcomes-framework-achievement-prevalence-and-exceptions-data/2024-25" target="_blank" rel="noopener noreferrer">QOF Depression and SMI prevalence</a></li>
-        <li><a href="https://openprescribing.net/analyse/#org=practice&orgIds=71E&numIds=4.3&denom=nothing&selectedTab=map" target="_blank" rel="noopener noreferrer">Antidepressant items per patient</a></li>
-        <li><a href="https://pldr.org/dataset/small-area-mental-health-index-samhi-2noyv" target="_blank" rel="noopener noreferrer">SAMHI</a></li>
+        <li><a href="https://digital.nhs.uk/data-and-information/publications/statistical/quality-and-outcomes-framework-achievement-prevalence-and-exceptions-data/2024-25" target="_blank" rel="noopener noreferrer">QOF Mental Health and Depression achievement data</a></li>
+        <li><a href="https://www.gov.uk/government/statistical-data-sets/journey-time-statistics-data-tables-jts" target="_blank" rel="noopener noreferrer">Journey Time Statistics (DfT, 2019)</a></li>
+        <li><a href="https://geoportal.statistics.gov.uk/datasets/ons::rural-urban-classification-2021-of-lsoas-in-ew/about" target="_blank" rel="noopener noreferrer">Rural Urban Classification (2021) of LSOAs (ONS)</a></li>
       </ul>
     </details>
 
     <div class="control">
-      <label for="dep">Depression Weight Points <output id="dep_val">25.0</output></label>
-      <input id="dep" type="range" min="0" max="100" step="0.1" value="25.0">
+      <label for="mh002">MH002 Intervention Weight Points <output id="mh002_val">10.0</output></label>
+      <input id="mh002" type="range" min="0" max="100" step="0.1" value="10.0">
     </div>
 
     <div class="control">
-      <label for="smi">SMI Weight Points <output id="smi_val">25.0</output></label>
-      <input id="smi" type="range" min="0" max="100" step="0.1" value="25.0">
+      <label for="mh021">MH021 Intervention Weight Points <output id="mh021_val">10.0</output></label>
+      <input id="mh021" type="range" min="0" max="100" step="0.1" value="10.0">
     </div>
 
     <div class="control">
-      <label for="prescribing">Prescribing Weight Points <output id="prescribing_val">25.0</output></label>
-      <input id="prescribing" type="range" min="0" max="100" step="0.1" value="25.0">
+      <label for="mh_pca">Mental Health Overall PCA Weight Points <output id="mh_pca_val">10.0</output></label>
+      <input id="mh_pca" type="range" min="0" max="100" step="0.1" value="10.0">
     </div>
 
     <div class="control">
-      <label for="samhi">SAMHI Weight Points <output id="samhi_val">25.0</output></label>
-      <input id="samhi" type="range" min="0" max="100" step="0.1" value="25.0">
+      <label for="dep_pca">Depression Overall PCA Weight Points <output id="dep_pca_val">10.0</output></label>
+      <input id="dep_pca" type="range" min="0" max="100" step="0.1" value="10.0">
     </div>
 
     <div class="control">
-      <label for="samhi_year">SAMHI Year <output id="samhi_year_val">2022</output></label>
-      <input id="samhi_year" type="range" min="2011" max="2022" step="1" value="2022">
+      <label for="dep004">DEP004 Intervention Weight Points <output id="dep004_val">10.0</output></label>
+      <input id="dep004" type="range" min="0" max="100" step="0.1" value="10.0">
+    </div>
+
+    <div class="control">
+      <label for="gp_pt">GP Travel Time (Public Transport/Walking) Weight Points <output id="gp_pt_val">10.0</output></label>
+      <input id="gp_pt" type="range" min="0" max="100" step="0.1" value="10.0">
+    </div>
+
+    <div class="control">
+      <label for="gp_car">GP Travel Time (Car) Weight Points <output id="gp_car_val">10.0</output></label>
+      <input id="gp_car" type="range" min="0" max="100" step="0.1" value="10.0">
+    </div>
+
+    <div class="control">
+      <label for="hosp_pt">Hospital Travel Time (Public Transport/Walking) Weight Points <output id="hosp_pt_val">10.0</output></label>
+      <input id="hosp_pt" type="range" min="0" max="100" step="0.1" value="10.0">
+    </div>
+
+    <div class="control">
+      <label for="hosp_car">Hospital Travel Time (Car) Weight Points <output id="hosp_car_val">10.0</output></label>
+      <input id="hosp_car" type="range" min="0" max="100" step="0.1" value="10.0">
+    </div>
+
+    <div class="control">
+      <label for="rural">Rural Access Weight Points <output id="rural_val">10.0</output></label>
+      <input id="rural" type="range" min="0" max="100" step="0.1" value="10.0">
     </div>
 
     <div class="legend" id="weight_total"></div>
@@ -77,7 +104,7 @@
     <div class="legend" style="margin-top:0.9rem;">
       &copy; 2026 <a href="https://www.lincoln.ac.uk/" target="_blank" rel="noopener noreferrer">University of Lincoln</a><br>
       <a href="https://lumhr.org.uk/" target="_blank" rel="noopener noreferrer">Lincolnshire Unit for Mental Health Research (LUMHR)</a><br>
-      Lincolnshire Mental Health Need Index v1.0
+      Lincolnshire Mental Health Access Index v1.0
     </div>
   </aside>
 
@@ -94,28 +121,38 @@
   let map;
   let geojsonLayer;
   let gpLayer;
-  let needLayerScores = {};
+  let accessLayerScores = {};
   let lsoaDetails = {};
-  let samhiLegendLabel = "SAMHI Index (2022)";
-  let currentLayerKey = "Need_Index";
+  let currentLayerKey = "Access_Index";
   let minScore = 0;
   let maxScore = 1;
   let fillOpacity = 0.82;
-  const sliderIds = ["dep", "smi", "prescribing", "samhi"];
+  const sliderIds = ["mh002", "mh021", "mh_pca", "dep_pca", "dep004", "gp_pt", "gp_car", "hosp_pt", "hosp_car", "rural"];
+
+  const layerLabels = {
+    "Access_Index": "Access Index",
+    "MH002_Access_Pct": "MH002 Intervention Rate (%)",
+    "MH021_Access_Pct": "MH021 Intervention Rate (%)",
+    "MH_PCA_Access_Pct": "Mental Health Overall PCA Rate (%)",
+    "Dep_PCA_Access_Pct": "Depression Overall PCA Rate (%)",
+    "DEP004_Access_Pct": "DEP004 Intervention Rate (%)",
+    "GP_PT_Time": "GP Travel Time - Public Transport/Walking (min)",
+    "GP_Car_Time": "GP Travel Time - Car (min)",
+    "Hosp_PT_Time": "Hospital Travel Time - Public Transport/Walking (min)",
+    "Hosp_Car_Time": "Hospital Travel Time - Car (min)",
+    "Rural_Access": "Rural Access (0-1, higher = better)",
+  };
 
   function getCode(feature) {
     return feature?.properties?.CODE ?? feature?.properties?.LSOA_CODE ?? null;
   }
 
   function getActiveLayerScores() {
-    return needLayerScores[currentLayerKey] || {};
+    return accessLayerScores[currentLayerKey] || {};
   }
 
-  function getScaleForLayer(layerKey) {
-    if (layerKey === "SAMHI_Selected") {
-      return "YlGnBu";
-    }
-    return "YlOrRd";
+  function getScaleForLayer() {
+    return "YlGnBu";
   }
 
   function styleFeature(feature) {
@@ -127,7 +164,7 @@
     if (score !== null && score !== undefined && Number.isFinite(score)) {
       const span = (maxScore - minScore) || 1;
       const t = Math.max(0, Math.min(1, (score - minScore) / span));
-      fillColor = chroma.scale(getScaleForLayer(currentLayerKey))(t).hex();
+      fillColor = chroma.scale(getScaleForLayer())(t).hex();
     }
 
     return {
@@ -193,31 +230,24 @@
   }
 
   function updateWeightText() {
-    const dep = Number(document.getElementById("dep").value);
-    const smi = Number(document.getElementById("smi").value);
-    const prescribing = Number(document.getElementById("prescribing").value);
-    const samhi = Number(document.getElementById("samhi").value);
-    const samhiYear = Number(document.getElementById("samhi_year").value);
+    const values = Object.fromEntries(sliderIds.map((id) => [id, Number(document.getElementById(id).value)]));
+    for (const id of sliderIds) {
+      document.getElementById(`${id}_val`).textContent = values[id].toFixed(1);
+    }
 
-    document.getElementById("dep_val").textContent = dep.toFixed(1);
-    document.getElementById("smi_val").textContent = smi.toFixed(1);
-    document.getElementById("prescribing_val").textContent = prescribing.toFixed(1);
-    document.getElementById("samhi_val").textContent = samhi.toFixed(1);
-    document.getElementById("samhi_year_val").textContent = String(samhiYear);
-
-    const rawTotal = dep + smi + prescribing + samhi;
+    const rawTotal = sliderIds.reduce((acc, id) => acc + values[id], 0);
     document.getElementById("weight_total").textContent = `Weight points total: ${rawTotal.toFixed(1)}`;
 
-    const normDen = rawTotal > 0 ? rawTotal : 4;
-    const normDep = rawTotal > 0 ? dep / normDen : 0.25;
-    const normSmi = rawTotal > 0 ? smi / normDen : 0.25;
-    const normPrescribing = rawTotal > 0 ? prescribing / normDen : 0.25;
-    const normSamhi = rawTotal > 0 ? samhi / normDen : 0.25;
-
-    document.getElementById("effective_weights").textContent =
-      `Effective Need Index weights: Depression ${(normDep * 100).toFixed(1)}% | ` +
-      `SMI ${(normSmi * 100).toFixed(1)}% | Prescribing ${(normPrescribing * 100).toFixed(1)}% | ` +
-      `SAMHI ${(normSamhi * 100).toFixed(1)}%`;
+    const normDen = rawTotal > 0 ? rawTotal : sliderIds.length;
+    const labels = {
+      mh002: "MH002", mh021: "MH021", mh_pca: "MH PCA", dep_pca: "Dep PCA", dep004: "DEP004",
+      gp_pt: "GP PT", gp_car: "GP Car", hosp_pt: "Hosp PT", hosp_car: "Hosp Car", rural: "Rural",
+    };
+    const parts = sliderIds.map((id) => {
+      const pct = rawTotal > 0 ? (values[id] / normDen) * 100 : 100 / sliderIds.length;
+      return `${labels[id]} ${pct.toFixed(1)}%`;
+    });
+    document.getElementById("effective_weights").textContent = `Effective Access Index weights: ${parts.join(" | ")}`;
   }
 
   function refreshTooltips() {
@@ -229,24 +259,22 @@
       const code = getCode(feature) ?? "Unknown";
       const name = feature?.properties?.NAME ?? "";
       const detail = lsoaDetails[code] || {};
-      const scoreMap = getActiveLayerScores();
-      const activeScore = code && Number.isFinite(Number(scoreMap[code])) ? Number(scoreMap[code]) : null;
-      const layerLabel = currentLayerKey === "SAMHI_Selected" ? samhiLegendLabel :
-        {
-          "Need_Index": "Need Index",
-          "Depression_Prevalence": "Depression Prevalence",
-          "SMI_Prevalence": "SMI Prevalence",
-          "Antidepressant_Items_Per_Patient": "Antidepressant Items Per Patient",
-        }[currentLayerKey] || "Value";
 
       const popupHtml =
         `<strong>LSOA:</strong> ${code}<br>` +
         `<strong>LSOA Name:</strong> ${detail.lsoa_name || name || "N/A"}<br>` +
-        `<strong>Need Index:</strong> ${detail.need_index !== null && detail.need_index !== undefined ? detail.need_index.toFixed(4) : "N/A"}<br>` +
-        `<strong>Depression Prevalence (%):</strong> ${detail.depression_prevalence_pct !== null && detail.depression_prevalence_pct !== undefined ? detail.depression_prevalence_pct.toFixed(2) : "N/A"}<br>` +
-        `<strong>SMI Prevalence (%):</strong> ${detail.smi_prevalence_pct !== null && detail.smi_prevalence_pct !== undefined ? detail.smi_prevalence_pct.toFixed(2) : "N/A"}<br>` +
-        `<strong>Antidepressant Items Per Patient:</strong> ${detail.antidepressant_items_per_patient !== null && detail.antidepressant_items_per_patient !== undefined ? detail.antidepressant_items_per_patient.toFixed(4) : "N/A"}<br>` +
-        `<strong>${samhiLegendLabel}:</strong> ${detail.samhi_selected !== null && detail.samhi_selected !== undefined ? detail.samhi_selected.toFixed(4) : "N/A"}`;
+        `<strong>Access Index:</strong> ${detail.access_index !== null && detail.access_index !== undefined ? detail.access_index.toFixed(4) : "N/A"}<br>` +
+        `<strong>MH002 Intervention Rate (%):</strong> ${detail.mh002_pct !== null && detail.mh002_pct !== undefined ? detail.mh002_pct.toFixed(2) : "N/A"}<br>` +
+        `<strong>MH021 Intervention Rate (%):</strong> ${detail.mh021_pct !== null && detail.mh021_pct !== undefined ? detail.mh021_pct.toFixed(2) : "N/A"}<br>` +
+        `<strong>Mental Health Overall PCA Rate (%):</strong> ${detail.mh_pca_pct !== null && detail.mh_pca_pct !== undefined ? detail.mh_pca_pct.toFixed(2) : "N/A"}<br>` +
+        `<strong>Depression Overall PCA Rate (%):</strong> ${detail.dep_pca_pct !== null && detail.dep_pca_pct !== undefined ? detail.dep_pca_pct.toFixed(2) : "N/A"}<br>` +
+        `<strong>DEP004 Intervention Rate (%):</strong> ${detail.dep004_pct !== null && detail.dep004_pct !== undefined ? detail.dep004_pct.toFixed(2) : "N/A"}<br>` +
+        `<strong>GP Travel Time (PT/Walk, min):</strong> ${detail.gp_pt_time !== null && detail.gp_pt_time !== undefined ? detail.gp_pt_time.toFixed(1) : "N/A"}<br>` +
+        `<strong>GP Travel Time (Car, min):</strong> ${detail.gp_car_time !== null && detail.gp_car_time !== undefined ? detail.gp_car_time.toFixed(1) : "N/A"}<br>` +
+        `<strong>Hospital Travel Time (PT/Walk, min):</strong> ${detail.hosp_pt_time !== null && detail.hosp_pt_time !== undefined ? detail.hosp_pt_time.toFixed(1) : "N/A"}<br>` +
+        `<strong>Hospital Travel Time (Car, min):</strong> ${detail.hosp_car_time !== null && detail.hosp_car_time !== undefined ? detail.hosp_car_time.toFixed(1) : "N/A"}<br>` +
+        `<strong>Rural Urban Classification:</strong> ${detail.ruc21nm || "N/A"}<br>` +
+        `<strong>Rural Access (0-1):</strong> ${detail.rural_access !== null && detail.rural_access !== undefined ? detail.rural_access.toFixed(2) : "N/A"}`;
 
       layer.bindPopup(popupHtml, { maxWidth: 360 });
       layer.setTooltipContent(`${code}${name ? ` | ${name}` : ""}`);
@@ -274,17 +302,11 @@
         `<strong>Code:</strong> ${gp.practice_code || "N/A"}<br>` +
         `<strong>Total Registered Patients:</strong> ${gp.patients !== null ? Math.round(gp.patients).toLocaleString() : "N/A"}<br><br>` +
         `<hr style="margin:6px 0;">` +
-        `<strong>Depression Register (2024-25):</strong> ${gp.dep_register !== null ? Math.round(gp.dep_register).toLocaleString() : "N/A"}<br>` +
-        `<strong>Depression Prevalence (2024-25):</strong> ${gp.dep_prev_pct !== null ? gp.dep_prev_pct.toFixed(2) + "%" : "N/A"}<br>` +
-        `<strong>SMI Register (2024-25):</strong> ${gp.smi_register !== null ? Math.round(gp.smi_register).toLocaleString() : "N/A"}<br>` +
-        `<strong>SMI Prevalence (2024-25):</strong> ${gp.smi_prev_pct !== null ? gp.smi_prev_pct.toFixed(2) + "%" : "N/A"}<br><br>` +
-        `<hr style="margin:6px 0;">` +
-        `<strong>Antidepressant Items (May 2026):</strong> ${gp.antidepressant_items !== null ? Math.round(gp.antidepressant_items).toLocaleString() : "N/A"}<br>` +
-        `<strong>Antidepressant Actual Cost (May 2026):</strong> ${gp.antidepressant_actual_cost !== null ? "£" + gp.antidepressant_actual_cost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "N/A"}<br><br>` +
-        `<hr style="margin:6px 0;">` +
-        `<strong>Care Plan Achievement Rate (MH002):</strong> ${gp.mh002_pct !== null ? gp.mh002_pct.toFixed(2) + "%" : "N/A"}<br>` +
-        `<strong>Avg Physical Health Review Rate:</strong> ${gp.physical_health_review_avg_pct !== null ? gp.physical_health_review_avg_pct.toFixed(2) + "%" : "N/A"}<br>` +
-        `<strong>Exception Rate (Overall PCA):</strong> ${gp.exception_rate_pct !== null ? gp.exception_rate_pct.toFixed(2) + "%" : "N/A"}`;
+        `<strong>MH002 Intervention Rate (%):</strong> ${gp.mh002_pct !== null ? gp.mh002_pct.toFixed(2) + "%" : "N/A"}<br>` +
+        `<strong>MH021 Intervention Rate (%):</strong> ${gp.mh021_pct !== null ? gp.mh021_pct.toFixed(2) + "%" : "N/A"}<br>` +
+        `<strong>Mental Health Overall PCA Rate (%):</strong> ${gp.mh_pca_pct !== null ? gp.mh_pca_pct.toFixed(2) + "%" : "N/A"}<br>` +
+        `<strong>Depression Overall PCA Rate (%):</strong> ${gp.dep_pca_pct !== null ? gp.dep_pca_pct.toFixed(2) + "%" : "N/A"}<br>` +
+        `<strong>DEP004 Intervention Rate (%):</strong> ${gp.dep004_pct !== null ? gp.dep004_pct.toFixed(2) + "%" : "N/A"}`;
       marker.bindPopup(popup);
       gpLayer.addLayer(marker);
     }
@@ -328,20 +350,10 @@
       return;
     }
 
-    const scaleName = getScaleForLayer(currentLayerKey);
-    const scale = chroma.scale(scaleName);
+    const scale = chroma.scale(getScaleForLayer());
     bar.style.background = `linear-gradient(to right, ${scale(0).hex()} 0%, ${scale(1).hex()} 100%)`;
 
-    const layerLabel = currentLayerKey === "SAMHI_Selected"
-      ? samhiLegendLabel
-      : {
-          "Need_Index": "Need Index",
-          "Depression_Prevalence": "Depression Prevalence",
-          "SMI_Prevalence": "SMI Prevalence",
-          "Antidepressant_Items_Per_Patient": "Antidepressant Items Per Patient",
-        }[currentLayerKey] || "Map Layer";
-
-    titleEl.textContent = layerLabel;
+    titleEl.textContent = layerLabels[currentLayerKey] || "Map Layer";
     minEl.textContent = formatLegendNumber(minScore);
     maxEl.textContent = formatLegendNumber(maxScore);
   }
@@ -358,13 +370,19 @@
       container.style.border = "1px solid #d7e2e8";
       container.innerHTML = `
         <div style="font-weight:700; margin-bottom:6px;">Map Layers</div>
-        <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="Need_Index" checked> Need Index</label>
-        <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="Depression_Prevalence"> Depression Prevalence</label>
-        <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="SMI_Prevalence"> SMI Prevalence</label>
-        <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="Antidepressant_Items_Per_Patient"> Antidepressant Items Per Patient</label>
-        <label id="samhi_radio_label" style="display:block; margin-bottom:8px;"><input type="radio" name="map_metric" value="SAMHI_Selected"> ${samhiLegendLabel}</label>
+        <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="Access_Index" checked> Access Index</label>
+        <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="MH002_Access_Pct"> MH002 Intervention Rate</label>
+        <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="MH021_Access_Pct"> MH021 Intervention Rate</label>
+        <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="MH_PCA_Access_Pct"> Mental Health Overall PCA Rate</label>
+        <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="Dep_PCA_Access_Pct"> Depression Overall PCA Rate</label>
+        <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="DEP004_Access_Pct"> DEP004 Intervention Rate</label>
+        <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="GP_PT_Time"> GP Travel Time (PT/Walk)</label>
+        <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="GP_Car_Time"> GP Travel Time (Car)</label>
+        <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="Hosp_PT_Time"> Hospital Travel Time (PT/Walk)</label>
+        <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="Hosp_Car_Time"> Hospital Travel Time (Car)</label>
+        <label style="display:block; margin-bottom:8px;"><input type="radio" name="map_metric" value="Rural_Access"> Rural Access</label>
         <div style="border-top:1px solid #e4ecef; padding-top:8px; margin-top:6px;">
-          <div id="map_colorbar_title" style="font-weight:600; margin-bottom:4px;">Need Index</div>
+          <div id="map_colorbar_title" style="font-weight:600; margin-bottom:4px;">Access Index</div>
           <div id="map_colorbar_gradient" style="height:12px; border-radius:4px; border:1px solid #d0d9df;"></div>
           <div style="display:flex; justify-content:space-between; font-size:11px; color:#4f5f69; margin-top:3px;">
             <span id="map_colorbar_min">0.0000</span>
@@ -413,49 +431,21 @@
     }
   }
 
-  function updateSamhiLegendLabel() {
-    const year = Number(document.getElementById("samhi_year").value);
-    samhiLegendLabel = `SAMHI Index (${year})`;
-    const label = document.getElementById("samhi_radio_label");
-    if (label) {
-      label.innerHTML = `<input type="radio" name="map_metric" value="SAMHI_Selected" ${currentLayerKey === "SAMHI_Selected" ? "checked" : ""}> ${samhiLegendLabel}`;
-      const radio = label.querySelector('input[name="map_metric"]');
-      if (radio) {
-        radio.addEventListener("change", () => {
-          currentLayerKey = "SAMHI_Selected";
-          applyActiveLayerStyle();
-        });
-      }
-    }
-  }
-
   async function updateMap() {
-    const dep = Number(document.getElementById("dep").value);
-    const smi = Number(document.getElementById("smi").value);
-    const prescribing = Number(document.getElementById("prescribing").value);
-    const samhi = Number(document.getElementById("samhi").value);
-    const samhiYear = Number(document.getElementById("samhi_year").value);
+    const params = new URLSearchParams(
+      Object.fromEntries(sliderIds.map((id) => [id, Number(document.getElementById(id).value).toString()]))
+    );
 
-    const params = new URLSearchParams({
-      dep: dep.toString(),
-      smi: smi.toString(),
-      prescribing: prescribing.toString(),
-      samhi: samhi.toString(),
-      samhi_year: samhiYear.toString(),
-    });
-
-    const resp = await fetch(`/api/need_scores?${params.toString()}`);
+    const resp = await fetch(`/api/access_scores?${params.toString()}`);
     if (!resp.ok) {
-      document.getElementById("status").textContent = "Failed to fetch need scores.";
+      document.getElementById("status").textContent = "Failed to fetch access scores.";
       return;
     }
 
     const payload = await resp.json();
-    needLayerScores = payload.layers || {};
+    accessLayerScores = payload.layers || {};
     lsoaDetails = payload.lsoa_details || {};
-    samhiLegendLabel = payload?.meta?.samhi_label || samhiLegendLabel;
 
-    updateSamhiLegendLabel();
     applyActiveLayerStyle();
 
     const activeCount = Object.keys(getActiveLayerScores()).length;
@@ -489,11 +479,6 @@
     map.fitBounds(geojsonLayer.getBounds());
     await loadGpLayer();
     syncGpLayerVisibility();
-
-    document.getElementById("samhi_year").addEventListener("input", async () => {
-      updateWeightText();
-      await updateMap();
-    });
 
     for (const id of sliderIds) {
       document.getElementById(id).addEventListener("input", async () => {
