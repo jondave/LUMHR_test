@@ -39,23 +39,25 @@
       </ul>
     </details>
 
+    <h2 style="font-size: 1.05rem; font-weight: 700; margin: 1rem 0 0.4rem; color: var(--text);">Weights:</h2>
+
     <div class="control">
-      <label for="dep">Depression Weight Points <output id="dep_val">25.0</output></label>
+      <label for="dep">Depression Prevalence (%) <output id="dep_val">25.0</output></label>
       <input id="dep" type="range" min="0" max="100" step="0.1" value="25.0">
     </div>
 
     <div class="control">
-      <label for="smi">SMI Weight Points <output id="smi_val">25.0</output></label>
+      <label for="smi">SMI Prevalence (%) <output id="smi_val">25.0</output></label>
       <input id="smi" type="range" min="0" max="100" step="0.1" value="25.0">
     </div>
 
     <div class="control">
-      <label for="prescribing">Prescribing Weight Points <output id="prescribing_val">25.0</output></label>
+      <label for="prescribing">Antidepressant Items / Patient <output id="prescribing_val">25.0</output></label>
       <input id="prescribing" type="range" min="0" max="100" step="0.1" value="25.0">
     </div>
 
     <div class="control">
-      <label for="samhi">SAMHI Weight Points <output id="samhi_val">25.0</output></label>
+      <label for="samhi">SAMHI Index <output id="samhi_val">25.0</output></label>
       <input id="samhi" type="range" min="0" max="100" step="0.1" value="25.0">
     </div>
 
@@ -244,10 +246,10 @@
       if (detail.ons_pop_total !== null && detail.ons_pop_total !== undefined) {
         popupHtml +=
           `<hr style="margin:6px 0;">` +
-          `<strong>Resident Population (ONS 2024):</strong> ${Math.round(detail.ons_pop_total).toLocaleString()}<br>` +
-          `<strong>Adults (18+):</strong> ${detail.ons_pop_18plus !== null ? Math.round(detail.ons_pop_18plus).toLocaleString() : "N/A"}${detail.pct_18plus !== null ? ` (${detail.pct_18plus.toFixed(1)}%)` : ""}<br>` +
-          `<strong>Older Adults (65+):</strong> ${detail.ons_pop_65plus !== null ? Math.round(detail.ons_pop_65plus).toLocaleString() : "N/A"}${detail.pct_65plus !== null ? ` (${detail.pct_65plus.toFixed(1)}%)` : ""}<br>` +
-          `<strong>GP Registered Patients:</strong> ${detail.gp_registered_patients !== null ? Math.round(detail.gp_registered_patients).toLocaleString() : "N/A"}${detail.gp_registration_rate_pct !== null ? ` (${detail.gp_registration_rate_pct.toFixed(1)}% of ONS)` : ""}`;
+          `<strong>Resident Population Estimate (ONS Mid-2024):</strong> ${Math.round(detail.ons_pop_total).toLocaleString()}<br>` +
+          `<strong>Adults 18+ (Estimate):</strong> ${detail.ons_pop_18plus !== null ? Math.round(detail.ons_pop_18plus).toLocaleString() : "N/A"}${detail.pct_18plus !== null ? ` (${detail.pct_18plus.toFixed(1)}%)` : ""}<br>` +
+          `<strong>Older Adults 65+ (Estimate):</strong> ${detail.ons_pop_65plus !== null ? Math.round(detail.ons_pop_65plus).toLocaleString() : "N/A"}${detail.pct_65plus !== null ? ` (${detail.pct_65plus.toFixed(1)}%)` : ""}<br>` +
+          `<strong>GP Registered Patients:</strong> ${detail.gp_registered_patients !== null ? Math.round(detail.gp_registered_patients).toLocaleString() : "N/A"}${detail.gp_registration_rate_pct !== null ? ` (${detail.gp_registration_rate_pct.toFixed(1)}% of ONS Estimate)` : ""}`;
 
         if (detail.list_inflation_est && detail.list_inflation_est > 0) {
           popupHtml += `<br><span style="color:#d9534f; font-size:11px;">⚠️ Estimated List Inflation: +${Math.round(detail.list_inflation_est).toLocaleString()}</span>`;
@@ -372,9 +374,7 @@
         <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="Depression_Prevalence"> Depression Prevalence</label>
         <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="SMI_Prevalence"> SMI Prevalence</label>
         <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="Antidepressant_Items_Per_Patient"> Antidepressant Items Per Patient</label>
-        <label id="samhi_radio_label" style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="SAMHI_Selected"> ${samhiLegendLabel}</label>
-        <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="Pct_65plus"> Older Adults (65+) %</label>
-        <label style="display:block; margin-bottom:8px;"><input type="radio" name="map_metric" value="GP_Registration_Rate_Pct"> GP Registration Coverage (%)</label>
+        <label id="samhi_radio_label" style="display:block; margin-bottom:8px;"><input type="radio" name="map_metric" value="SAMHI_Selected"> ${samhiLegendLabel}</label>
         <div style="border-top:1px solid #e4ecef; padding-top:8px; margin-top:6px;">
           <div id="map_colorbar_title" style="font-weight:600; margin-bottom:4px;">Need Index</div>
           <div id="map_colorbar_gradient" style="height:12px; border-radius:4px; border:1px solid #d0d9df;"></div>
@@ -474,11 +474,13 @@
     document.getElementById("status").textContent = `Updated ${activeCount} LSOA scores.`;
   }
 
+  const lincolnshireBounds = [[52.64022, -0.82065], [53.61637, 0.35797]];
+
   async function init() {
     map = L.map("map", {
       zoomControl: true,
       preferCanvas: true
-    }).setView([53.22, -0.54], 9);
+    }).fitBounds(lincolnshireBounds, { animate: false });
 
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       maxZoom: 19,
@@ -498,7 +500,6 @@
     }).addTo(map);
 
     addMapLegendControl();
-    map.fitBounds(geojsonLayer.getBounds());
     await loadGpLayer();
     syncGpLayerVisibility();
 

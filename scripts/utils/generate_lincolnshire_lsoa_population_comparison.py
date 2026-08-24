@@ -29,13 +29,13 @@ def generate_comparison():
             "LSOA_Code": df["LSOA_CODE"],
             "LSOA_Name": df["LSOA_NAME"],
             "Local_Authority_District": df["LAD_NAME"],
-            "Resident_Population_ONS_2024": df["ONS_Pop_Total_2024"].astype(int),
+            "Resident_Population_ONS_2024_Estimate": df["ONS_Pop_Total_2024"].astype(int),
             "GP_Registered_Patients": df["GP_Registered_Patients"].astype(int),
             "Number_Difference": (df["GP_Registered_Patients"] - df["ONS_Pop_Total_2024"]).astype(int),
-            "Percentage_Difference_Pct": (
+            "Percentage_Difference_vs_Estimate_Pct": (
                 ((df["GP_Registered_Patients"] - df["ONS_Pop_Total_2024"]) / df["ONS_Pop_Total_2024"].replace(0, 1)) * 100.0
             ).round(2),
-            "GP_Registration_Coverage_Pct": (
+            "GP_Registration_vs_Estimate_Pct": (
                 (df["GP_Registered_Patients"] / df["ONS_Pop_Total_2024"].replace(0, 1)) * 100.0
             ).round(2),
         }
@@ -54,14 +54,14 @@ def generate_comparison():
     print(f"Saved: {out_utils}")
 
     print(f"\nTotal Lincolnshire 2021 LSOAs: {len(comparison_df)}")
-    print(f"Total ONS Resident Population (2024): {comparison_df['Resident_Population_ONS_2024'].sum():,}")
+    print(f"Total ONS Resident Population Estimate (Mid-2024): {comparison_df['Resident_Population_ONS_2024_Estimate'].sum():,}")
     print(f"Total GP Registered Patients: {comparison_df['GP_Registered_Patients'].sum():,}")
     print(f"Net Difference: {comparison_df['Number_Difference'].sum():,}")
-    print("\nTop 5 Areas with Highest GP List Inflation (GP Patients > ONS Resident Pop):")
-    print(comparison_df.head(5)[["LSOA_Code", "LSOA_Name", "Resident_Population_ONS_2024", "GP_Registered_Patients", "Number_Difference", "Percentage_Difference_Pct"]].to_string(index=False))
+    print("\nTop 5 Areas with Highest GP List Inflation (GP Patients > ONS Resident Pop Estimate):")
+    print(comparison_df.head(5)[["LSOA_Code", "LSOA_Name", "Resident_Population_ONS_2024_Estimate", "GP_Registered_Patients", "Number_Difference", "Percentage_Difference_vs_Estimate_Pct"]].to_string(index=False))
 
-    print("\nTop 5 Areas with Highest Registration Gap (ONS Resident Pop > GP Patients):")
-    print(comparison_df.tail(5)[["LSOA_Code", "LSOA_Name", "Resident_Population_ONS_2024", "GP_Registered_Patients", "Number_Difference", "Percentage_Difference_Pct"]].to_string(index=False))
+    print("\nTop 5 Areas with Highest Registration Gap (ONS Resident Pop Estimate > GP Patients):")
+    print(comparison_df.tail(5)[["LSOA_Code", "LSOA_Name", "Resident_Population_ONS_2024_Estimate", "GP_Registered_Patients", "Number_Difference", "Percentage_Difference_vs_Estimate_Pct"]].to_string(index=False))
 
 
 if __name__ == "__main__":

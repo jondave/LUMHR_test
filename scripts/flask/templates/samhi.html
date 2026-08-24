@@ -28,8 +28,16 @@
           <li><strong>10</strong> = Highest 10% of estimated mental health need.</li>
         </ul>
         <p style="margin:0;"><strong>Note:</strong> SAMHI measures <strong>relative estimated need</strong>, not diagnosed mental illness.</p>
-        <p style="margin:0.35rem 0 0;"><a href="https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/populationestimates/datasets/lowersuperoutputareamidyearpopulationestimates" target="_blank" rel="noopener noreferrer">LSOA Population Estimates (Mid-2024 SAPE, ONS)</a></p>
       </div>
+    </details>
+
+    <details class="control">
+      <summary><strong>Data Sources</strong></summary>
+      <ul class="muted" style="margin-top:0.6rem; padding-left:1.1rem;">
+        <li><a href="https://pldr.org/dataset/small-area-mental-health-index-samhi-2noyv" target="_blank" rel="noopener noreferrer">Small Area Mental Health Index (SAMHI, PLDR)</a></li>
+        <li><a href="https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/populationestimates/datasets/lowersuperoutputareamidyearpopulationestimates" target="_blank" rel="noopener noreferrer">LSOA Mid-Year Population Estimates (Mid-2024 SAPE, ONS)</a></li>
+        <li><a href="https://digital.nhs.uk/data-and-information/publications/statistical/patients-registered-at-a-gp-practice/july-2026" target="_blank" rel="noopener noreferrer">GP Patient Registration (NHS Digital)</a></li>
+      </ul>
     </details>
 
     <div class="control">
@@ -285,9 +293,9 @@
         if (details.ons_pop_total !== null && details.ons_pop_total !== undefined) {
           popupHtml +=
             `<hr style="margin:6px 0;">` +
-            `<strong>Resident Population (ONS 2024):</strong> ${Math.round(details.ons_pop_total).toLocaleString()}<br>` +
-            `<strong>Older Adults (65+):</strong> ${details.pct_65plus !== null ? `${details.pct_65plus.toFixed(1)}%` : "N/A"}<br>` +
-            `<strong>GP Registered Patients:</strong> ${details.gp_registered_patients !== null ? Math.round(details.gp_registered_patients).toLocaleString() : "N/A"}${details.gp_registration_rate_pct !== null ? ` (${details.gp_registration_rate_pct.toFixed(1)}%)` : ""}`;
+            `<strong>Resident Population Estimate (ONS Mid-2024):</strong> ${Math.round(details.ons_pop_total).toLocaleString()}<br>` +
+            `<strong>Older Adults 65+ (Estimate):</strong> ${details.pct_65plus !== null ? `${details.pct_65plus.toFixed(1)}%` : "N/A"}<br>` +
+            `<strong>GP Registered Patients:</strong> ${details.gp_registered_patients !== null ? Math.round(details.gp_registered_patients).toLocaleString() : "N/A"}${details.gp_registration_rate_pct !== null ? ` (${details.gp_registration_rate_pct.toFixed(1)}% of ONS Estimate)` : ""}`;
         }
 
         layer.bindPopup(popupHtml, { maxWidth: 360 });
@@ -366,11 +374,13 @@
     startPlayback();
   }
 
+  const lincolnshireBounds = [[52.64022, -0.82065], [53.61637, 0.35797]];
+
   async function init() {
     map = L.map("map", {
       zoomControl: true,
       preferCanvas: true
-    }).setView([53.22, -0.54], 9);
+    }).fitBounds(lincolnshireBounds, { animate: false });
 
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       maxZoom: 19,
@@ -390,7 +400,6 @@
     }).addTo(map);
 
     addMapLegendControl();
-    map.fitBounds(geojsonLayer.getBounds());
 
     for (const radio of document.querySelectorAll('input[name="analysis_mode"]')) {
       radio.addEventListener("change", async () => {

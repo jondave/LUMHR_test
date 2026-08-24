@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}Lincolnshire Mental Health Research Dashboard | LUMHR{% endblock %}
+
+{% block content %}
+<div class="home-container">
+  <div class="hero">
+    <h1>Lincolnshire Mental Health Research Dashboard</h1>
+    <p>
+      An interactive geospatial decision-support platform exploring small-area mental health need, healthcare accessibility in Lincolnshire. Developed by the <a href="https://lumhr.org.uk/" target="_blank" rel="noopener noreferrer">Lincolnshire Unit for Mental Health Research (LUMHR)</a> at the <a href="https://www.lincoln.ac.uk/" target="_blank" rel="noopener noreferrer">University of Lincoln</a>.
+    </p>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-value">435</div>
+      <div class="stat-label">Lincolnshire 2021 LSOAs</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">789,502</div>
+      <div class="stat-label">Resident Population Estimate (Mid-2024 SAPE)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">795,072</div>
+      <div class="stat-label">GP Registered Patients (NHS Digital 2026)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">81</div>
+      <div class="stat-label">Mapped GP Practice Locations</div>
+    </div>
+  </div>
+
+  <div class="cards-grid">
+    <!-- Card 1: Need Index -->
+    <div class="index-card">
+      <div>
+        <h2>Mental Health Need Index</h2>
+        <p>
+          Models local mental health demand by proportionally allocating GP practice registers and prescribing data to LSOAs based on patient registration data.
+        </p>
+        <p>
+          <strong>Indicators:</strong> QOF Depression prevalence, QOF SMI prevalence, Antidepressant items per patient, and SAMHI index.
+          </p>
+        </div>
+      <a href="/need_index" class="card-btn">Need Index Map</a>
+    </div>
+
+    <!-- Card 2: Access Index -->
+    <div class="index-card">
+      <div>
+        <h2>Mental Health Access Index</h2>
+        <p>
+          Models primary healthcare accessibility combining clinical quality, physical travel times, rurality, vehicle access, and digital exclusion.
+        </p>
+        <p>
+          <strong>Indicators (12 total):</strong> SMI care plans (MH002), physical health reviews (MH021), PCA exception rates, depression reviews (DEP004), GP & Hospital travel times (Public Transport & Car), rural isolation, car availability, and DERI digital access.
+        </p>
+      </div>
+      <a href="/access_index" class="card-btn">Access Index Map</a>
+    </div>
+
+    <!-- Card 3: Access Gap Index -->
+    <div class="index-card">
+      <div>
+        <h2>Access Gap Index</h2>
+        <p>
+          Calculates geographic disparities by comparing mental health need directly against healthcare accessibility (<strong>Need &minus; Access</strong>).
+        </p>
+        <p>
+          <strong>Disparity Mapping:</strong> Divergent scale highlighting areas where clinical need outpaces accessibility.
+        </p>
+      </div>
+      <a href="/access_gap_index" class="card-btn">Access Gap Index Map</a>
+    </div>
+
+    <!-- Card 4: SAMHI -->
+    <div class="index-card">
+      <div>
+        <h2>Small Area Mental Health Index (SAMHI)</h2>
+        <p>
+          Longitudinal analysis of the composite mental health index developed by the Place-Based Longitudinal Data Resource (PLDR).
+        </p>
+        <p>
+          <strong>12 Years of Data:</strong> Annual national indicators spanning 2011 through 2022.
+        </p>
+        <p>  
+          <strong>Components:</strong> Mental health prescriptions, hospital admissions, and incapacity/disability benefits.
+        </p>
+      </div>
+      <a href="/samhi" class="card-btn">SAMHI Map</a>
+    </div>
+  </div>
+
+  <div class="info-section">
+    <h3>About the LUMHR Project</h3>
+    <p>
+      The <strong>Lincolnshire Unit for Mental Health Research (LUMHR)</strong> is a Centre of Excellence for applied, place-based mental health research focused on improving mental health outcomes in rural, coastal, and small urban communities across Lincolnshire. LUMHR works closely with local communities, NHS partners, and local authorities to better understand mental health needs, identify what works, and develop new approaches to support wellbeing.
+    </p>
+    <p style="margin-bottom:0;">
+      &copy; 2026 <a href="https://www.lincoln.ac.uk/" target="_blank" rel="noopener noreferrer">University of Lincoln</a> &amp; <a href="https://lumhr.org.uk/" target="_blank" rel="noopener noreferrer">Lincolnshire Unit for Mental Health Research (LUMHR)</a>
+    </p>
+  </div>
+</div>
+{% endblock %}
+

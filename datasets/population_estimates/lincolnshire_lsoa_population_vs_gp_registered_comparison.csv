@@ -1,4 +1,4 @@
-LSOA_Code,LSOA_Name,Local_Authority_District,Resident_Population_ONS_2024,GP_Registered_Patients,Number_Difference,Percentage_Difference_Pct,GP_Registration_Coverage_Pct
+LSOA_Code,LSOA_Name,Local_Authority_District,Resident_Population_ONS_2024_Estimate,GP_Registered_Patients,Number_Difference,Percentage_Difference_vs_Estimate_Pct,GP_Registration_vs_Estimate_Pct
 E01026023,Boston 001D,Boston,1686,4797,3111,184.52,284.52
 E01026032,Boston 002D,Boston,2073,2761,688,33.19,133.19
 E01034703,South Kesteven 010E,South Kesteven,1429,2116,687,48.08,148.08

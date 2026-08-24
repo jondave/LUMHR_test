@@ -60,6 +60,11 @@ def _get_lsoa_name_column(df: pd.DataFrame) -> str | None:
 
 
 @app.get("/")
+def home_page() -> str:
+    return render_template("home.html")
+
+
+@app.get("/need_index")
 def need_index_page() -> str:
     out_lsoa_count = len(BUNDLE["out_of_area_lsoa_codes"])
     out_patients = int(round(float(BUNDLE["out_of_area_patients"])))
