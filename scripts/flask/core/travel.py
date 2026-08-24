@@ -101,3 +101,94 @@ def prepare_rural_urban(df: pd.DataFrame) -> pd.DataFrame:
     out["Isolation_Normalized"] = (out["Isolation_Scale"] - min_scale) / (max_scale - min_scale)
     out["Rural_Access"] = 1 - out["Isolation_Normalized"]
     return out
+
+
+def prepare_car_availability(df: pd.DataFrame) -> pd.DataFrame:
+    code_col = find_column(df, ["Lower layer Super Output Areas Code", "LSOA21CD", "LSOA_CODE"])
+    cat_code_col = find_column(df, ["Car or van availability (5 categories) Code", "Category Code"])
+    obs_col = find_column(df, ["Observation", "OBSERVATION", "Count"])
+
+    work = pd.DataFrame(
+        {
+            "LSOA_CODE": df[code_col].map(normalize_code),
+            "Cat_Code": pd.to_numeric(df[cat_code_col], errors="coerce"),
+            "Obs": parse_numeric(df[obs_col]),
+        }
+    )
+    work = work[work["LSOA_CODE"].ne("") & work["Cat_Code"].isin([0, 1, 2, 3])].copy()
+
+    pivoted = work.pivot_table(
+        index="LSOA_CODE",
+        columns="Cat_Code",
+        values="Obs",
+        aggfunc="sum",
+        fill_value=0.0,
+    ).reset_index()
+
+    pivoted.columns = ["LSOA_CODE", "Cars_0", "Cars_1", "Cars_2", "Cars_3"]
+
+    total_households = pivoted["Cars_0"] + pivoted["Cars_1"] + pivoted["Cars_2"] + pivoted["Cars_3"]
+    total_valid = total_households.replace(0, float("nan"))
+
+    pivoted["Total_Households"] = total_households
+    pivoted["No_Cars_Pct"] = (pivoted["Cars_0"] / total_valid) * 100.0
+    pivoted["One_Car_Pct"] = (pivoted["Cars_1"] / total_valid) * 100.0
+    pivoted["Two_Cars_Pct"] = (pivoted["Cars_2"] / total_valid) * 100.0
+    pivoted["Three_Plus_Cars_Pct"] = (pivoted["Cars_3"] / total_valid) * 100.0
+    pivoted["Car_Access_Pct"] = ((pivoted["Cars_1"] + pivoted["Cars_2"] + pivoted["Cars_3"]) / total_valid) * 100.0
+
+    car_score = (
+        0.0 * pivoted["Cars_0"]
+        + 1.0 * pivoted["Cars_1"]
+        + 2.0 * pivoted["Cars_2"]
+        + 3.0 * pivoted["Cars_3"]
+    ) / total_valid
+    pivoted["Car_Availability_Score"] = car_score
+
+    min_score = float(car_score.min())
+    max_score = float(car_score.max())
+    span = (max_score - min_score) if (max_score - min_score) > 0 else 1.0
+    pivoted["Car_Access"] = (car_score - min_score) / span
+
+    return pivoted[
+        [
+            "LSOA_CODE",
+            "Total_Households",
+            "No_Cars_Pct",
+            "One_Car_Pct",
+            "Two_Cars_Pct",
+            "Three_Plus_Cars_Pct",
+            "Car_Access_Pct",
+            "Car_Availability_Score",
+            "Car_Access",
+        ]
+    ]
+
+
+def prepare_digital_exclusion(df: pd.DataFrame) -> pd.DataFrame:
+    work = df.copy()
+    code_col = "LSOA_Code" if "LSOA_Code" in work.columns else "LSOA21CD"
+    work["LSOA_CODE"] = work[code_col].astype(str).str.strip()
+
+    keep_cols = [
+        "LSOA_CODE",
+        "DERI_Score",
+        "Digital_Access",
+        "Demography_Score",
+        "Deprivation_Score",
+        "Broadband_Score",
+        "Avg_Download_Speed_Mbps",
+        "No_Superfast_Broadband_Pct",
+        "Slow_Connections_Pct",
+        "Aged_65_Plus_Pct",
+        "Day_To_Day_Limited_Pct",
+        "No_Qualifications_Pct",
+        "Pension_Credit_Rate",
+        "Unemployment_Rate",
+        "Social_Grade_DE_Pct",
+        "IMD_2019_Score",
+    ]
+    present = [c for c in keep_cols if c in work.columns]
+    return work[present].drop_duplicates(subset=["LSOA_CODE"])
+
+

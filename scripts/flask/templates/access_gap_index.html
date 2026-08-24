@@ -49,44 +49,52 @@
     <details class="control" open>
       <summary><strong>Access Index Weights</strong></summary>
       <div class="control" style="margin-top:0.6rem;">
-        <label for="mh002">MH002 Intervention Weight Points <output id="mh002_val">10.0</output></label>
-        <input id="mh002" type="range" min="0" max="100" step="0.1" value="10.0">
+        <label for="mh002">MH002 (SMI Care Plan) Weight Points <output id="mh002_val">8.3</output></label>
+        <input id="mh002" type="range" min="0" max="100" step="0.1" value="8.3">
       </div>
       <div class="control">
-        <label for="mh021">MH021 Intervention Weight Points <output id="mh021_val">10.0</output></label>
-        <input id="mh021" type="range" min="0" max="100" step="0.1" value="10.0">
+        <label for="mh021">MH021 (SMI Health Check) Weight Points <output id="mh021_val">8.3</output></label>
+        <input id="mh021" type="range" min="0" max="100" step="0.1" value="8.3">
       </div>
       <div class="control">
-        <label for="mh_pca">Mental Health Overall PCA Weight Points <output id="mh_pca_val">10.0</output></label>
-        <input id="mh_pca" type="range" min="0" max="100" step="0.1" value="10.0">
+        <label for="mh_pca">Mental Health PCA (SMI Exceptions) Weight Points <output id="mh_pca_val">8.3</output></label>
+        <input id="mh_pca" type="range" min="0" max="100" step="0.1" value="8.3">
       </div>
       <div class="control">
-        <label for="dep_pca">Depression Overall PCA Weight Points <output id="dep_pca_val">10.0</output></label>
-        <input id="dep_pca" type="range" min="0" max="100" step="0.1" value="10.0">
+        <label for="dep_pca">Depression PCA (Exceptions) Weight Points <output id="dep_pca_val">8.3</output></label>
+        <input id="dep_pca" type="range" min="0" max="100" step="0.1" value="8.3">
       </div>
       <div class="control">
-        <label for="dep004">DEP004 Intervention Weight Points <output id="dep004_val">10.0</output></label>
-        <input id="dep004" type="range" min="0" max="100" step="0.1" value="10.0">
+        <label for="dep004">DEP004 (Depression Review) Weight Points <output id="dep004_val">8.3</output></label>
+        <input id="dep004" type="range" min="0" max="100" step="0.1" value="8.3">
       </div>
       <div class="control">
-        <label for="gp_pt">GP Travel Time (PT/Walk) Weight Points <output id="gp_pt_val">10.0</output></label>
-        <input id="gp_pt" type="range" min="0" max="100" step="0.1" value="10.0">
+        <label for="gp_pt">GP Travel Time (PT/Walk) Weight Points <output id="gp_pt_val">8.3</output></label>
+        <input id="gp_pt" type="range" min="0" max="100" step="0.1" value="8.3">
       </div>
       <div class="control">
-        <label for="gp_car">GP Travel Time (Car) Weight Points <output id="gp_car_val">10.0</output></label>
-        <input id="gp_car" type="range" min="0" max="100" step="0.1" value="10.0">
+        <label for="gp_car">GP Travel Time (Car) Weight Points <output id="gp_car_val">8.3</output></label>
+        <input id="gp_car" type="range" min="0" max="100" step="0.1" value="8.3">
       </div>
       <div class="control">
-        <label for="hosp_pt">Hospital Travel Time (PT/Walk) Weight Points <output id="hosp_pt_val">10.0</output></label>
-        <input id="hosp_pt" type="range" min="0" max="100" step="0.1" value="10.0">
+        <label for="hosp_pt">Hospital Travel Time (PT/Walk) Weight Points <output id="hosp_pt_val">8.3</output></label>
+        <input id="hosp_pt" type="range" min="0" max="100" step="0.1" value="8.3">
       </div>
       <div class="control">
-        <label for="hosp_car">Hospital Travel Time (Car) Weight Points <output id="hosp_car_val">10.0</output></label>
-        <input id="hosp_car" type="range" min="0" max="100" step="0.1" value="10.0">
+        <label for="hosp_car">Hospital Travel Time (Car) Weight Points <output id="hosp_car_val">8.3</output></label>
+        <input id="hosp_car" type="range" min="0" max="100" step="0.1" value="8.3">
       </div>
       <div class="control">
-        <label for="rural">Rural Access Weight Points <output id="rural_val">10.0</output></label>
-        <input id="rural" type="range" min="0" max="100" step="0.1" value="10.0">
+        <label for="rural">Rural Access Weight Points <output id="rural_val">8.3</output></label>
+        <input id="rural" type="range" min="0" max="100" step="0.1" value="8.3">
+      </div>
+      <div class="control">
+        <label for="car">Car/Van Availability Weight Points <output id="car_val">8.3</output></label>
+        <input id="car" type="range" min="0" max="100" step="0.1" value="8.3">
+      </div>
+      <div class="control">
+        <label for="digital">Digital Accessibility (DERI) Weight Points <output id="digital_val">8.7</output></label>
+        <input id="digital" type="range" min="0" max="100" step="0.1" value="8.7">
       </div>
       <div class="legend" id="access_weight_total"></div>
     </details>
@@ -127,7 +135,7 @@
   let maxScore = 1;
   let fillOpacity = 0.82;
   const needSliderIds = ["dep", "smi", "prescribing", "samhi"];
-  const accessSliderIds = ["mh002", "mh021", "mh_pca", "dep_pca", "dep004", "gp_pt", "gp_car", "hosp_pt", "hosp_car", "rural"];
+  const accessSliderIds = ["mh002", "mh021", "mh_pca", "dep_pca", "dep004", "gp_pt", "gp_car", "hosp_pt", "hosp_car", "rural", "car", "digital"];
 
   const layerLabels = {
     "Access_Gap_Index": "Access Gap Index (Need &minus; Access)",
@@ -239,19 +247,16 @@
     const needTotal = dep + smi + prescribing + samhi;
     document.getElementById("need_weight_total").textContent = `Need Index weight points total: ${needTotal.toFixed(1)}`;
 
-    const mh002 = Number(document.getElementById("mh002").value);
-    const mh021 = Number(document.getElementById("mh021").value);
-    const mhPca = Number(document.getElementById("mh_pca").value);
-    const depPca = Number(document.getElementById("dep_pca").value);
-    const dep004 = Number(document.getElementById("dep004").value);
-
-    document.getElementById("mh002_val").textContent = mh002.toFixed(1);
-    document.getElementById("mh021_val").textContent = mh021.toFixed(1);
-    document.getElementById("mh_pca_val").textContent = mhPca.toFixed(1);
-    document.getElementById("dep_pca_val").textContent = depPca.toFixed(1);
-    document.getElementById("dep004_val").textContent = dep004.toFixed(1);
-
-    const accessTotal = mh002 + mh021 + mhPca + depPca + dep004;
+    let accessTotal = 0;
+    for (const id of accessSliderIds) {
+      const el = document.getElementById(id);
+      const val = el ? Number(el.value) : 0;
+      const valEl = document.getElementById(`${id}_val`);
+      if (valEl) {
+        valEl.textContent = val.toFixed(1);
+      }
+      accessTotal += val;
+    }
     document.getElementById("access_weight_total").textContent = `Access Index weight points total: ${accessTotal.toFixed(1)}`;
   }
 

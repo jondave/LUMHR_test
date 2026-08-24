@@ -25,7 +25,9 @@
         <li>Mental Health and Depression Overall PCA (exception) rates are min-max normalized then inverted (1 - normalized), since a higher exception rate reduces effective access.</li>
         <li>GP and Hospital travel times (Public Transport/Walking and Car, 2019) are min-max normalized then inverted, since longer journeys reduce effective access.</li>
         <li>Rural Access is derived from the ONS Rural Urban Classification (2021): each LSOA's remoteness category is mapped to an isolation scale from 0 (Urban: Nearer to a major town or city) to 5 (Smaller rural: Further from a major town or city), min-max normalized, then inverted so higher = better access.</li>
-        <li>Access Index = (MH002_Normalized * w_mh002) + (MH021_Normalized * w_mh021) + (MH_PCA_Inverted * w_mh_pca) + (Dep_PCA_Inverted * w_dep_pca) + (DEP004_Normalized * w_dep004) + (GP_PT_Inverted * w_gp_pt) + (GP_Car_Inverted * w_gp_car) + (Hosp_PT_Inverted * w_hosp_pt) + (Hosp_Car_Inverted * w_hosp_car) + (Rural_Access * w_rural)</li>
+        <li>Household Car/Van Availability is derived from ONS Census 2021 (TS045) across 5 categories (No cars: 0, 1 car: 1, 2 cars: 2, 3+ cars: 3), weighted to calculate average vehicles per household, and min-max normalized so higher = better transport access.</li>
+        <li>Digital Accessibility is derived from the Digital Exclusion Risk Index (DERI v1.6, GMCA): combines 10 indicators across Demography, Deprivation, and Broadband infrastructure into a 0–10 risk score, min-max normalized and inverted so higher = better digital access.</li>
+        <li>Access Index = (MH002_Normalized * w_mh002) + (MH021_Normalized * w_mh021) + (MH_PCA_Inverted * w_mh_pca) + (Dep_PCA_Inverted * w_dep_pca) + (DEP004_Normalized * w_dep004) + (GP_PT_Inverted * w_gp_pt) + (GP_Car_Inverted * w_gp_car) + (Hosp_PT_Inverted * w_hosp_pt) + (Hosp_Car_Inverted * w_hosp_car) + (Rural_Access * w_rural) + (Car_Access * w_car) + (Digital_Access * w_digital)</li>
       </ul>
     </details>
 
@@ -36,57 +38,69 @@
         <li><a href="https://digital.nhs.uk/data-and-information/publications/statistical/quality-and-outcomes-framework-achievement-prevalence-and-exceptions-data/2024-25" target="_blank" rel="noopener noreferrer">QOF Mental Health and Depression achievement data</a></li>
         <li><a href="https://www.gov.uk/government/statistical-data-sets/journey-time-statistics-data-tables-jts" target="_blank" rel="noopener noreferrer">Journey Time Statistics (DfT, 2019)</a></li>
         <li><a href="https://geoportal.statistics.gov.uk/datasets/ons::rural-urban-classification-2021-of-lsoas-in-ew/about" target="_blank" rel="noopener noreferrer">Rural Urban Classification (2021) of LSOAs (ONS)</a></li>
+        <li><a href="https://www.ons.gov.uk/datasets/TS045/editions/2021/versions/4" target="_blank" rel="noopener noreferrer">Car or van availability (Census 2021, ONS)</a></li>
+        <li><a href="https://github.com/GreaterManchesterODA/Digital-Exclusion-Risk-Index" target="_blank" rel="noopener noreferrer">Digital Exclusion Risk Index (DERI v1.6, GMCA)</a></li>
       </ul>
     </details>
 
     <div class="control">
-      <label for="mh002">MH002 Intervention Weight Points <output id="mh002_val">10.0</output></label>
-      <input id="mh002" type="range" min="0" max="100" step="0.1" value="10.0">
+      <label for="mh002">MH002 (SMI Care Plan) Weight Points <output id="mh002_val">8.3</output></label>
+      <input id="mh002" type="range" min="0" max="100" step="0.1" value="8.3">
     </div>
 
     <div class="control">
-      <label for="mh021">MH021 Intervention Weight Points <output id="mh021_val">10.0</output></label>
-      <input id="mh021" type="range" min="0" max="100" step="0.1" value="10.0">
+      <label for="mh021">MH021 (SMI Health Check) Weight Points <output id="mh021_val">8.3</output></label>
+      <input id="mh021" type="range" min="0" max="100" step="0.1" value="8.3">
     </div>
 
     <div class="control">
-      <label for="mh_pca">Mental Health Overall PCA Weight Points <output id="mh_pca_val">10.0</output></label>
-      <input id="mh_pca" type="range" min="0" max="100" step="0.1" value="10.0">
+      <label for="mh_pca">Mental Health PCA (SMI Exceptions) Weight Points <output id="mh_pca_val">8.3</output></label>
+      <input id="mh_pca" type="range" min="0" max="100" step="0.1" value="8.3">
     </div>
 
     <div class="control">
-      <label for="dep_pca">Depression Overall PCA Weight Points <output id="dep_pca_val">10.0</output></label>
-      <input id="dep_pca" type="range" min="0" max="100" step="0.1" value="10.0">
+      <label for="dep_pca">Depression PCA (Exceptions) Weight Points <output id="dep_pca_val">8.3</output></label>
+      <input id="dep_pca" type="range" min="0" max="100" step="0.1" value="8.3">
     </div>
 
     <div class="control">
-      <label for="dep004">DEP004 Intervention Weight Points <output id="dep004_val">10.0</output></label>
-      <input id="dep004" type="range" min="0" max="100" step="0.1" value="10.0">
+      <label for="dep004">DEP004 (Depression Review) Weight Points <output id="dep004_val">8.3</output></label>
+      <input id="dep004" type="range" min="0" max="100" step="0.1" value="8.3">
     </div>
 
     <div class="control">
-      <label for="gp_pt">GP Travel Time (Public Transport/Walking) Weight Points <output id="gp_pt_val">10.0</output></label>
-      <input id="gp_pt" type="range" min="0" max="100" step="0.1" value="10.0">
+      <label for="gp_pt">GP Travel Time (Public Transport/Walking) Weight Points <output id="gp_pt_val">8.3</output></label>
+      <input id="gp_pt" type="range" min="0" max="100" step="0.1" value="8.3">
     </div>
 
     <div class="control">
-      <label for="gp_car">GP Travel Time (Car) Weight Points <output id="gp_car_val">10.0</output></label>
-      <input id="gp_car" type="range" min="0" max="100" step="0.1" value="10.0">
+      <label for="gp_car">GP Travel Time (Car) Weight Points <output id="gp_car_val">8.3</output></label>
+      <input id="gp_car" type="range" min="0" max="100" step="0.1" value="8.3">
     </div>
 
     <div class="control">
-      <label for="hosp_pt">Hospital Travel Time (Public Transport/Walking) Weight Points <output id="hosp_pt_val">10.0</output></label>
-      <input id="hosp_pt" type="range" min="0" max="100" step="0.1" value="10.0">
+      <label for="hosp_pt">Hospital Travel Time (Public Transport/Walking) Weight Points <output id="hosp_pt_val">8.3</output></label>
+      <input id="hosp_pt" type="range" min="0" max="100" step="0.1" value="8.3">
     </div>
 
     <div class="control">
-      <label for="hosp_car">Hospital Travel Time (Car) Weight Points <output id="hosp_car_val">10.0</output></label>
-      <input id="hosp_car" type="range" min="0" max="100" step="0.1" value="10.0">
+      <label for="hosp_car">Hospital Travel Time (Car) Weight Points <output id="hosp_car_val">8.3</output></label>
+      <input id="hosp_car" type="range" min="0" max="100" step="0.1" value="8.3">
     </div>
 
     <div class="control">
-      <label for="rural">Rural Access Weight Points <output id="rural_val">10.0</output></label>
-      <input id="rural" type="range" min="0" max="100" step="0.1" value="10.0">
+      <label for="rural">Rural Access Weight Points <output id="rural_val">8.3</output></label>
+      <input id="rural" type="range" min="0" max="100" step="0.1" value="8.3">
+    </div>
+
+    <div class="control">
+      <label for="car">Car/Van Availability Weight Points <output id="car_val">8.3</output></label>
+      <input id="car" type="range" min="0" max="100" step="0.1" value="8.3">
+    </div>
+
+    <div class="control">
+      <label for="digital">Digital Accessibility (DERI) Weight Points <output id="digital_val">8.7</output></label>
+      <input id="digital" type="range" min="0" max="100" step="0.1" value="8.7">
     </div>
 
     <div class="legend" id="weight_total"></div>
@@ -127,20 +141,22 @@
   let minScore = 0;
   let maxScore = 1;
   let fillOpacity = 0.82;
-  const sliderIds = ["mh002", "mh021", "mh_pca", "dep_pca", "dep004", "gp_pt", "gp_car", "hosp_pt", "hosp_car", "rural"];
+  const sliderIds = ["mh002", "mh021", "mh_pca", "dep_pca", "dep004", "gp_pt", "gp_car", "hosp_pt", "hosp_car", "rural", "car", "digital"];
 
   const layerLabels = {
     "Access_Index": "Access Index",
-    "MH002_Access_Pct": "MH002 Intervention Rate (%)",
-    "MH021_Access_Pct": "MH021 Intervention Rate (%)",
-    "MH_PCA_Access_Pct": "Mental Health Overall PCA Rate (%)",
-    "Dep_PCA_Access_Pct": "Depression Overall PCA Rate (%)",
-    "DEP004_Access_Pct": "DEP004 Intervention Rate (%)",
+    "MH002_Access_Pct": "MH002 (SMI Care Plan) Rate (%)",
+    "MH021_Access_Pct": "MH021 (SMI Health Check) Rate (%)",
+    "MH_PCA_Access_Pct": "Mental Health PCA (SMI Exceptions) Rate (%)",
+    "Dep_PCA_Access_Pct": "Depression PCA (Exceptions) Rate (%)",
+    "DEP004_Access_Pct": "DEP004 (Depression Review) Rate (%)",
     "GP_PT_Time": "GP Travel Time - Public Transport/Walking (min)",
     "GP_Car_Time": "GP Travel Time - Car (min)",
     "Hosp_PT_Time": "Hospital Travel Time - Public Transport/Walking (min)",
     "Hosp_Car_Time": "Hospital Travel Time - Car (min)",
     "Rural_Access": "Rural Access (0-1, higher = better)",
+    "Car_Access": "Household Car/Van Availability (0-1, higher = better)",
+    "Digital_Access": "Digital Accessibility (0-1, higher = better)",
   };
 
   function getCode(feature) {
@@ -240,8 +256,9 @@
 
     const normDen = rawTotal > 0 ? rawTotal : sliderIds.length;
     const labels = {
-      mh002: "MH002", mh021: "MH021", mh_pca: "MH PCA", dep_pca: "Dep PCA", dep004: "DEP004",
+      mh002: "MH002 (SMI Care Plan)", mh021: "MH021 (SMI Health Check)", mh_pca: "MH PCA (SMI)", dep_pca: "Dep PCA", dep004: "DEP004 (Dep Review)",
       gp_pt: "GP PT", gp_car: "GP Car", hosp_pt: "Hosp PT", hosp_car: "Hosp Car", rural: "Rural",
+      car: "Car/Van", digital: "Digital (DERI)",
     };
     const parts = sliderIds.map((id) => {
       const pct = rawTotal > 0 ? (values[id] / normDen) * 100 : 100 / sliderIds.length;
@@ -260,21 +277,32 @@
       const name = feature?.properties?.NAME ?? "";
       const detail = lsoaDetails[code] || {};
 
-      const popupHtml =
+      let popupHtml =
         `<strong>LSOA:</strong> ${code}<br>` +
         `<strong>LSOA Name:</strong> ${detail.lsoa_name || name || "N/A"}<br>` +
         `<strong>Access Index:</strong> ${detail.access_index !== null && detail.access_index !== undefined ? detail.access_index.toFixed(4) : "N/A"}<br>` +
-        `<strong>MH002 Intervention Rate (%):</strong> ${detail.mh002_pct !== null && detail.mh002_pct !== undefined ? detail.mh002_pct.toFixed(2) : "N/A"}<br>` +
-        `<strong>MH021 Intervention Rate (%):</strong> ${detail.mh021_pct !== null && detail.mh021_pct !== undefined ? detail.mh021_pct.toFixed(2) : "N/A"}<br>` +
-        `<strong>Mental Health Overall PCA Rate (%):</strong> ${detail.mh_pca_pct !== null && detail.mh_pca_pct !== undefined ? detail.mh_pca_pct.toFixed(2) : "N/A"}<br>` +
-        `<strong>Depression Overall PCA Rate (%):</strong> ${detail.dep_pca_pct !== null && detail.dep_pca_pct !== undefined ? detail.dep_pca_pct.toFixed(2) : "N/A"}<br>` +
-        `<strong>DEP004 Intervention Rate (%):</strong> ${detail.dep004_pct !== null && detail.dep004_pct !== undefined ? detail.dep004_pct.toFixed(2) : "N/A"}<br>` +
+        `<strong>MH002 (SMI Care Plan) Rate (%):</strong> ${detail.mh002_pct !== null && detail.mh002_pct !== undefined ? detail.mh002_pct.toFixed(2) : "N/A"}<br>` +
+        `<strong>MH021 (SMI Health Check) Rate (%):</strong> ${detail.mh021_pct !== null && detail.mh021_pct !== undefined ? detail.mh021_pct.toFixed(2) : "N/A"}<br>` +
+        `<strong>Mental Health PCA (SMI Exceptions) Rate (%):</strong> ${detail.mh_pca_pct !== null && detail.mh_pca_pct !== undefined ? detail.mh_pca_pct.toFixed(2) : "N/A"}<br>` +
+        `<strong>Depression PCA (Exceptions) Rate (%):</strong> ${detail.dep_pca_pct !== null && detail.dep_pca_pct !== undefined ? detail.dep_pca_pct.toFixed(2) : "N/A"}<br>` +
+        `<strong>DEP004 (Depression Review) Rate (%):</strong> ${detail.dep004_pct !== null && detail.dep004_pct !== undefined ? detail.dep004_pct.toFixed(2) : "N/A"}<br>` +
         `<strong>GP Travel Time (PT/Walk, min):</strong> ${detail.gp_pt_time !== null && detail.gp_pt_time !== undefined ? detail.gp_pt_time.toFixed(1) : "N/A"}<br>` +
         `<strong>GP Travel Time (Car, min):</strong> ${detail.gp_car_time !== null && detail.gp_car_time !== undefined ? detail.gp_car_time.toFixed(1) : "N/A"}<br>` +
         `<strong>Hospital Travel Time (PT/Walk, min):</strong> ${detail.hosp_pt_time !== null && detail.hosp_pt_time !== undefined ? detail.hosp_pt_time.toFixed(1) : "N/A"}<br>` +
         `<strong>Hospital Travel Time (Car, min):</strong> ${detail.hosp_car_time !== null && detail.hosp_car_time !== undefined ? detail.hosp_car_time.toFixed(1) : "N/A"}<br>` +
         `<strong>Rural Urban Classification:</strong> ${detail.ruc21nm || "N/A"}<br>` +
-        `<strong>Rural Access (0-1):</strong> ${detail.rural_access !== null && detail.rural_access !== undefined ? detail.rural_access.toFixed(2) : "N/A"}`;
+        `<strong>Rural Access (0-1):</strong> ${detail.rural_access !== null && detail.rural_access !== undefined ? detail.rural_access.toFixed(2) : "N/A"}<br>` +
+        `<strong>Households with Car/Van (%):</strong> ${detail.car_access_pct !== null && detail.car_access_pct !== undefined ? detail.car_access_pct.toFixed(1) + "%" : "N/A"}<br>` +
+        `<strong>Households with No Car/Van (%):</strong> ${detail.no_cars_pct !== null && detail.no_cars_pct !== undefined ? detail.no_cars_pct.toFixed(1) + "%" : "N/A"}<br>` +
+        `<strong>Car/Van Access Score (0-1):</strong> ${detail.car_access !== null && detail.car_access !== undefined ? detail.car_access.toFixed(2) : "N/A"}<br>` +
+        `<strong>Digital Access Score (0-1):</strong> ${detail.digital_access !== null && detail.digital_access !== undefined ? detail.digital_access.toFixed(2) : "N/A"}<br>` +
+        `<strong>DERI Exclusion Risk (0-10):</strong> ${detail.deri_score !== null && detail.deri_score !== undefined ? detail.deri_score.toFixed(2) : "N/A"}<br>` +
+        `<strong>Avg Download Speed (Mbps):</strong> ${detail.avg_download_speed_mbps !== null && detail.avg_download_speed_mbps !== undefined ? detail.avg_download_speed_mbps.toFixed(1) : "N/A"}<br>` +
+        `<strong>Homes with No Superfast (&ge;30M):</strong> ${detail.no_superfast_broadband_pct !== null && detail.no_superfast_broadband_pct !== undefined ? (detail.no_superfast_broadband_pct / 100).toFixed(1) + "%" : "N/A"}`;
+
+      if (detail.total_households !== null && detail.total_households !== undefined) {
+        popupHtml += `<br><strong>Total Households (Census 2021):</strong> ${Math.round(detail.total_households).toLocaleString()}`;
+      }
 
       layer.bindPopup(popupHtml, { maxWidth: 360 });
       layer.setTooltipContent(`${code}${name ? ` | ${name}` : ""}`);
@@ -302,11 +330,11 @@
         `<strong>Code:</strong> ${gp.practice_code || "N/A"}<br>` +
         `<strong>Total Registered Patients:</strong> ${gp.patients !== null ? Math.round(gp.patients).toLocaleString() : "N/A"}<br><br>` +
         `<hr style="margin:6px 0;">` +
-        `<strong>MH002 Intervention Rate (%):</strong> ${gp.mh002_pct !== null ? gp.mh002_pct.toFixed(2) + "%" : "N/A"}<br>` +
-        `<strong>MH021 Intervention Rate (%):</strong> ${gp.mh021_pct !== null ? gp.mh021_pct.toFixed(2) + "%" : "N/A"}<br>` +
-        `<strong>Mental Health Overall PCA Rate (%):</strong> ${gp.mh_pca_pct !== null ? gp.mh_pca_pct.toFixed(2) + "%" : "N/A"}<br>` +
-        `<strong>Depression Overall PCA Rate (%):</strong> ${gp.dep_pca_pct !== null ? gp.dep_pca_pct.toFixed(2) + "%" : "N/A"}<br>` +
-        `<strong>DEP004 Intervention Rate (%):</strong> ${gp.dep004_pct !== null ? gp.dep004_pct.toFixed(2) + "%" : "N/A"}`;
+        `<strong>MH002 (SMI Care Plan) Rate (%):</strong> ${gp.mh002_pct !== null ? gp.mh002_pct.toFixed(2) + "%" : "N/A"}<br>` +
+        `<strong>MH021 (SMI Health Check) Rate (%):</strong> ${gp.mh021_pct !== null ? gp.mh021_pct.toFixed(2) + "%" : "N/A"}<br>` +
+        `<strong>Mental Health PCA (SMI Exceptions) Rate (%):</strong> ${gp.mh_pca_pct !== null ? gp.mh_pca_pct.toFixed(2) + "%" : "N/A"}<br>` +
+        `<strong>Depression PCA (Exceptions) Rate (%):</strong> ${gp.dep_pca_pct !== null ? gp.dep_pca_pct.toFixed(2) + "%" : "N/A"}<br>` +
+        `<strong>DEP004 (Depression Review) Rate (%):</strong> ${gp.dep004_pct !== null ? gp.dep004_pct.toFixed(2) + "%" : "N/A"}`;
       marker.bindPopup(popup);
       gpLayer.addLayer(marker);
     }
@@ -371,16 +399,18 @@
       container.innerHTML = `
         <div style="font-weight:700; margin-bottom:6px;">Map Layers</div>
         <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="Access_Index" checked> Access Index</label>
-        <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="MH002_Access_Pct"> MH002 Intervention Rate</label>
-        <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="MH021_Access_Pct"> MH021 Intervention Rate</label>
-        <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="MH_PCA_Access_Pct"> Mental Health Overall PCA Rate</label>
-        <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="Dep_PCA_Access_Pct"> Depression Overall PCA Rate</label>
-        <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="DEP004_Access_Pct"> DEP004 Intervention Rate</label>
+        <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="MH002_Access_Pct"> MH002 (SMI Care Plan)</label>
+        <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="MH021_Access_Pct"> MH021 (SMI Health Check)</label>
+        <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="MH_PCA_Access_Pct"> Mental Health PCA (SMI Exceptions)</label>
+        <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="Dep_PCA_Access_Pct"> Depression PCA (Exceptions)</label>
+        <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="DEP004_Access_Pct"> DEP004 (Depression Review)</label>
         <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="GP_PT_Time"> GP Travel Time (PT/Walk)</label>
         <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="GP_Car_Time"> GP Travel Time (Car)</label>
         <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="Hosp_PT_Time"> Hospital Travel Time (PT/Walk)</label>
         <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="Hosp_Car_Time"> Hospital Travel Time (Car)</label>
-        <label style="display:block; margin-bottom:8px;"><input type="radio" name="map_metric" value="Rural_Access"> Rural Access</label>
+        <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="Rural_Access"> Rural Access</label>
+        <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="Car_Access"> Household Car/Van Availability</label>
+        <label style="display:block; margin-bottom:8px;"><input type="radio" name="map_metric" value="Digital_Access"> Digital Accessibility (DERI)</label>
         <div style="border-top:1px solid #e4ecef; padding-top:8px; margin-top:6px;">
           <div id="map_colorbar_title" style="font-weight:600; margin-bottom:4px;">Access Index</div>
           <div id="map_colorbar_gradient" style="height:12px; border-radius:4px; border:1px solid #d0d9df;"></div>

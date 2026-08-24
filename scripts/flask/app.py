@@ -251,16 +251,18 @@ def need_scores_api():
 @app.get("/api/access_scores")
 def access_scores_api():
     try:
-        mh002 = _parse_float_arg("mh002", 20.0)
-        mh021 = _parse_float_arg("mh021", 20.0)
-        mh_pca = _parse_float_arg("mh_pca", 20.0)
-        dep_pca = _parse_float_arg("dep_pca", 20.0)
-        dep004 = _parse_float_arg("dep004", 20.0)
-        gp_pt = _parse_float_arg("gp_pt", 10.0)
-        gp_car = _parse_float_arg("gp_car", 10.0)
-        hosp_pt = _parse_float_arg("hosp_pt", 10.0)
-        hosp_car = _parse_float_arg("hosp_car", 10.0)
-        rural = _parse_float_arg("rural", 10.0)
+        mh002 = _parse_float_arg("mh002", 8.33)
+        mh021 = _parse_float_arg("mh021", 8.33)
+        mh_pca = _parse_float_arg("mh_pca", 8.33)
+        dep_pca = _parse_float_arg("dep_pca", 8.33)
+        dep004 = _parse_float_arg("dep004", 8.33)
+        gp_pt = _parse_float_arg("gp_pt", 8.33)
+        gp_car = _parse_float_arg("gp_car", 8.33)
+        hosp_pt = _parse_float_arg("hosp_pt", 8.33)
+        hosp_car = _parse_float_arg("hosp_car", 8.33)
+        rural = _parse_float_arg("rural", 8.33)
+        car = _parse_float_arg("car", 8.33)
+        digital = _parse_float_arg("digital", 8.33)
     except ValueError as exc:
         return jsonify({"error": str(exc)}), 400
 
@@ -275,13 +277,15 @@ def access_scores_api():
         "Hosp_PT_Time",
         "Hosp_Car_Time",
         "Rural_Access",
+        "Car_Access",
+        "Digital_Access",
     ]
     missing = [c for c in required_cols if c not in LSOA_METRICS.columns]
     if missing:
         return jsonify({"error": f"Missing access columns: {', '.join(missing)}"}), 400
 
     scored = apply_access_index(
-        LSOA_METRICS, mh002, mh021, mh_pca, dep_pca, dep004, gp_pt, gp_car, hosp_pt, hosp_car, rural
+        LSOA_METRICS, mh002, mh021, mh_pca, dep_pca, dep004, gp_pt, gp_car, hosp_pt, hosp_car, rural, car, digital
     )
 
     layers = {
@@ -296,15 +300,33 @@ def access_scores_api():
         "Hosp_PT_Time": _scores_to_dict(scored, "Hosp_PT_Time"),
         "Hosp_Car_Time": _scores_to_dict(scored, "Hosp_Car_Time"),
         "Rural_Access": _scores_to_dict(scored, "Rural_Access"),
+        "Car_Access": _scores_to_dict(scored, "Car_Access"),
+        "Digital_Access": _scores_to_dict(scored, "Digital_Access"),
     }
 
     lsoa_name_col = _get_lsoa_name_column(scored)
 
+    extra_detail_cols = [
+        "Car_Access_Pct",
+        "No_Cars_Pct",
+        "One_Car_Pct",
+        "Two_Cars_Pct",
+        "Three_Plus_Cars_Pct",
+        "Total_Households",
+        "DERI_Score",
+        "Demography_Score",
+        "Deprivation_Score",
+        "Broadband_Score",
+        "Avg_Download_Speed_Mbps",
+        "No_Superfast_Broadband_Pct",
+        "Slow_Connections_Pct",
+    ]
     detail_cols = [
         "LSOA_CODE",
         "Access_Index",
         "RUC21NM",
         *required_cols,
+        *extra_detail_cols,
     ]
     if lsoa_name_col:
         detail_cols.insert(1, lsoa_name_col)
@@ -328,6 +350,21 @@ def access_scores_api():
             "hosp_car_time": _num_or_none(row.get("Hosp_Car_Time")),
             "rural_access": _num_or_none(row.get("Rural_Access")),
             "ruc21nm": str(row.get("RUC21NM", "") or ""),
+            "car_access": _num_or_none(row.get("Car_Access")),
+            "car_access_pct": _num_or_none(row.get("Car_Access_Pct")),
+            "no_cars_pct": _num_or_none(row.get("No_Cars_Pct")),
+            "one_car_pct": _num_or_none(row.get("One_Car_Pct")),
+            "two_cars_pct": _num_or_none(row.get("Two_Cars_Pct")),
+            "three_plus_cars_pct": _num_or_none(row.get("Three_Plus_Cars_Pct")),
+            "total_households": _num_or_none(row.get("Total_Households")),
+            "digital_access": _num_or_none(row.get("Digital_Access")),
+            "deri_score": _num_or_none(row.get("DERI_Score")),
+            "demography_score": _num_or_none(row.get("Demography_Score")),
+            "deprivation_score": _num_or_none(row.get("Deprivation_Score")),
+            "broadband_score": _num_or_none(row.get("Broadband_Score")),
+            "avg_download_speed_mbps": _num_or_none(row.get("Avg_Download_Speed_Mbps")),
+            "no_superfast_broadband_pct": _num_or_none(row.get("No_Superfast_Broadband_Pct")),
+            "slow_connections_pct": _num_or_none(row.get("Slow_Connections_Pct")),
         }
 
     return jsonify(
@@ -346,16 +383,18 @@ def access_gap_scores_api():
         prescribing = _parse_float_arg("prescribing", 25.0)
         samhi_weight = _parse_float_arg("samhi", 25.0)
         samhi_year = _parse_int_arg("samhi_year", max(SAMHI_YEARS))
-        mh002 = _parse_float_arg("mh002", 20.0)
-        mh021 = _parse_float_arg("mh021", 20.0)
-        mh_pca = _parse_float_arg("mh_pca", 20.0)
-        dep_pca = _parse_float_arg("dep_pca", 20.0)
-        dep004 = _parse_float_arg("dep004", 20.0)
-        gp_pt = _parse_float_arg("gp_pt", 10.0)
-        gp_car = _parse_float_arg("gp_car", 10.0)
-        hosp_pt = _parse_float_arg("hosp_pt", 10.0)
-        hosp_car = _parse_float_arg("hosp_car", 10.0)
-        rural = _parse_float_arg("rural", 10.0)
+        mh002 = _parse_float_arg("mh002", 8.33)
+        mh021 = _parse_float_arg("mh021", 8.33)
+        mh_pca = _parse_float_arg("mh_pca", 8.33)
+        dep_pca = _parse_float_arg("dep_pca", 8.33)
+        dep004 = _parse_float_arg("dep004", 8.33)
+        gp_pt = _parse_float_arg("gp_pt", 8.33)
+        gp_car = _parse_float_arg("gp_car", 8.33)
+        hosp_pt = _parse_float_arg("hosp_pt", 8.33)
+        hosp_car = _parse_float_arg("hosp_car", 8.33)
+        rural = _parse_float_arg("rural", 8.33)
+        car = _parse_float_arg("car", 8.33)
+        digital = _parse_float_arg("digital", 8.33)
     except ValueError as exc:
         return jsonify({"error": str(exc)}), 400
 
@@ -377,6 +416,8 @@ def access_gap_scores_api():
         "Hosp_PT_Time",
         "Hosp_Car_Time",
         "Rural_Access",
+        "Car_Access",
+        "Digital_Access",
     ]
     missing = [c for c in access_required_cols if c not in LSOA_METRICS.columns]
     if missing:
@@ -384,7 +425,7 @@ def access_gap_scores_api():
 
     need_scored = apply_need_index(LSOA_METRICS, dep, smi, prescribing, samhi_weight, samhi_index_col)
     access_scored = apply_access_index(
-        LSOA_METRICS, mh002, mh021, mh_pca, dep_pca, dep004, gp_pt, gp_car, hosp_pt, hosp_car, rural
+        LSOA_METRICS, mh002, mh021, mh_pca, dep_pca, dep004, gp_pt, gp_car, hosp_pt, hosp_car, rural, car, digital
     )
 
     combined = need_scored[["LSOA_CODE", "Need_Index"]].merge(

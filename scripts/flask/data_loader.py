@@ -20,7 +20,13 @@ from core.allocation import (
 )
 from core.common import normalize_code
 from core.samhi import join_samhi, prepare_samhi
-from core.travel import build_2011_to_2021_lookup, prepare_rural_urban, prepare_travel_times
+from core.travel import (
+    build_2011_to_2021_lookup,
+    prepare_car_availability,
+    prepare_digital_exclusion,
+    prepare_rural_urban,
+    prepare_travel_times,
+)
 
 
 def resolve_base_dir(script_file: Path) -> Path:
@@ -69,6 +75,14 @@ def get_paths(base_dir: Path) -> dict[str, Path]:
         / "datasets"
         / "rural_urban_classification_2021_lsoa"
         / "lincolnshire_rural_urban_2021.csv",
+        "car_van": base_dir
+        / "datasets"
+        / "car_or_van_availability"
+        / "TS045-2021-4-filtered-2026-08-24T10_54_11Z.csv",
+        "deri": base_dir
+        / "datasets"
+        / "digital_exclusion_risk_index"
+        / "deri_lincolnshire_2021_lsoa.csv",
         "lsoa_2011_2021_lookup": base_dir
         / "datasets"
         / "lincolnshire_lsoa"
@@ -179,6 +193,8 @@ def load_raw_data(base_dir_str: str) -> dict[str, object]:
         "gp_travel_time_raw": pd.read_csv(paths["gp_travel_time"]),
         "hospital_travel_time_raw": pd.read_csv(paths["hospital_travel_time"]),
         "rural_urban_raw": pd.read_csv(paths["rural_urban"]),
+        "car_van_raw": pd.read_csv(paths["car_van"]),
+        "deri_raw": pd.read_csv(paths["deri"]),
         "lsoa_2011_2021_lookup_raw": pd.read_csv(paths["lsoa_2011_2021_lookup"]),
         "lsoa_codes": lsoa_codes_df,
         "lsoa_centroids": lsoa_centroids_df,
@@ -221,6 +237,12 @@ def get_prepared_bundle_cached(base_dir_str: str) -> dict[str, object]:
 
     rural_urban_df = prepare_rural_urban(raw["rural_urban_raw"])
     lsoa_metrics = lsoa_metrics.merge(rural_urban_df, on="LSOA_CODE", how="left")
+
+    car_van_df = prepare_car_availability(raw["car_van_raw"])
+    lsoa_metrics = lsoa_metrics.merge(car_van_df, on="LSOA_CODE", how="left")
+
+    deri_df = prepare_digital_exclusion(raw["deri_raw"])
+    lsoa_metrics = lsoa_metrics.merge(deri_df, on="LSOA_CODE", how="left")
 
     gp_marker_df = build_gp_marker_df(gp_loc_df, gp_master, mapping_df, lsoa_centroids_df, in_area_lsoa_codes)
 
