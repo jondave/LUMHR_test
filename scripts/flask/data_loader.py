@@ -24,6 +24,7 @@ from core.travel import (
     build_2011_to_2021_lookup,
     prepare_car_availability,
     prepare_digital_exclusion,
+    prepare_population_estimates,
     prepare_rural_urban,
     prepare_travel_times,
 )
@@ -83,6 +84,10 @@ def get_paths(base_dir: Path) -> dict[str, Path]:
         / "datasets"
         / "digital_exclusion_risk_index"
         / "deri_lincolnshire_2021_lsoa.csv",
+        "population": base_dir
+        / "datasets"
+        / "population_estimates"
+        / "lincolnshire_lsoa_population_estimates_2024.csv",
         "lsoa_2011_2021_lookup": base_dir
         / "datasets"
         / "lincolnshire_lsoa"
@@ -195,6 +200,7 @@ def load_raw_data(base_dir_str: str) -> dict[str, object]:
         "rural_urban_raw": pd.read_csv(paths["rural_urban"]),
         "car_van_raw": pd.read_csv(paths["car_van"]),
         "deri_raw": pd.read_csv(paths["deri"]),
+        "pop_raw": pd.read_csv(paths["population"]),
         "lsoa_2011_2021_lookup_raw": pd.read_csv(paths["lsoa_2011_2021_lookup"]),
         "lsoa_codes": lsoa_codes_df,
         "lsoa_centroids": lsoa_centroids_df,
@@ -243,6 +249,9 @@ def get_prepared_bundle_cached(base_dir_str: str) -> dict[str, object]:
 
     deri_df = prepare_digital_exclusion(raw["deri_raw"])
     lsoa_metrics = lsoa_metrics.merge(deri_df, on="LSOA_CODE", how="left")
+
+    pop_df = prepare_population_estimates(raw["pop_raw"])
+    lsoa_metrics = lsoa_metrics.merge(pop_df, on="LSOA_CODE", how="left")
 
     gp_marker_df = build_gp_marker_df(gp_loc_df, gp_master, mapping_df, lsoa_centroids_df, in_area_lsoa_codes)
 

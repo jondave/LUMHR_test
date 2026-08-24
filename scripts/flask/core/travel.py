@@ -192,3 +192,28 @@ def prepare_digital_exclusion(df: pd.DataFrame) -> pd.DataFrame:
     return work[present].drop_duplicates(subset=["LSOA_CODE"])
 
 
+def prepare_population_estimates(df: pd.DataFrame) -> pd.DataFrame:
+    work = df.copy()
+    work["LSOA_CODE"] = work["LSOA_CODE"].astype(str).str.strip()
+
+    keep_cols = [
+        "LSOA_CODE",
+        "ONS_Pop_Total_2024",
+        "ONS_Pop_0to17",
+        "ONS_Pop_18to64",
+        "ONS_Pop_65plus",
+        "ONS_Pop_18plus",
+        "Pct_18plus",
+        "Pct_65plus",
+        "Pct_0to17",
+        "Pct_18to64",
+        "GP_Registered_Patients",
+        "GP_Registration_Rate_Pct",
+        "Registration_Gap_Est",
+        "List_Inflation_Est",
+    ]
+    present = [c for c in keep_cols if c in work.columns]
+    return work[present].drop_duplicates(subset=["LSOA_CODE"])
+
+
+

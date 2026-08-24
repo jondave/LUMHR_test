@@ -38,8 +38,9 @@
         <li><a href="https://digital.nhs.uk/data-and-information/publications/statistical/quality-and-outcomes-framework-achievement-prevalence-and-exceptions-data/2024-25" target="_blank" rel="noopener noreferrer">QOF Mental Health and Depression achievement data</a></li>
         <li><a href="https://www.gov.uk/government/statistical-data-sets/journey-time-statistics-data-tables-jts" target="_blank" rel="noopener noreferrer">Journey Time Statistics (DfT, 2019)</a></li>
         <li><a href="https://geoportal.statistics.gov.uk/datasets/ons::rural-urban-classification-2021-of-lsoas-in-ew/about" target="_blank" rel="noopener noreferrer">Rural Urban Classification (2021) of LSOAs (ONS)</a></li>
-        <li><a href="https://www.ons.gov.uk/datasets/TS045/editions/2021/versions/4" target="_blank" rel="noopener noreferrer">Car or van availability (Census 2021, ONS)</a></li>
+        <li><a href="https://ons.gov.uk/datasets/TS045/editions/2021/versions/4" target="_blank" rel="noopener noreferrer">Car or van availability (Census 2021, ONS)</a></li>
         <li><a href="https://github.com/GreaterManchesterODA/Digital-Exclusion-Risk-Index" target="_blank" rel="noopener noreferrer">Digital Exclusion Risk Index (DERI v1.6, GMCA)</a></li>
+        <li><a href="https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/populationestimates/datasets/lowersuperoutputareamidyearpopulationestimates" target="_blank" rel="noopener noreferrer">LSOA Mid-Year Population Estimates (Mid-2024 SAPE, ONS)</a></li>
       </ul>
     </details>
 
@@ -157,6 +158,8 @@
     "Rural_Access": "Rural Access (0-1, higher = better)",
     "Car_Access": "Household Car/Van Availability (0-1, higher = better)",
     "Digital_Access": "Digital Accessibility (0-1, higher = better)",
+    "Pct_65plus": "Older Adults (65+) %",
+    "GP_Registration_Rate_Pct": "GP Registration Coverage (%)",
   };
 
   function getCode(feature) {
@@ -304,6 +307,21 @@
         popupHtml += `<br><strong>Total Households (Census 2021):</strong> ${Math.round(detail.total_households).toLocaleString()}`;
       }
 
+      if (detail.ons_pop_total !== null && detail.ons_pop_total !== undefined) {
+        popupHtml +=
+          `<hr style="margin:6px 0;">` +
+          `<strong>Resident Population (ONS 2024):</strong> ${Math.round(detail.ons_pop_total).toLocaleString()}<br>` +
+          `<strong>Adults (18+):</strong> ${detail.ons_pop_18plus !== null ? Math.round(detail.ons_pop_18plus).toLocaleString() : "N/A"}${detail.pct_18plus !== null ? ` (${detail.pct_18plus.toFixed(1)}%)` : ""}<br>` +
+          `<strong>Older Adults (65+):</strong> ${detail.ons_pop_65plus !== null ? Math.round(detail.ons_pop_65plus).toLocaleString() : "N/A"}${detail.pct_65plus !== null ? ` (${detail.pct_65plus.toFixed(1)}%)` : ""}<br>` +
+          `<strong>GP Registered Patients:</strong> ${detail.gp_registered_patients !== null ? Math.round(detail.gp_registered_patients).toLocaleString() : "N/A"}${detail.gp_registration_rate_pct !== null ? ` (${detail.gp_registration_rate_pct.toFixed(1)}% of ONS)` : ""}`;
+
+        if (detail.list_inflation_est && detail.list_inflation_est > 0) {
+          popupHtml += `<br><span style="color:#d9534f; font-size:11px;">⚠️ Estimated List Inflation: +${Math.round(detail.list_inflation_est).toLocaleString()}</span>`;
+        } else if (detail.registration_gap_est && detail.registration_gap_est > 0) {
+          popupHtml += `<br><span style="color:#8a6d3b; font-size:11px;">ℹ️ Estimated Registration/Border Gap: ${Math.round(detail.registration_gap_est).toLocaleString()}</span>`;
+        }
+      }
+
       layer.bindPopup(popupHtml, { maxWidth: 360 });
       layer.setTooltipContent(`${code}${name ? ` | ${name}` : ""}`);
     });
@@ -410,7 +428,9 @@
         <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="Hosp_Car_Time"> Hospital Travel Time (Car)</label>
         <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="Rural_Access"> Rural Access</label>
         <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="Car_Access"> Household Car/Van Availability</label>
-        <label style="display:block; margin-bottom:8px;"><input type="radio" name="map_metric" value="Digital_Access"> Digital Accessibility (DERI)</label>
+        <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="Digital_Access"> Digital Accessibility (DERI)</label>
+        <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="Pct_65plus"> Older Adults (65+) %</label>
+        <label style="display:block; margin-bottom:8px;"><input type="radio" name="map_metric" value="GP_Registration_Rate_Pct"> GP Registration Coverage (%)</label>
         <div style="border-top:1px solid #e4ecef; padding-top:8px; margin-top:6px;">
           <div id="map_colorbar_title" style="font-weight:600; margin-bottom:4px;">Access Index</div>
           <div id="map_colorbar_gradient" style="height:12px; border-radius:4px; border:1px solid #d0d9df;"></div>

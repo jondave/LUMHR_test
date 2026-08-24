@@ -141,6 +141,8 @@
     "Access_Gap_Index": "Access Gap Index (Need &minus; Access)",
     "Need_Index": "Need Index",
     "Access_Index": "Access Index",
+    "Pct_65plus": "Older Adults (65+) %",
+    "GP_Registration_Rate_Pct": "GP Registration Coverage (%)",
   };
 
   function getCode(feature) {
@@ -152,7 +154,9 @@
   }
 
   function getScaleForLayer() {
-    return currentLayerKey === "Access_Gap_Index" ? "RdBu" : "YlOrRd";
+    if (currentLayerKey === "Access_Gap_Index") return "RdBu";
+    if (currentLayerKey === "Access_Index" || currentLayerKey === "Pct_65plus") return "YlGnBu";
+    return "YlOrRd";
   }
 
   function styleFeature(feature) {
@@ -270,12 +274,27 @@
       const name = feature?.properties?.NAME ?? "";
       const detail = lsoaDetails[code] || {};
 
-      const popupHtml =
+      let popupHtml =
         `<strong>LSOA:</strong> ${code}<br>` +
         `<strong>LSOA Name:</strong> ${detail.lsoa_name || name || "N/A"}<br>` +
         `<strong>Access Gap Index:</strong> ${detail.access_gap_index !== null && detail.access_gap_index !== undefined ? detail.access_gap_index.toFixed(4) : "N/A"}<br>` +
         `<strong>Need Index:</strong> ${detail.need_index !== null && detail.need_index !== undefined ? detail.need_index.toFixed(4) : "N/A"}<br>` +
         `<strong>Access Index:</strong> ${detail.access_index !== null && detail.access_index !== undefined ? detail.access_index.toFixed(4) : "N/A"}`;
+
+      if (detail.ons_pop_total !== null && detail.ons_pop_total !== undefined) {
+        popupHtml +=
+          `<hr style="margin:6px 0;">` +
+          `<strong>Resident Population (ONS 2024):</strong> ${Math.round(detail.ons_pop_total).toLocaleString()}<br>` +
+          `<strong>Adults (18+):</strong> ${detail.ons_pop_18plus !== null ? Math.round(detail.ons_pop_18plus).toLocaleString() : "N/A"}${detail.pct_18plus !== null ? ` (${detail.pct_18plus.toFixed(1)}%)` : ""}<br>` +
+          `<strong>Older Adults (65+):</strong> ${detail.ons_pop_65plus !== null ? Math.round(detail.ons_pop_65plus).toLocaleString() : "N/A"}${detail.pct_65plus !== null ? ` (${detail.pct_65plus.toFixed(1)}%)` : ""}<br>` +
+          `<strong>GP Registered Patients:</strong> ${detail.gp_registered_patients !== null ? Math.round(detail.gp_registered_patients).toLocaleString() : "N/A"}${detail.gp_registration_rate_pct !== null ? ` (${detail.gp_registration_rate_pct.toFixed(1)}% of ONS)` : ""}`;
+
+        if (detail.list_inflation_est && detail.list_inflation_est > 0) {
+          popupHtml += `<br><span style="color:#d9534f; font-size:11px;">⚠️ Estimated List Inflation: +${Math.round(detail.list_inflation_est).toLocaleString()}</span>`;
+        } else if (detail.registration_gap_est && detail.registration_gap_est > 0) {
+          popupHtml += `<br><span style="color:#8a6d3b; font-size:11px;">ℹ️ Estimated Registration/Border Gap: ${Math.round(detail.registration_gap_est).toLocaleString()}</span>`;
+        }
+      }
 
       layer.bindPopup(popupHtml, { maxWidth: 360 });
       layer.setTooltipContent(`${code}${name ? ` | ${name}` : ""}`);
@@ -370,7 +389,9 @@
         <div style="font-weight:700; margin-bottom:6px;">Map Layers</div>
         <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="Access_Gap_Index" checked> Access Gap Index</label>
         <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="Need_Index"> Need Index</label>
-        <label style="display:block; margin-bottom:8px;"><input type="radio" name="map_metric" value="Access_Index"> Access Index</label>
+        <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="Access_Index"> Access Index</label>
+        <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="Pct_65plus"> Older Adults (65+) %</label>
+        <label style="display:block; margin-bottom:8px;"><input type="radio" name="map_metric" value="GP_Registration_Rate_Pct"> GP Registration Coverage (%)</label>
         <div style="border-top:1px solid #e4ecef; padding-top:8px; margin-top:6px;">
           <div id="map_colorbar_title" style="font-weight:600; margin-bottom:4px;">Access Gap Index</div>
           <div id="map_colorbar_gradient" style="height:12px; border-radius:4px; border:1px solid #d0d9df;"></div>

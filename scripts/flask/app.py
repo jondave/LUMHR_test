@@ -207,6 +207,8 @@ def need_scores_api():
         "SMI_Prevalence": _scores_to_dict(scored, "SMI_Prevalence"),
         "Antidepressant_Items_Per_Patient": _scores_to_dict(scored, "Antidepressant_Items_Per_Patient"),
         "SAMHI_Selected": _scores_to_dict(scored, "SAMHI_Selected"),
+        "Pct_65plus": _scores_to_dict(scored, "Pct_65plus"),
+        "GP_Registration_Rate_Pct": _scores_to_dict(scored, "GP_Registration_Rate_Pct"),
     }
 
     lsoa_name_col = _get_lsoa_name_column(scored)
@@ -218,6 +220,17 @@ def need_scores_api():
         "SMI_Prevalence_Pct",
         "Antidepressant_Items_Per_Patient",
         "SAMHI_Selected",
+        "ONS_Pop_Total_2024",
+        "ONS_Pop_18plus",
+        "ONS_Pop_65plus",
+        "ONS_Pop_0to17",
+        "Pct_18plus",
+        "Pct_65plus",
+        "Pct_0to17",
+        "GP_Registered_Patients",
+        "GP_Registration_Rate_Pct",
+        "Registration_Gap_Est",
+        "List_Inflation_Est",
     ]
     if lsoa_name_col:
         detail_cols.insert(1, lsoa_name_col)
@@ -234,6 +247,17 @@ def need_scores_api():
             "smi_prevalence_pct": _num_or_none(row.get("SMI_Prevalence_Pct")),
             "antidepressant_items_per_patient": _num_or_none(row.get("Antidepressant_Items_Per_Patient")),
             "samhi_selected": _num_or_none(row.get("SAMHI_Selected")),
+            "ons_pop_total": _num_or_none(row.get("ONS_Pop_Total_2024")),
+            "ons_pop_18plus": _num_or_none(row.get("ONS_Pop_18plus")),
+            "ons_pop_65plus": _num_or_none(row.get("ONS_Pop_65plus")),
+            "ons_pop_0to17": _num_or_none(row.get("ONS_Pop_0to17")),
+            "pct_18plus": _num_or_none(row.get("Pct_18plus")),
+            "pct_65plus": _num_or_none(row.get("Pct_65plus")),
+            "pct_0to17": _num_or_none(row.get("Pct_0to17")),
+            "gp_registered_patients": _num_or_none(row.get("GP_Registered_Patients")),
+            "gp_registration_rate_pct": _num_or_none(row.get("GP_Registration_Rate_Pct")),
+            "registration_gap_est": _num_or_none(row.get("Registration_Gap_Est")),
+            "list_inflation_est": _num_or_none(row.get("List_Inflation_Est")),
         }
 
     return jsonify(
@@ -302,6 +326,8 @@ def access_scores_api():
         "Rural_Access": _scores_to_dict(scored, "Rural_Access"),
         "Car_Access": _scores_to_dict(scored, "Car_Access"),
         "Digital_Access": _scores_to_dict(scored, "Digital_Access"),
+        "Pct_65plus": _scores_to_dict(scored, "Pct_65plus"),
+        "GP_Registration_Rate_Pct": _scores_to_dict(scored, "GP_Registration_Rate_Pct"),
     }
 
     lsoa_name_col = _get_lsoa_name_column(scored)
@@ -320,6 +346,17 @@ def access_scores_api():
         "Avg_Download_Speed_Mbps",
         "No_Superfast_Broadband_Pct",
         "Slow_Connections_Pct",
+        "ONS_Pop_Total_2024",
+        "ONS_Pop_18plus",
+        "ONS_Pop_65plus",
+        "ONS_Pop_0to17",
+        "Pct_18plus",
+        "Pct_65plus",
+        "Pct_0to17",
+        "GP_Registered_Patients",
+        "GP_Registration_Rate_Pct",
+        "Registration_Gap_Est",
+        "List_Inflation_Est",
     ]
     detail_cols = [
         "LSOA_CODE",
@@ -365,6 +402,17 @@ def access_scores_api():
             "avg_download_speed_mbps": _num_or_none(row.get("Avg_Download_Speed_Mbps")),
             "no_superfast_broadband_pct": _num_or_none(row.get("No_Superfast_Broadband_Pct")),
             "slow_connections_pct": _num_or_none(row.get("Slow_Connections_Pct")),
+            "ons_pop_total": _num_or_none(row.get("ONS_Pop_Total_2024")),
+            "ons_pop_18plus": _num_or_none(row.get("ONS_Pop_18plus")),
+            "ons_pop_65plus": _num_or_none(row.get("ONS_Pop_65plus")),
+            "ons_pop_0to17": _num_or_none(row.get("ONS_Pop_0to17")),
+            "pct_18plus": _num_or_none(row.get("Pct_18plus")),
+            "pct_65plus": _num_or_none(row.get("Pct_65plus")),
+            "pct_0to17": _num_or_none(row.get("Pct_0to17")),
+            "gp_registered_patients": _num_or_none(row.get("GP_Registered_Patients")),
+            "gp_registration_rate_pct": _num_or_none(row.get("GP_Registration_Rate_Pct")),
+            "registration_gap_est": _num_or_none(row.get("Registration_Gap_Est")),
+            "list_inflation_est": _num_or_none(row.get("List_Inflation_Est")),
         }
 
     return jsonify(
@@ -433,6 +481,23 @@ def access_gap_scores_api():
     )
     combined["Access_Gap_Index"] = combined["Need_Index"] - combined["Access_Index"]
 
+    pop_cols = [
+        "ONS_Pop_Total_2024",
+        "ONS_Pop_18plus",
+        "ONS_Pop_65plus",
+        "ONS_Pop_0to17",
+        "Pct_18plus",
+        "Pct_65plus",
+        "Pct_0to17",
+        "GP_Registered_Patients",
+        "GP_Registration_Rate_Pct",
+        "Registration_Gap_Est",
+        "List_Inflation_Est",
+    ]
+    extra_join_cols = [c for c in pop_cols if c in LSOA_METRICS.columns]
+    if extra_join_cols:
+        combined = combined.merge(LSOA_METRICS[["LSOA_CODE", *extra_join_cols]], on="LSOA_CODE", how="left")
+
     lsoa_name_col = _get_lsoa_name_column(LSOA_METRICS)
     if lsoa_name_col:
         combined = combined.merge(LSOA_METRICS[["LSOA_CODE", lsoa_name_col]], on="LSOA_CODE", how="left")
@@ -441,6 +506,8 @@ def access_gap_scores_api():
         "Access_Gap_Index": _scores_to_dict(combined, "Access_Gap_Index"),
         "Need_Index": _scores_to_dict(combined, "Need_Index"),
         "Access_Index": _scores_to_dict(combined, "Access_Index"),
+        "Pct_65plus": _scores_to_dict(combined, "Pct_65plus"),
+        "GP_Registration_Rate_Pct": _scores_to_dict(combined, "GP_Registration_Rate_Pct"),
     }
 
     lsoa_details: dict[str, dict[str, object]] = {}
@@ -453,6 +520,17 @@ def access_gap_scores_api():
             "access_gap_index": _num_or_none(row.get("Access_Gap_Index")),
             "need_index": _num_or_none(row.get("Need_Index")),
             "access_index": _num_or_none(row.get("Access_Index")),
+            "ons_pop_total": _num_or_none(row.get("ONS_Pop_Total_2024")),
+            "ons_pop_18plus": _num_or_none(row.get("ONS_Pop_18plus")),
+            "ons_pop_65plus": _num_or_none(row.get("ONS_Pop_65plus")),
+            "ons_pop_0to17": _num_or_none(row.get("ONS_Pop_0to17")),
+            "pct_18plus": _num_or_none(row.get("Pct_18plus")),
+            "pct_65plus": _num_or_none(row.get("Pct_65plus")),
+            "pct_0to17": _num_or_none(row.get("Pct_0to17")),
+            "gp_registered_patients": _num_or_none(row.get("GP_Registered_Patients")),
+            "gp_registration_rate_pct": _num_or_none(row.get("GP_Registration_Rate_Pct")),
+            "registration_gap_est": _num_or_none(row.get("Registration_Gap_Est")),
+            "list_inflation_est": _num_or_none(row.get("List_Inflation_Est")),
         }
 
     return jsonify(
@@ -498,6 +576,8 @@ def samhi_scores_api():
         cols = ["LSOA_CODE", selected_col]
         if lsoa_name_col:
             cols.insert(1, lsoa_name_col)
+        pop_cols = ["ONS_Pop_Total_2024", "Pct_65plus", "Pct_18plus", "GP_Registered_Patients", "GP_Registration_Rate_Pct"]
+        cols.extend([c for c in pop_cols if c in LSOA_METRICS.columns])
         out_df = LSOA_METRICS[cols].copy()
         out_df = out_df.rename(columns={selected_col: "score"})
 
@@ -509,6 +589,11 @@ def samhi_scores_api():
             details[code] = {
                 "lsoa_name": str(row.get(lsoa_name_col, "") or "") if lsoa_name_col else "",
                 "value": _num_or_none(row.get("score")),
+                "ons_pop_total": _num_or_none(row.get("ONS_Pop_Total_2024")),
+                "pct_65plus": _num_or_none(row.get("Pct_65plus")),
+                "pct_18plus": _num_or_none(row.get("Pct_18plus")),
+                "gp_registered_patients": _num_or_none(row.get("GP_Registered_Patients")),
+                "gp_registration_rate_pct": _num_or_none(row.get("GP_Registration_Rate_Pct")),
             }
 
         return jsonify(
@@ -536,6 +621,8 @@ def samhi_scores_api():
     cols = ["LSOA_CODE", from_col, to_col]
     if lsoa_name_col:
         cols.insert(1, lsoa_name_col)
+    pop_cols = ["ONS_Pop_Total_2024", "Pct_65plus", "Pct_18plus", "GP_Registered_Patients", "GP_Registration_Rate_Pct"]
+    cols.extend([c for c in pop_cols if c in LSOA_METRICS.columns])
     out_df = LSOA_METRICS[cols].copy()
     out_df["from_value"] = pd.to_numeric(out_df[from_col], errors="coerce")
     out_df["to_value"] = pd.to_numeric(out_df[to_col], errors="coerce")
@@ -551,6 +638,11 @@ def samhi_scores_api():
             "from_value": _num_or_none(row.get("from_value")),
             "to_value": _num_or_none(row.get("to_value")),
             "change": _num_or_none(row.get("score")),
+            "ons_pop_total": _num_or_none(row.get("ONS_Pop_Total_2024")),
+            "pct_65plus": _num_or_none(row.get("Pct_65plus")),
+            "pct_18plus": _num_or_none(row.get("Pct_18plus")),
+            "gp_registered_patients": _num_or_none(row.get("GP_Registered_Patients")),
+            "gp_registration_rate_pct": _num_or_none(row.get("GP_Registration_Rate_Pct")),
         }
 
     return jsonify(

@@ -35,6 +35,7 @@
         <li><a href="https://digital.nhs.uk/data-and-information/publications/statistical/quality-and-outcomes-framework-achievement-prevalence-and-exceptions-data/2024-25" target="_blank" rel="noopener noreferrer">QOF Depression and SMI prevalence</a></li>
         <li><a href="https://openprescribing.net/analyse/#org=practice&orgIds=71E&numIds=4.3&denom=nothing&selectedTab=map" target="_blank" rel="noopener noreferrer">Antidepressant items per patient</a></li>
         <li><a href="https://pldr.org/dataset/small-area-mental-health-index-samhi-2noyv" target="_blank" rel="noopener noreferrer">SAMHI</a></li>
+        <li><a href="https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/populationestimates/datasets/lowersuperoutputareamidyearpopulationestimates" target="_blank" rel="noopener noreferrer">LSOA Mid-Year Population Estimates (Mid-2024 SAPE, ONS)</a></li>
       </ul>
     </details>
 
@@ -113,7 +114,7 @@
   }
 
   function getScaleForLayer(layerKey) {
-    if (layerKey === "SAMHI_Selected") {
+    if (layerKey === "SAMHI_Selected" || layerKey === "Pct_65plus") {
       return "YlGnBu";
     }
     return "YlOrRd";
@@ -230,17 +231,8 @@
       const code = getCode(feature) ?? "Unknown";
       const name = feature?.properties?.NAME ?? "";
       const detail = lsoaDetails[code] || {};
-      const scoreMap = getActiveLayerScores();
-      const activeScore = code && Number.isFinite(Number(scoreMap[code])) ? Number(scoreMap[code]) : null;
-      const layerLabel = currentLayerKey === "SAMHI_Selected" ? samhiLegendLabel :
-        {
-          "Need_Index": "Need Index",
-          "Depression_Prevalence": "Depression Prevalence",
-          "SMI_Prevalence": "SMI Prevalence",
-          "Antidepressant_Items_Per_Patient": "Antidepressant Items Per Patient",
-        }[currentLayerKey] || "Value";
 
-      const popupHtml =
+      let popupHtml =
         `<strong>LSOA:</strong> ${code}<br>` +
         `<strong>LSOA Name:</strong> ${detail.lsoa_name || name || "N/A"}<br>` +
         `<strong>Need Index:</strong> ${detail.need_index !== null && detail.need_index !== undefined ? detail.need_index.toFixed(4) : "N/A"}<br>` +
@@ -248,6 +240,21 @@
         `<strong>SMI Prevalence (%):</strong> ${detail.smi_prevalence_pct !== null && detail.smi_prevalence_pct !== undefined ? detail.smi_prevalence_pct.toFixed(2) : "N/A"}<br>` +
         `<strong>Antidepressant Items Per Patient:</strong> ${detail.antidepressant_items_per_patient !== null && detail.antidepressant_items_per_patient !== undefined ? detail.antidepressant_items_per_patient.toFixed(4) : "N/A"}<br>` +
         `<strong>${samhiLegendLabel}:</strong> ${detail.samhi_selected !== null && detail.samhi_selected !== undefined ? detail.samhi_selected.toFixed(4) : "N/A"}`;
+
+      if (detail.ons_pop_total !== null && detail.ons_pop_total !== undefined) {
+        popupHtml +=
+          `<hr style="margin:6px 0;">` +
+          `<strong>Resident Population (ONS 2024):</strong> ${Math.round(detail.ons_pop_total).toLocaleString()}<br>` +
+          `<strong>Adults (18+):</strong> ${detail.ons_pop_18plus !== null ? Math.round(detail.ons_pop_18plus).toLocaleString() : "N/A"}${detail.pct_18plus !== null ? ` (${detail.pct_18plus.toFixed(1)}%)` : ""}<br>` +
+          `<strong>Older Adults (65+):</strong> ${detail.ons_pop_65plus !== null ? Math.round(detail.ons_pop_65plus).toLocaleString() : "N/A"}${detail.pct_65plus !== null ? ` (${detail.pct_65plus.toFixed(1)}%)` : ""}<br>` +
+          `<strong>GP Registered Patients:</strong> ${detail.gp_registered_patients !== null ? Math.round(detail.gp_registered_patients).toLocaleString() : "N/A"}${detail.gp_registration_rate_pct !== null ? ` (${detail.gp_registration_rate_pct.toFixed(1)}% of ONS)` : ""}`;
+
+        if (detail.list_inflation_est && detail.list_inflation_est > 0) {
+          popupHtml += `<br><span style="color:#d9534f; font-size:11px;">⚠️ Estimated List Inflation: +${Math.round(detail.list_inflation_est).toLocaleString()}</span>`;
+        } else if (detail.registration_gap_est && detail.registration_gap_est > 0) {
+          popupHtml += `<br><span style="color:#8a6d3b; font-size:11px;">ℹ️ Estimated Registration/Border Gap: ${Math.round(detail.registration_gap_est).toLocaleString()}</span>`;
+        }
+      }
 
       layer.bindPopup(popupHtml, { maxWidth: 360 });
       layer.setTooltipContent(`${code}${name ? ` | ${name}` : ""}`);
@@ -340,6 +347,8 @@
           "Depression_Prevalence": "Depression Prevalence",
           "SMI_Prevalence": "SMI Prevalence",
           "Antidepressant_Items_Per_Patient": "Antidepressant Items Per Patient",
+          "Pct_65plus": "Older Adults (65+) %",
+          "GP_Registration_Rate_Pct": "GP Registration Coverage (%)",
         }[currentLayerKey] || "Map Layer";
 
     titleEl.textContent = layerLabel;
@@ -363,7 +372,9 @@
         <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="Depression_Prevalence"> Depression Prevalence</label>
         <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="SMI_Prevalence"> SMI Prevalence</label>
         <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="Antidepressant_Items_Per_Patient"> Antidepressant Items Per Patient</label>
-        <label id="samhi_radio_label" style="display:block; margin-bottom:8px;"><input type="radio" name="map_metric" value="SAMHI_Selected"> ${samhiLegendLabel}</label>
+        <label id="samhi_radio_label" style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="SAMHI_Selected"> ${samhiLegendLabel}</label>
+        <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="Pct_65plus"> Older Adults (65+) %</label>
+        <label style="display:block; margin-bottom:8px;"><input type="radio" name="map_metric" value="GP_Registration_Rate_Pct"> GP Registration Coverage (%)</label>
         <div style="border-top:1px solid #e4ecef; padding-top:8px; margin-top:6px;">
           <div id="map_colorbar_title" style="font-weight:600; margin-bottom:4px;">Need Index</div>
           <div id="map_colorbar_gradient" style="height:12px; border-radius:4px; border:1px solid #d0d9df;"></div>

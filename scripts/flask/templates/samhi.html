@@ -28,6 +28,7 @@
           <li><strong>10</strong> = Highest 10% of estimated mental health need.</li>
         </ul>
         <p style="margin:0;"><strong>Note:</strong> SAMHI measures <strong>relative estimated need</strong>, not diagnosed mental illness.</p>
+        <p style="margin:0.35rem 0 0;"><a href="https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/populationestimates/datasets/lowersuperoutputareamidyearpopulationestimates" target="_blank" rel="noopener noreferrer">LSOA Population Estimates (Mid-2024 SAPE, ONS)</a></p>
       </div>
     </details>
 
@@ -269,16 +270,24 @@
         let popupHtml = `<strong>LSOA:</strong> ${code}<br><strong>LSOA Name:</strong> ${displayName}<br>`;
 
         if (!isChangeMode()) {
-        const year = samhiMeta.year ?? Number(document.getElementById("year").value);
-        popupHtml += `<strong>SAMHI ${mode} (${year}):</strong> ${formatValue(details.value, mode)}`;
+          const year = samhiMeta.year ?? Number(document.getElementById("year").value);
+          popupHtml += `<strong>SAMHI ${mode} (${year}):</strong> ${formatValue(details.value, mode)}`;
         } else {
-        const fromYear = samhiMeta.from_year ?? Number(document.getElementById("from_year").value);
-        const toYear = samhiMeta.to_year ?? Number(document.getElementById("to_year").value);
+          const fromYear = samhiMeta.from_year ?? Number(document.getElementById("from_year").value);
+          const toYear = samhiMeta.to_year ?? Number(document.getElementById("to_year").value);
 
-        popupHtml +=
-            `<strong>SAMHI ${mode} (${fromYear}):</strong> ${formatValue(details.from_value, mode)}<br>` +
-            `<strong>SAMHI ${mode} (${toYear}):</strong> ${formatValue(details.to_value, mode)}<br>` +
-            `<strong>Change (${toYear} - ${fromYear}):</strong> ${formatValue(details.change, mode)}`;
+          popupHtml +=
+              `<strong>SAMHI ${mode} (${fromYear}):</strong> ${formatValue(details.from_value, mode)}<br>` +
+              `<strong>SAMHI ${mode} (${toYear}):</strong> ${formatValue(details.to_value, mode)}<br>` +
+              `<strong>Change (${toYear} - ${fromYear}):</strong> ${formatValue(details.change, mode)}`;
+        }
+
+        if (details.ons_pop_total !== null && details.ons_pop_total !== undefined) {
+          popupHtml +=
+            `<hr style="margin:6px 0;">` +
+            `<strong>Resident Population (ONS 2024):</strong> ${Math.round(details.ons_pop_total).toLocaleString()}<br>` +
+            `<strong>Older Adults (65+):</strong> ${details.pct_65plus !== null ? `${details.pct_65plus.toFixed(1)}%` : "N/A"}<br>` +
+            `<strong>GP Registered Patients:</strong> ${details.gp_registered_patients !== null ? Math.round(details.gp_registered_patients).toLocaleString() : "N/A"}${details.gp_registration_rate_pct !== null ? ` (${details.gp_registration_rate_pct.toFixed(1)}%)` : ""}`;
         }
 
         layer.bindPopup(popupHtml, { maxWidth: 360 });
