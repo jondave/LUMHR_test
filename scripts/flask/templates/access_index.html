@@ -286,28 +286,18 @@
         `<strong>LSOA:</strong> ${code}<br>` +
         `<strong>LSOA Name:</strong> ${detail.lsoa_name || name || "N/A"}<br>` +
         `<strong>Access Index:</strong> ${detail.access_index !== null && detail.access_index !== undefined ? detail.access_index.toFixed(4) : "N/A"}<br>` +
-        `<strong>MH002 (SMI Care Plan) Rate (%):</strong> ${detail.mh002_pct !== null && detail.mh002_pct !== undefined ? detail.mh002_pct.toFixed(2) : "N/A"}<br>` +
-        `<strong>MH021 (SMI Health Check) Rate (%):</strong> ${detail.mh021_pct !== null && detail.mh021_pct !== undefined ? detail.mh021_pct.toFixed(2) : "N/A"}<br>` +
-        `<strong>Mental Health PCA (SMI Exceptions) Rate (%):</strong> ${detail.mh_pca_pct !== null && detail.mh_pca_pct !== undefined ? detail.mh_pca_pct.toFixed(2) : "N/A"}<br>` +
-        `<strong>Depression PCA (Exceptions) Rate (%):</strong> ${detail.dep_pca_pct !== null && detail.dep_pca_pct !== undefined ? detail.dep_pca_pct.toFixed(2) : "N/A"}<br>` +
-        `<strong>DEP004 (Depression Review) Rate (%):</strong> ${detail.dep004_pct !== null && detail.dep004_pct !== undefined ? detail.dep004_pct.toFixed(2) : "N/A"}<br>` +
-        `<strong>GP Travel Time (PT/Walk, min):</strong> ${detail.gp_pt_time !== null && detail.gp_pt_time !== undefined ? detail.gp_pt_time.toFixed(1) : "N/A"}<br>` +
-        `<strong>GP Travel Time (Car, min):</strong> ${detail.gp_car_time !== null && detail.gp_car_time !== undefined ? detail.gp_car_time.toFixed(1) : "N/A"}<br>` +
-        `<strong>Hospital Travel Time (PT/Walk, min):</strong> ${detail.hosp_pt_time !== null && detail.hosp_pt_time !== undefined ? detail.hosp_pt_time.toFixed(1) : "N/A"}<br>` +
-        `<strong>Hospital Travel Time (Car, min):</strong> ${detail.hosp_car_time !== null && detail.hosp_car_time !== undefined ? detail.hosp_car_time.toFixed(1) : "N/A"}<br>` +
-        `<strong>Rural Urban Classification:</strong> ${detail.ruc21nm || "N/A"}<br>` +
-        `<strong>Rural Access (0-1):</strong> ${detail.rural_access !== null && detail.rural_access !== undefined ? detail.rural_access.toFixed(2) : "N/A"}<br>` +
-        `<strong>Households with Car/Van (%):</strong> ${detail.car_access_pct !== null && detail.car_access_pct !== undefined ? detail.car_access_pct.toFixed(1) + "%" : "N/A"}<br>` +
-        `<strong>Households with No Car/Van (%):</strong> ${detail.no_cars_pct !== null && detail.no_cars_pct !== undefined ? detail.no_cars_pct.toFixed(1) + "%" : "N/A"}<br>` +
-        `<strong>Car/Van Access Score (0-1):</strong> ${detail.car_access !== null && detail.car_access !== undefined ? detail.car_access.toFixed(2) : "N/A"}<br>` +
-        `<strong>Digital Access Score (0-1):</strong> ${detail.digital_access !== null && detail.digital_access !== undefined ? detail.digital_access.toFixed(2) : "N/A"}<br>` +
-        `<strong>DERI Exclusion Risk (0-10):</strong> ${detail.deri_score !== null && detail.deri_score !== undefined ? detail.deri_score.toFixed(2) : "N/A"}<br>` +
-        `<strong>Avg Download Speed (Mbps):</strong> ${detail.avg_download_speed_mbps !== null && detail.avg_download_speed_mbps !== undefined ? detail.avg_download_speed_mbps.toFixed(1) : "N/A"}<br>` +
-        `<strong>Homes with No Superfast (&ge;30M):</strong> ${detail.no_superfast_broadband_pct !== null && detail.no_superfast_broadband_pct !== undefined ? (detail.no_superfast_broadband_pct / 100).toFixed(1) + "%" : "N/A"}`;
-
-      if (detail.total_households !== null && detail.total_households !== undefined) {
-        popupHtml += `<br><strong>Total Households (Census 2021):</strong> ${Math.round(detail.total_households).toLocaleString()}`;
-      }
+        `<strong>MH002 (SMI Care Plan) (%):</strong> ${detail.mh002_pct !== null && detail.mh002_pct !== undefined ? detail.mh002_pct.toFixed(2) + "%" : "N/A"}<br>` +
+        `<strong>MH021 (SMI Health Check) (%):</strong> ${detail.mh021_pct !== null && detail.mh021_pct !== undefined ? detail.mh021_pct.toFixed(2) + "%" : "N/A"}<br>` +
+        `<strong>Mental Health PCA (Exceptions) (%):</strong> ${detail.mh_pca_pct !== null && detail.mh_pca_pct !== undefined ? detail.mh_pca_pct.toFixed(2) + "%" : "N/A"}<br>` +
+        `<strong>Depression PCA (Exceptions) (%):</strong> ${detail.dep_pca_pct !== null && detail.dep_pca_pct !== undefined ? detail.dep_pca_pct.toFixed(2) + "%" : "N/A"}<br>` +
+        `<strong>DEP004 (Depression Review) (%):</strong> ${detail.dep004_pct !== null && detail.dep004_pct !== undefined ? detail.dep004_pct.toFixed(2) + "%" : "N/A"}<br>` +
+        `<strong>GP Travel Time (PT / Walk):</strong> ${detail.gp_pt_time !== null && detail.gp_pt_time !== undefined ? detail.gp_pt_time.toFixed(1) + " min" : "N/A"}<br>` +
+        `<strong>GP Travel Time (Car):</strong> ${detail.gp_car_time !== null && detail.gp_car_time !== undefined ? detail.gp_car_time.toFixed(1) + " min" : "N/A"}<br>` +
+        `<strong>Hospital Travel Time (PT / Walk):</strong> ${detail.hosp_pt_time !== null && detail.hosp_pt_time !== undefined ? detail.hosp_pt_time.toFixed(1) + " min" : "N/A"}<br>` +
+        `<strong>Hospital Travel Time (Car):</strong> ${detail.hosp_car_time !== null && detail.hosp_car_time !== undefined ? detail.hosp_car_time.toFixed(1) + " min" : "N/A"}<br>` +
+        `<strong>Rural Access (0-1):</strong> ${detail.rural_access !== null && detail.rural_access !== undefined ? detail.rural_access.toFixed(2) : "N/A"}${detail.ruc21nm ? ` (${detail.ruc21nm})` : ""}<br>` +
+        `<strong>Car / Van Availability (0-1):</strong> ${detail.car_access !== null && detail.car_access !== undefined ? detail.car_access.toFixed(2) : "N/A"}<br>` +
+        `<strong>Digital Accessibility (DERI) (0-1):</strong> ${detail.digital_access !== null && detail.digital_access !== undefined ? detail.digital_access.toFixed(2) : "N/A"}`;
 
       if (detail.ons_pop_total !== null && detail.ons_pop_total !== undefined) {
         popupHtml +=
@@ -318,9 +308,9 @@
           `<strong>GP Registered Patients:</strong> ${detail.gp_registered_patients !== null ? Math.round(detail.gp_registered_patients).toLocaleString() : "N/A"}${detail.gp_registration_rate_pct !== null ? ` (${detail.gp_registration_rate_pct.toFixed(1)}% of ONS Estimate)` : ""}`;
 
         if (detail.list_inflation_est && detail.list_inflation_est > 0) {
-          popupHtml += `<br><span style="color:#d9534f; font-size:11px;">⚠️ Estimated List Inflation: +${Math.round(detail.list_inflation_est).toLocaleString()}</span>`;
+          popupHtml += `<br><strong>Net Excess GP Registrations:</strong> +${Math.round(detail.list_inflation_est).toLocaleString()}`;
         } else if (detail.registration_gap_est && detail.registration_gap_est > 0) {
-          popupHtml += `<br><span style="color:#8a6d3b; font-size:11px;">ℹ️ Estimated Registration/Border Gap: ${Math.round(detail.registration_gap_est).toLocaleString()}</span>`;
+          popupHtml += `<br><strong>Unregistered / Cross-Border Difference:</strong> -${Math.round(detail.registration_gap_est).toLocaleString()}`;
         }
       }
 

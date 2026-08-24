@@ -252,9 +252,9 @@
           `<strong>GP Registered Patients:</strong> ${detail.gp_registered_patients !== null ? Math.round(detail.gp_registered_patients).toLocaleString() : "N/A"}${detail.gp_registration_rate_pct !== null ? ` (${detail.gp_registration_rate_pct.toFixed(1)}% of ONS Estimate)` : ""}`;
 
         if (detail.list_inflation_est && detail.list_inflation_est > 0) {
-          popupHtml += `<br><span style="color:#d9534f; font-size:11px;">⚠️ Estimated List Inflation: +${Math.round(detail.list_inflation_est).toLocaleString()}</span>`;
+          popupHtml += `<br><strong>Net Excess GP Registrations:</strong> +${Math.round(detail.list_inflation_est).toLocaleString()}`;
         } else if (detail.registration_gap_est && detail.registration_gap_est > 0) {
-          popupHtml += `<br><span style="color:#8a6d3b; font-size:11px;">ℹ️ Estimated Registration/Border Gap: ${Math.round(detail.registration_gap_est).toLocaleString()}</span>`;
+          popupHtml += `<br><strong>Unregistered / Cross-Border Difference:</strong> -${Math.round(detail.registration_gap_est).toLocaleString()}`;
         }
       }
 
