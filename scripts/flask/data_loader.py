@@ -24,9 +24,12 @@ from core.travel import (
     build_2011_to_2021_lookup,
     prepare_car_availability,
     prepare_digital_exclusion,
+    prepare_imd_2025,
+    prepare_lsoac_classification,
     prepare_population_estimates,
     prepare_rural_urban,
     prepare_travel_times,
+    prepare_ts003_household_composition,
 )
 
 
@@ -88,6 +91,19 @@ def get_paths(base_dir: Path) -> dict[str, Path]:
         / "datasets"
         / "population_estimates"
         / "lincolnshire_lsoa_population_estimates_2024.csv",
+        "imd_2025": base_dir
+        / "datasets"
+        / "indices_of_deprivation_imd"
+        / "2025"
+        / "lincolnshire_imd_2025_lsoa.csv",
+        "lsoac_2021_2": base_dir
+        / "datasets"
+        / "lsoa_classification_2021_2"
+        / "lincolnshire_lsoa_classification_2021_2.csv",
+        "ts003_household_composition": base_dir
+        / "datasets"
+        / "TS003_household_composition"
+        / "lincolnshire_ts003_household_composition.csv",
         "lsoa_2011_2021_lookup": base_dir
         / "datasets"
         / "lincolnshire_lsoa"
@@ -201,6 +217,9 @@ def load_raw_data(base_dir_str: str) -> dict[str, object]:
         "car_van_raw": pd.read_csv(paths["car_van"]),
         "deri_raw": pd.read_csv(paths["deri"]),
         "pop_raw": pd.read_csv(paths["population"]),
+        "imd_2025_raw": pd.read_csv(paths["imd_2025"]),
+        "lsoac_2021_2_raw": pd.read_csv(paths["lsoac_2021_2"]),
+        "ts003_raw": pd.read_csv(paths["ts003_household_composition"]),
         "lsoa_2011_2021_lookup_raw": pd.read_csv(paths["lsoa_2011_2021_lookup"]),
         "lsoa_codes": lsoa_codes_df,
         "lsoa_centroids": lsoa_centroids_df,
@@ -252,6 +271,15 @@ def get_prepared_bundle_cached(base_dir_str: str) -> dict[str, object]:
 
     pop_df = prepare_population_estimates(raw["pop_raw"])
     lsoa_metrics = lsoa_metrics.merge(pop_df, on="LSOA_CODE", how="left")
+
+    imd_df = prepare_imd_2025(raw["imd_2025_raw"])
+    lsoa_metrics = lsoa_metrics.merge(imd_df, on="LSOA_CODE", how="left")
+
+    lsoac_df = prepare_lsoac_classification(raw["lsoac_2021_2_raw"])
+    lsoa_metrics = lsoa_metrics.merge(lsoac_df, on="LSOA_CODE", how="left")
+
+    ts003_df = prepare_ts003_household_composition(raw["ts003_raw"])
+    lsoa_metrics = lsoa_metrics.merge(ts003_df, on="LSOA_CODE", how="left")
 
     gp_marker_df = build_gp_marker_df(gp_loc_df, gp_master, mapping_df, lsoa_centroids_df, in_area_lsoa_codes)
 

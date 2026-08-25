@@ -1,0 +1,436 @@
+LSOA_Code,LSOA_Name,Supergroup_Code,Supergroup_Name,Group_Code,Group_Name,Subgroup_Code,Subgroup_Name
+E01026007,Boston 001A,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026008,Boston 001B,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b2,Rural Mix
+E01026009,Boston 001C,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026010,Boston 002A,7,Semi- and Un-Skilled Workforce,7a,Established but Challenged,7a2,Industry Associations
+E01026012,Boston 004A,8,Legacy Communities,8b,Legacy and Demographically Mixed Communities,8b1,Challenged Families
+E01026013,Boston 008A,1,Retired Professionals,1b,Small Town Suburbia,1b1,Younger Established Suburban Communities
+E01026014,Boston 008B,7,Semi- and Un-Skilled Workforce,7b,Young Families in Industrial Towns,7b1,Terraces in Transitional Towns
+E01026015,Boston 004B,2,Suburbanites and Peri-Urbanites,2a,Inner Suburbs and Small Town Living,2a1,Younger Suburban Family Renters
+E01026016,Boston 006A,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026017,Boston 007A,7,Semi- and Un-Skilled Workforce,7b,Young Families in Industrial Towns,7b2,Families and Later Life
+E01026018,Boston 007B,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026019,Boston 007C,7,Semi- and Un-Skilled Workforce,7a,Established but Challenged,7a2,Industry Associations
+E01026020,Boston 007D,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b1,Ageing Rural Communities
+E01026021,Boston 003B,5,Ethnically Diverse Suburb-an Professionals,5a,Outer Suburbs,5a1,Outer Suburb Asian Mix
+E01026022,Boston 008C,5,Ethnically Diverse Suburb-an Professionals,5b,Suburban Professionals,5b2,Established Multi-Ethnic Suburbs
+E01026023,Boston 001D,1,Retired Professionals,1a,Spacious Rural Living,1a2,Retirement Spacious Living
+E01026024,Boston 001E,7,Semi- and Un-Skilled Workforce,7b,Young Families in Industrial Towns,7b1,Terraces in Transitional Towns
+E01026025,Boston 003C,6,Baseline UK,6b,Legacy Industrial and Coastal Communities,6b3,EU Singles
+E01026026,Boston 004C,7,Semi- and Un-Skilled Workforce,7b,Young Families in Industrial Towns,7b1,Terraces in Transitional Towns
+E01026027,Boston 004D,7,Semi- and Un-Skilled Workforce,7b,Young Families in Industrial Towns,7b1,Terraces in Transitional Towns
+E01026028,Boston 004E,7,Semi- and Un-Skilled Workforce,7a,Established but Challenged,7a2,Industry Associations
+E01026030,Boston 002C,7,Semi- and Un-Skilled Workforce,7a,Established but Challenged,7a2,Industry Associations
+E01026031,Boston 009B,7,Semi- and Un-Skilled Workforce,7b,Young Families in Industrial Towns,7b1,Terraces in Transitional Towns
+E01026032,Boston 002D,6,Baseline UK,6b,Legacy Industrial and Coastal Communities,6b3,EU Singles
+E01026033,Boston 006B,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026034,Boston 006C,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b1,Ageing Rural Communities
+E01026035,Boston 009C,1,Retired Professionals,1c,Established Mature Families,1c1,Affluent Mature Families
+E01026036,Boston 003D,6,Baseline UK,6b,Legacy Industrial and Coastal Communities,6b3,EU Singles
+E01026037,Boston 002E,6,Baseline UK,6b,Legacy Industrial and Coastal Communities,6b3,EU Singles
+E01026038,Boston 008D,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b1,Ageing Rural Communities
+E01026039,Boston 009D,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b2,Rural Mix
+E01026040,Boston 008E,7,Semi- and Un-Skilled Workforce,7b,Young Families in Industrial Towns,7b1,Terraces in Transitional Towns
+E01026041,Boston 007E,7,Semi- and Un-Skilled Workforce,7a,Established but Challenged,7a2,Industry Associations
+E01026042,East Lindsey 008A,7,Semi- and Un-Skilled Workforce,7a,Established but Challenged,7a2,Industry Associations
+E01026043,East Lindsey 008B,7,Semi- and Un-Skilled Workforce,7a,Established but Challenged,7a2,Industry Associations
+E01026044,East Lindsey 008C,1,Retired Professionals,1a,Spacious Rural Living,1a2,Retirement Spacious Living
+E01026045,East Lindsey 001A,1,Retired Professionals,1a,Spacious Rural Living,1a2,Retirement Spacious Living
+E01026046,East Lindsey 013A,1,Retired Professionals,1a,Spacious Rural Living,1a2,Retirement Spacious Living
+E01026047,East Lindsey 013B,1,Retired Professionals,1a,Spacious Rural Living,1a2,Retirement Spacious Living
+E01026048,East Lindsey 010A,2,Suburbanites and Peri-Urbanites,2c,Ageing Communities,2c2,Ageing Independent Living
+E01026049,East Lindsey 010B,1,Retired Professionals,1a,Spacious Rural Living,1a2,Retirement Spacious Living
+E01026050,East Lindsey 010C,1,Retired Professionals,1a,Spacious Rural Living,1a2,Retirement Spacious Living
+E01026051,East Lindsey 016A,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b1,Ageing Rural Communities
+E01026052,East Lindsey 016B,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b2,Rural Mix
+E01026053,East Lindsey 016C,2,Suburbanites and Peri-Urbanites,2a,Inner Suburbs and Small Town Living,2a1,Younger Suburban Family Renters
+E01026054,East Lindsey 016D,2,Suburbanites and Peri-Urbanites,2c,Ageing Communities,2c1,Communal Retirement Living
+E01026055,East Lindsey 013C,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026056,East Lindsey 017A,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026057,East Lindsey 018A,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026058,East Lindsey 002A,1,Retired Professionals,1a,Spacious Rural Living,1a2,Retirement Spacious Living
+E01026059,East Lindsey 013D,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b1,Ageing Rural Communities
+E01026060,East Lindsey 009A,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026061,East Lindsey 001B,1,Retired Professionals,1b,Small Town Suburbia,1b2,Older Established Suburban Communities
+E01026062,East Lindsey 001C,1,Retired Professionals,1c,Established Mature Families,1c2,Burgeoning Mature Families
+E01026063,East Lindsey 001D,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b2,Rural Mix
+E01026064,East Lindsey 011A,7,Semi- and Un-Skilled Workforce,7a,Established but Challenged,7a2,Industry Associations
+E01026065,East Lindsey 011B,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026066,East Lindsey 011C,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026067,East Lindsey 011D,2,Suburbanites and Peri-Urbanites,2c,Ageing Communities,2c2,Ageing Independent Living
+E01026068,East Lindsey 009B,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b1,Ageing Rural Communities
+E01026069,East Lindsey 010D,1,Retired Professionals,1a,Spacious Rural Living,1a2,Retirement Spacious Living
+E01026070,East Lindsey 009C,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026071,East Lindsey 007A,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026072,East Lindsey 005A,7,Semi- and Un-Skilled Workforce,7b,Young Families in Industrial Towns,7b2,Families and Later Life
+E01026073,East Lindsey 005B,7,Semi- and Un-Skilled Workforce,7a,Established but Challenged,7a2,Industry Associations
+E01026074,East Lindsey 005C,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b1,Ageing Rural Communities
+E01026075,East Lindsey 018B,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026076,East Lindsey 002B,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026077,East Lindsey 003A,7,Semi- and Un-Skilled Workforce,7a,Established but Challenged,7a2,Industry Associations
+E01026078,East Lindsey 003B,7,Semi- and Un-Skilled Workforce,7a,Established but Challenged,7a2,Industry Associations
+E01026079,East Lindsey 002C,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b1,Ageing Rural Communities
+E01026080,East Lindsey 001E,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b1,Ageing Rural Communities
+E01026081,East Lindsey 004A,2,Suburbanites and Peri-Urbanites,2a,Inner Suburbs and Small Town Living,2a3,Terraced Communities
+E01026082,East Lindsey 007B,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026083,East Lindsey 015A,7,Semi- and Un-Skilled Workforce,7a,Established but Challenged,7a2,Industry Associations
+E01026084,East Lindsey 012A,7,Semi- and Un-Skilled Workforce,7a,Established but Challenged,7a2,Industry Associations
+E01026087,East Lindsey 003C,1,Retired Professionals,1b,Small Town Suburbia,1b1,Younger Established Suburban Communities
+E01026088,East Lindsey 003D,1,Retired Professionals,1a,Spacious Rural Living,1a2,Retirement Spacious Living
+E01026089,East Lindsey 004C,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026090,East Lindsey 003E,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b1,Ageing Rural Communities
+E01026091,East Lindsey 003F,1,Retired Professionals,1b,Small Town Suburbia,1b1,Younger Established Suburban Communities
+E01026092,East Lindsey 014A,7,Semi- and Un-Skilled Workforce,7a,Established but Challenged,7a2,Industry Associations
+E01026093,East Lindsey 014B,6,Baseline UK,6b,Legacy Industrial and Coastal Communities,6b1,Retired Seniors
+E01026094,East Lindsey 015B,7,Semi- and Un-Skilled Workforce,7a,Established but Challenged,7a2,Industry Associations
+E01026095,East Lindsey 014C,8,Legacy Communities,8b,Legacy and Demographically Mixed Communities,8b2,Retirement Pockets
+E01026096,East Lindsey 015C,1,Retired Professionals,1b,Small Town Suburbia,1b1,Younger Established Suburban Communities
+E01026097,East Lindsey 015D,7,Semi- and Un-Skilled Workforce,7a,Established but Challenged,7a2,Industry Associations
+E01026098,East Lindsey 018C,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026099,East Lindsey 005D,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026100,East Lindsey 013E,7,Semi- and Un-Skilled Workforce,7b,Young Families in Industrial Towns,7b2,Families and Later Life
+E01026101,East Lindsey 013F,7,Semi- and Un-Skilled Workforce,7a,Established but Challenged,7a2,Industry Associations
+E01026102,East Lindsey 018D,1,Retired Professionals,1a,Spacious Rural Living,1a2,Retirement Spacious Living
+E01026103,East Lindsey 006A,1,Retired Professionals,1a,Spacious Rural Living,1a2,Retirement Spacious Living
+E01026104,East Lindsey 006B,1,Retired Professionals,1a,Spacious Rural Living,1a2,Retirement Spacious Living
+E01026105,East Lindsey 009D,1,Retired Professionals,1a,Spacious Rural Living,1a2,Retirement Spacious Living
+E01026106,East Lindsey 001F,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026107,East Lindsey 001G,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026108,East Lindsey 003G,7,Semi- and Un-Skilled Workforce,7a,Established but Challenged,7a2,Industry Associations
+E01026109,East Lindsey 006C,1,Retired Professionals,1a,Spacious Rural Living,1a2,Retirement Spacious Living
+E01026110,East Lindsey 017B,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026111,East Lindsey 017C,1,Retired Professionals,1a,Spacious Rural Living,1a2,Retirement Spacious Living
+E01026112,East Lindsey 017D,7,Semi- and Un-Skilled Workforce,7a,Established but Challenged,7a2,Industry Associations
+E01026113,East Lindsey 008D,1,Retired Professionals,1a,Spacious Rural Living,1a2,Retirement Spacious Living
+E01026114,East Lindsey 014D,6,Baseline UK,6b,Legacy Industrial and Coastal Communities,6b3,EU Singles
+E01026115,East Lindsey 012C,2,Suburbanites and Peri-Urbanites,2c,Ageing Communities,2c1,Communal Retirement Living
+E01026116,East Lindsey 012D,2,Suburbanites and Peri-Urbanites,2c,Ageing Communities,2c2,Ageing Independent Living
+E01026117,East Lindsey 008E,1,Retired Professionals,1a,Spacious Rural Living,1a2,Retirement Spacious Living
+E01026118,East Lindsey 016E,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026119,East Lindsey 016F,1,Retired Professionals,1a,Spacious Rural Living,1a2,Retirement Spacious Living
+E01026120,East Lindsey 016G,2,Suburbanites and Peri-Urbanites,2c,Ageing Communities,2c2,Ageing Independent Living
+E01026121,East Lindsey 007C,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026122,Lincoln 004A,3,Multicultural and Educated Urbanites,3a,Student Living and Professional Footholds,3a1,University Centric
+E01026123,Lincoln 004B,4,Low-Skilled Migrant and Student Communities,4a,Ethnically Diverse Families in Less Connected Locations,4a1,"Semi-Detached, Service Workers and Students"
+E01026124,Lincoln 004C,6,Baseline UK,6b,Legacy Industrial and Coastal Communities,6b3,EU Singles
+E01026125,Lincoln 003A,6,Baseline UK,6b,Legacy Industrial and Coastal Communities,6b3,EU Singles
+E01026126,Lincoln 004D,6,Baseline UK,6b,Legacy Industrial and Coastal Communities,6b3,EU Singles
+E01026127,Lincoln 007A,7,Semi- and Un-Skilled Workforce,7a,Established but Challenged,7a2,Industry Associations
+E01026129,Lincoln 007C,7,Semi- and Un-Skilled Workforce,7a,Established but Challenged,7a2,Industry Associations
+E01026130,Lincoln 009A,1,Retired Professionals,1c,Established Mature Families,1c1,Affluent Mature Families
+E01026131,Lincoln 007D,7,Semi- and Un-Skilled Workforce,7a,Established but Challenged,7a2,Industry Associations
+E01026132,Lincoln 005A,3,Multicultural and Educated Urbanites,3a,Student Living and Professional Footholds,3a1,University Centric
+E01026134,Lincoln 006A,6,Baseline UK,6b,Legacy Industrial and Coastal Communities,6b3,EU Singles
+E01026135,Lincoln 008B,1,Retired Professionals,1b,Small Town Suburbia,1b1,Younger Established Suburban Communities
+E01026136,Lincoln 008C,2,Suburbanites and Peri-Urbanites,2c,Ageing Communities,2c2,Ageing Independent Living
+E01026137,Lincoln 011A,2,Suburbanites and Peri-Urbanites,2a,Inner Suburbs and Small Town Living,2a2,Settled Owner-Occupied Suburbs
+E01026138,Lincoln 011B,1,Retired Professionals,1b,Small Town Suburbia,1b1,Younger Established Suburban Communities
+E01026139,Lincoln 011C,1,Retired Professionals,1b,Small Town Suburbia,1b1,Younger Established Suburban Communities
+E01026140,Lincoln 011D,7,Semi- and Un-Skilled Workforce,7a,Established but Challenged,7a2,Industry Associations
+E01026141,Lincoln 011E,1,Retired Professionals,1b,Small Town Suburbia,1b1,Younger Established Suburban Communities
+E01026142,Lincoln 011F,7,Semi- and Un-Skilled Workforce,7b,Young Families in Industrial Towns,7b1,Terraces in Transitional Towns
+E01026144,Lincoln 003B,6,Baseline UK,6c,Multicultural Inner Suburbs,6c1,Transient Communities
+E01026145,Lincoln 005C,6,Baseline UK,6c,Multicultural Inner Suburbs,6c1,Transient Communities
+E01026146,Lincoln 005D,6,Baseline UK,6c,Multicultural Inner Suburbs,6c1,Transient Communities
+E01026147,Lincoln 003C,2,Suburbanites and Peri-Urbanites,2a,Inner Suburbs and Small Town Living,2a2,Settled Owner-Occupied Suburbs
+E01026148,Lincoln 003D,6,Baseline UK,6b,Legacy Industrial and Coastal Communities,6b1,Retired Seniors
+E01026149,Lincoln 001A,7,Semi- and Un-Skilled Workforce,7b,Young Families in Industrial Towns,7b1,Terraces in Transitional Towns
+E01026150,Lincoln 001B,6,Baseline UK,6b,Legacy Industrial and Coastal Communities,6b1,Retired Seniors
+E01026151,Lincoln 003E,6,Baseline UK,6b,Legacy Industrial and Coastal Communities,6b1,Retired Seniors
+E01026152,Lincoln 004E,7,Semi- and Un-Skilled Workforce,7a,Established but Challenged,7a2,Industry Associations
+E01026153,Lincoln 002A,5,Ethnically Diverse Suburb-an Professionals,5a,Outer Suburbs,5a3,Young Suburban Families
+E01026154,Lincoln 004F,7,Semi- and Un-Skilled Workforce,7b,Young Families in Industrial Towns,7b1,Terraces in Transitional Towns
+E01026155,Lincoln 002B,2,Suburbanites and Peri-Urbanites,2a,Inner Suburbs and Small Town Living,2a1,Younger Suburban Family Renters
+E01026156,Lincoln 004G,7,Semi- and Un-Skilled Workforce,7b,Young Families in Industrial Towns,7b1,Terraces in Transitional Towns
+E01026157,Lincoln 002C,1,Retired Professionals,1a,Spacious Rural Living,1a2,Retirement Spacious Living
+E01026158,Lincoln 009B,2,Suburbanites and Peri-Urbanites,2c,Ageing Communities,2c1,Communal Retirement Living
+E01026159,Lincoln 009C,7,Semi- and Un-Skilled Workforce,7b,Young Families in Industrial Towns,7b1,Terraces in Transitional Towns
+E01026160,Lincoln 009D,1,Retired Professionals,1b,Small Town Suburbia,1b1,Younger Established Suburban Communities
+E01026161,Lincoln 010A,7,Semi- and Un-Skilled Workforce,7a,Established but Challenged,7a2,Industry Associations
+E01026162,Lincoln 009E,7,Semi- and Un-Skilled Workforce,7b,Young Families in Industrial Towns,7b1,Terraces in Transitional Towns
+E01026163,Lincoln 009F,1,Retired Professionals,1b,Small Town Suburbia,1b1,Younger Established Suburban Communities
+E01026164,Lincoln 003F,2,Suburbanites and Peri-Urbanites,2c,Ageing Communities,2c1,Communal Retirement Living
+E01026165,Lincoln 002D,7,Semi- and Un-Skilled Workforce,7b,Young Families in Industrial Towns,7b1,Terraces in Transitional Towns
+E01026166,Lincoln 001C,7,Semi- and Un-Skilled Workforce,7b,Young Families in Industrial Towns,7b1,Terraces in Transitional Towns
+E01026167,Lincoln 003G,6,Baseline UK,6c,Multicultural Inner Suburbs,6c1,Transient Communities
+E01026168,Lincoln 001D,7,Semi- and Un-Skilled Workforce,7b,Young Families in Industrial Towns,7b1,Terraces in Transitional Towns
+E01026169,Lincoln 011G,7,Semi- and Un-Skilled Workforce,7b,Young Families in Industrial Towns,7b1,Terraces in Transitional Towns
+E01026170,Lincoln 010B,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b2,Rural Mix
+E01026171,Lincoln 011H,2,Suburbanites and Peri-Urbanites,2c,Ageing Communities,2c2,Ageing Independent Living
+E01026172,Lincoln 010C,7,Semi- and Un-Skilled Workforce,7b,Young Families in Industrial Towns,7b1,Terraces in Transitional Towns
+E01026173,Lincoln 010D,6,Baseline UK,6a,Challenged Communities,6a3,Younger Ethnic Minority Families in Flats
+E01026174,Lincoln 008D,6,Baseline UK,6b,Legacy Industrial and Coastal Communities,6b3,EU Singles
+E01026175,Lincoln 010E,6,Baseline UK,6b,Legacy Industrial and Coastal Communities,6b3,EU Singles
+E01026176,Lincoln 006B,6,Baseline UK,6b,Legacy Industrial and Coastal Communities,6b3,EU Singles
+E01026177,Lincoln 006C,6,Baseline UK,6b,Legacy Industrial and Coastal Communities,6b3,EU Singles
+E01026178,Lincoln 006D,6,Baseline UK,6b,Legacy Industrial and Coastal Communities,6b3,EU Singles
+E01026179,North Kesteven 008A,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b2,Rural Mix
+E01026180,North Kesteven 007A,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026182,North Kesteven 003B,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b1,Ageing Rural Communities
+E01026183,North Kesteven 007B,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b2,Rural Mix
+E01026184,North Kesteven 004A,2,Suburbanites and Peri-Urbanites,2a,Inner Suburbs and Small Town Living,2a1,Younger Suburban Family Renters
+E01026185,North Kesteven 004B,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b1,Ageing Rural Communities
+E01026186,North Kesteven 001A,1,Retired Professionals,1c,Established Mature Families,1c2,Burgeoning Mature Families
+E01026187,North Kesteven 001B,1,Retired Professionals,1c,Established Mature Families,1c2,Burgeoning Mature Families
+E01026188,North Kesteven 004C,2,Suburbanites and Peri-Urbanites,2a,Inner Suburbs and Small Town Living,2a1,Younger Suburban Family Renters
+E01026189,North Kesteven 001C,1,Retired Professionals,1a,Spacious Rural Living,1a2,Retirement Spacious Living
+E01026190,North Kesteven 004D,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026191,North Kesteven 005A,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b2,Rural Mix
+E01026192,North Kesteven 006A,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b1,Ageing Rural Communities
+E01026193,North Kesteven 003C,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026194,North Kesteven 006B,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b1,Ageing Rural Communities
+E01026195,North Kesteven 006C,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b1,Ageing Rural Communities
+E01026196,North Kesteven 006D,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b1,Ageing Rural Communities
+E01026197,North Kesteven 008B,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026198,North Kesteven 008C,1,Retired Professionals,1c,Established Mature Families,1c1,Affluent Mature Families
+E01026199,North Kesteven 003D,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026200,North Kesteven 012A,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026201,North Kesteven 012B,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026202,North Kesteven 012C,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b1,Ageing Rural Communities
+E01026203,North Kesteven 001D,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b1,Ageing Rural Communities
+E01026204,North Kesteven 001E,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026205,North Kesteven 005B,7,Semi- and Un-Skilled Workforce,7b,Young Families in Industrial Towns,7b2,Families and Later Life
+E01026206,North Kesteven 001F,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026207,North Kesteven 012D,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b1,Ageing Rural Communities
+E01026208,North Kesteven 012E,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b1,Ageing Rural Communities
+E01026209,North Kesteven 009A,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b1,Ageing Rural Communities
+E01026210,North Kesteven 007C,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026211,North Kesteven 005C,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026212,North Kesteven 005D,1,Retired Professionals,1a,Spacious Rural Living,1a2,Retirement Spacious Living
+E01026213,North Kesteven 005E,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b2,Rural Mix
+E01026214,North Kesteven 014A,1,Retired Professionals,1b,Small Town Suburbia,1b1,Younger Established Suburban Communities
+E01026215,North Kesteven 014B,1,Retired Professionals,1b,Small Town Suburbia,1b2,Older Established Suburban Communities
+E01026218,North Kesteven 014C,1,Retired Professionals,1b,Small Town Suburbia,1b1,Younger Established Suburban Communities
+E01026219,North Kesteven 014D,1,Retired Professionals,1b,Small Town Suburbia,1b1,Younger Established Suburban Communities
+E01026220,North Kesteven 013A,1,Retired Professionals,1a,Spacious Rural Living,1a2,Retirement Spacious Living
+E01026221,North Kesteven 009B,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b1,Ageing Rural Communities
+E01026222,North Kesteven 009C,1,Retired Professionals,1b,Small Town Suburbia,1b1,Younger Established Suburban Communities
+E01026223,North Kesteven 008D,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026224,North Kesteven 007D,7,Semi- and Un-Skilled Workforce,7b,Young Families in Industrial Towns,7b1,Terraces in Transitional Towns
+E01026225,North Kesteven 003E,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b2,Rural Mix
+E01026226,North Kesteven 003F,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026227,North Kesteven 010A,6,Baseline UK,6b,Legacy Industrial and Coastal Communities,6b3,EU Singles
+E01026228,North Kesteven 011A,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b2,Rural Mix
+E01026229,North Kesteven 011B,1,Retired Professionals,1c,Established Mature Families,1c2,Burgeoning Mature Families
+E01026230,North Kesteven 010B,7,Semi- and Un-Skilled Workforce,7b,Young Families in Industrial Towns,7b1,Terraces in Transitional Towns
+E01026231,North Kesteven 010C,1,Retired Professionals,1b,Small Town Suburbia,1b1,Younger Established Suburban Communities
+E01026232,North Kesteven 010D,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026233,North Kesteven 011C,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026235,North Kesteven 010E,7,Semi- and Un-Skilled Workforce,7b,Young Families in Industrial Towns,7b1,Terraces in Transitional Towns
+E01026236,North Kesteven 011E,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b1,Ageing Rural Communities
+E01026237,North Kesteven 004E,1,Retired Professionals,1b,Small Town Suburbia,1b1,Younger Established Suburban Communities
+E01026238,North Kesteven 004F,1,Retired Professionals,1b,Small Town Suburbia,1b1,Younger Established Suburban Communities
+E01026239,South Holland 011A,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b2,Rural Mix
+E01026240,South Holland 011B,1,Retired Professionals,1b,Small Town Suburbia,1b1,Younger Established Suburban Communities
+E01026241,South Holland 005A,1,Retired Professionals,1b,Small Town Suburbia,1b1,Younger Established Suburban Communities
+E01026242,South Holland 001A,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b2,Rural Mix
+E01026243,South Holland 001B,7,Semi- and Un-Skilled Workforce,7b,Young Families in Industrial Towns,7b2,Families and Later Life
+E01026244,South Holland 001C,1,Retired Professionals,1c,Established Mature Families,1c2,Burgeoning Mature Families
+E01026245,South Holland 010A,1,Retired Professionals,1a,Spacious Rural Living,1a2,Retirement Spacious Living
+E01026246,South Holland 002A,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026247,South Holland 001D,1,Retired Professionals,1a,Spacious Rural Living,1a2,Retirement Spacious Living
+E01026248,South Holland 002B,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b2,Rural Mix
+E01026249,South Holland 010B,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026250,South Holland 003A,6,Baseline UK,6b,Legacy Industrial and Coastal Communities,6b3,EU Singles
+E01026251,South Holland 003B,1,Retired Professionals,1b,Small Town Suburbia,1b1,Younger Established Suburban Communities
+E01026252,South Holland 003C,2,Suburbanites and Peri-Urbanites,2c,Ageing Communities,2c2,Ageing Independent Living
+E01026253,South Holland 003D,1,Retired Professionals,1b,Small Town Suburbia,1b1,Younger Established Suburban Communities
+E01026254,South Holland 008A,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b1,Ageing Rural Communities
+E01026255,South Holland 008B,2,Suburbanites and Peri-Urbanites,2c,Ageing Communities,2c1,Communal Retirement Living
+E01026256,South Holland 008C,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026257,South Holland 002C,1,Retired Professionals,1a,Spacious Rural Living,1a2,Retirement Spacious Living
+E01026258,South Holland 005B,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026259,South Holland 005C,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026260,South Holland 005D,1,Retired Professionals,1b,Small Town Suburbia,1b1,Younger Established Suburban Communities
+E01026262,South Holland 009A,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026263,South Holland 009B,2,Suburbanites and Peri-Urbanites,2a,Inner Suburbs and Small Town Living,2a1,Younger Suburban Family Renters
+E01026264,South Holland 009C,2,Suburbanites and Peri-Urbanites,2a,Inner Suburbs and Small Town Living,2a1,Younger Suburban Family Renters
+E01026265,South Holland 009D,7,Semi- and Un-Skilled Workforce,7b,Young Families in Industrial Towns,7b1,Terraces in Transitional Towns
+E01026266,South Holland 006B,6,Baseline UK,6b,Legacy Industrial and Coastal Communities,6b3,EU Singles
+E01026268,South Holland 007A,7,Semi- and Un-Skilled Workforce,7a,Established but Challenged,7a2,Industry Associations
+E01026269,South Holland 007B,1,Retired Professionals,1a,Spacious Rural Living,1a2,Retirement Spacious Living
+E01026270,South Holland 007C,2,Suburbanites and Peri-Urbanites,2a,Inner Suburbs and Small Town Living,2a1,Younger Suburban Family Renters
+E01026271,South Holland 007D,7,Semi- and Un-Skilled Workforce,7a,Established but Challenged,7a2,Industry Associations
+E01026272,South Holland 007E,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b2,Rural Mix
+E01026273,South Holland 006C,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026275,South Holland 006E,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b2,Rural Mix
+E01026276,South Holland 001E,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026277,South Holland 008D,7,Semi- and Un-Skilled Workforce,7b,Young Families in Industrial Towns,7b2,Families and Later Life
+E01026278,South Holland 008E,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026279,South Holland 008F,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b1,Ageing Rural Communities
+E01026280,South Holland 010C,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026281,South Holland 004A,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026282,South Holland 004B,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026283,South Holland 004C,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026284,South Holland 011C,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b1,Ageing Rural Communities
+E01026285,South Holland 004D,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026286,South Holland 004E,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b2,Rural Mix
+E01026287,South Kesteven 015A,7,Semi- and Un-Skilled Workforce,7a,Established but Challenged,7a2,Industry Associations
+E01026288,South Kesteven 015B,7,Semi- and Un-Skilled Workforce,7a,Established but Challenged,7a2,Industry Associations
+E01026289,South Kesteven 015C,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b2,Rural Mix
+E01026290,South Kesteven 008A,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026291,South Kesteven 002A,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b1,Ageing Rural Communities
+E01026292,South Kesteven 007A,1,Retired Professionals,1b,Small Town Suburbia,1b1,Younger Established Suburban Communities
+E01026293,South Kesteven 007B,2,Suburbanites and Peri-Urbanites,2a,Inner Suburbs and Small Town Living,2a1,Younger Suburban Family Renters
+E01026294,South Kesteven 007C,2,Suburbanites and Peri-Urbanites,2a,Inner Suburbs and Small Town Living,2a1,Younger Suburban Family Renters
+E01026296,South Kesteven 011B,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b1,Ageing Rural Communities
+E01026297,South Kesteven 011C,7,Semi- and Un-Skilled Workforce,7b,Young Families in Industrial Towns,7b1,Terraces in Transitional Towns
+E01026298,South Kesteven 011D,7,Semi- and Un-Skilled Workforce,7a,Established but Challenged,7a2,Industry Associations
+E01026299,South Kesteven 010A,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026300,South Kesteven 010B,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026302,South Kesteven 010D,2,Suburbanites and Peri-Urbanites,2a,Inner Suburbs and Small Town Living,2a1,Younger Suburban Family Renters
+E01026303,South Kesteven 014A,1,Retired Professionals,1b,Small Town Suburbia,1b1,Younger Established Suburban Communities
+E01026304,South Kesteven 014B,2,Suburbanites and Peri-Urbanites,2c,Ageing Communities,2c2,Ageing Independent Living
+E01026305,South Kesteven 014C,2,Suburbanites and Peri-Urbanites,2a,Inner Suburbs and Small Town Living,2a1,Younger Suburban Family Renters
+E01026306,South Kesteven 014D,7,Semi- and Un-Skilled Workforce,7b,Young Families in Industrial Towns,7b1,Terraces in Transitional Towns
+E01026307,South Kesteven 014E,1,Retired Professionals,1a,Spacious Rural Living,1a2,Retirement Spacious Living
+E01026308,South Kesteven 005A,6,Baseline UK,6a,Challenged Communities,6a3,Younger Ethnic Minority Families in Flats
+E01026309,South Kesteven 005B,7,Semi- and Un-Skilled Workforce,7b,Young Families in Industrial Towns,7b1,Terraces in Transitional Towns
+E01026310,South Kesteven 005C,7,Semi- and Un-Skilled Workforce,7b,Young Families in Industrial Towns,7b1,Terraces in Transitional Towns
+E01026311,South Kesteven 005D,6,Baseline UK,6b,Legacy Industrial and Coastal Communities,6b3,EU Singles
+E01026312,South Kesteven 005E,7,Semi- and Un-Skilled Workforce,7a,Established but Challenged,7a2,Industry Associations
+E01026313,South Kesteven 001A,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b1,Ageing Rural Communities
+E01026314,South Kesteven 001B,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026315,South Kesteven 009A,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b1,Ageing Rural Communities
+E01026316,South Kesteven 007D,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026317,South Kesteven 006A,6,Baseline UK,6b,Legacy Industrial and Coastal Communities,6b3,EU Singles
+E01026318,South Kesteven 006B,7,Semi- and Un-Skilled Workforce,7b,Young Families in Industrial Towns,7b1,Terraces in Transitional Towns
+E01026319,South Kesteven 006C,1,Retired Professionals,1b,Small Town Suburbia,1b1,Younger Established Suburban Communities
+E01026321,South Kesteven 004B,2,Suburbanites and Peri-Urbanites,2a,Inner Suburbs and Small Town Living,2a1,Younger Suburban Family Renters
+E01026322,South Kesteven 004C,1,Retired Professionals,1b,Small Town Suburbia,1b1,Younger Established Suburban Communities
+E01026323,South Kesteven 004D,6,Baseline UK,6b,Legacy Industrial and Coastal Communities,6b3,EU Singles
+E01026324,South Kesteven 004E,1,Retired Professionals,1b,Small Town Suburbia,1b1,Younger Established Suburban Communities
+E01026325,South Kesteven 003A,7,Semi- and Un-Skilled Workforce,7b,Young Families in Industrial Towns,7b1,Terraces in Transitional Towns
+E01026326,South Kesteven 003B,6,Baseline UK,6b,Legacy Industrial and Coastal Communities,6b1,Retired Seniors
+E01026327,South Kesteven 003C,7,Semi- and Un-Skilled Workforce,7b,Young Families in Industrial Towns,7b1,Terraces in Transitional Towns
+E01026328,South Kesteven 003D,7,Semi- and Un-Skilled Workforce,7b,Young Families in Industrial Towns,7b1,Terraces in Transitional Towns
+E01026329,South Kesteven 001C,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026330,South Kesteven 012A,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026331,South Kesteven 009B,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b1,Ageing Rural Communities
+E01026332,South Kesteven 007E,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026333,South Kesteven 001D,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b1,Ageing Rural Communities
+E01026334,South Kesteven 013A,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026335,South Kesteven 013B,2,Suburbanites and Peri-Urbanites,2c,Ageing Communities,2c1,Communal Retirement Living
+E01026336,South Kesteven 013C,7,Semi- and Un-Skilled Workforce,7a,Established but Challenged,7a2,Industry Associations
+E01026337,South Kesteven 013D,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b2,Rural Mix
+E01026338,South Kesteven 009C,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b1,Ageing Rural Communities
+E01026339,South Kesteven 009D,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b2,Rural Mix
+E01026340,South Kesteven 002B,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b1,Ageing Rural Communities
+E01026341,South Kesteven 008B,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b1,Ageing Rural Communities
+E01026342,South Kesteven 008C,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026343,South Kesteven 006D,6,Baseline UK,6b,Legacy Industrial and Coastal Communities,6b3,EU Singles
+E01026344,South Kesteven 006E,6,Baseline UK,6b,Legacy Industrial and Coastal Communities,6b2,Traditional Terraces
+E01026345,South Kesteven 006F,2,Suburbanites and Peri-Urbanites,2c,Ageing Communities,2c1,Communal Retirement Living
+E01026346,South Kesteven 015D,7,Semi- and Un-Skilled Workforce,7b,Young Families in Industrial Towns,7b1,Terraces in Transitional Towns
+E01026347,South Kesteven 015E,2,Suburbanites and Peri-Urbanites,2a,Inner Suburbs and Small Town Living,2a1,Younger Suburban Family Renters
+E01026348,South Kesteven 015F,7,Semi- and Un-Skilled Workforce,7b,Young Families in Industrial Towns,7b1,Terraces in Transitional Towns
+E01026349,South Kesteven 016A,2,Suburbanites and Peri-Urbanites,2c,Ageing Communities,2c2,Ageing Independent Living
+E01026350,South Kesteven 016B,6,Baseline UK,6b,Legacy Industrial and Coastal Communities,6b1,Retired Seniors
+E01026351,South Kesteven 016C,2,Suburbanites and Peri-Urbanites,2c,Ageing Communities,2c2,Ageing Independent Living
+E01026352,South Kesteven 003E,5,Ethnically Diverse Suburb-an Professionals,5b,Suburban Professionals,5b2,Established Multi-Ethnic Suburbs
+E01026353,South Kesteven 003F,6,Baseline UK,6b,Legacy Industrial and Coastal Communities,6b3,EU Singles
+E01026354,South Kesteven 003G,1,Retired Professionals,1c,Established Mature Families,1c1,Affluent Mature Families
+E01026355,South Kesteven 002C,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026356,South Kesteven 016D,1,Retired Professionals,1b,Small Town Suburbia,1b1,Younger Established Suburban Communities
+E01026357,South Kesteven 016E,1,Retired Professionals,1b,Small Town Suburbia,1b1,Younger Established Suburban Communities
+E01026358,South Kesteven 016F,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026359,South Kesteven 016G,1,Retired Professionals,1c,Established Mature Families,1c1,Affluent Mature Families
+E01026360,South Kesteven 012B,1,Retired Professionals,1c,Established Mature Families,1c1,Affluent Mature Families
+E01026361,South Kesteven 008D,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b1,Ageing Rural Communities
+E01026362,South Kesteven 012C,1,Retired Professionals,1b,Small Town Suburbia,1b1,Younger Established Suburban Communities
+E01026363,South Kesteven 012D,1,Retired Professionals,1a,Spacious Rural Living,1a2,Retirement Spacious Living
+E01026364,South Kesteven 012E,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b1,Ageing Rural Communities
+E01026365,South Kesteven 002D,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026366,West Lindsey 011A,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b2,Rural Mix
+E01026367,West Lindsey 001A,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b1,Ageing Rural Communities
+E01026368,West Lindsey 001B,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b1,Ageing Rural Communities
+E01026369,West Lindsey 011B,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b2,Rural Mix
+E01026370,West Lindsey 011C,1,Retired Professionals,1a,Spacious Rural Living,1a2,Retirement Spacious Living
+E01026371,West Lindsey 011D,1,Retired Professionals,1c,Established Mature Families,1c1,Affluent Mature Families
+E01026372,West Lindsey 008A,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026373,West Lindsey 011E,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b1,Ageing Rural Communities
+E01026374,West Lindsey 006A,7,Semi- and Un-Skilled Workforce,7a,Established but Challenged,7a2,Industry Associations
+E01026375,West Lindsey 006B,7,Semi- and Un-Skilled Workforce,7a,Established but Challenged,7a2,Industry Associations
+E01026376,West Lindsey 006C,7,Semi- and Un-Skilled Workforce,7a,Established but Challenged,7a2,Industry Associations
+E01026377,West Lindsey 006D,7,Semi- and Un-Skilled Workforce,7a,Established but Challenged,7a2,Industry Associations
+E01026378,West Lindsey 004A,7,Semi- and Un-Skilled Workforce,7b,Young Families in Industrial Towns,7b1,Terraces in Transitional Towns
+E01026379,West Lindsey 004B,7,Semi- and Un-Skilled Workforce,7a,Established but Challenged,7a2,Industry Associations
+E01026380,West Lindsey 002A,2,Suburbanites and Peri-Urbanites,2a,Inner Suburbs and Small Town Living,2a1,Younger Suburban Family Renters
+E01026381,West Lindsey 004C,7,Semi- and Un-Skilled Workforce,7a,Established but Challenged,7a2,Industry Associations
+E01026382,West Lindsey 004D,2,Suburbanites and Peri-Urbanites,2a,Inner Suburbs and Small Town Living,2a2,Settled Owner-Occupied Suburbs
+E01026383,West Lindsey 004E,6,Baseline UK,6b,Legacy Industrial and Coastal Communities,6b3,EU Singles
+E01026384,West Lindsey 004F,7,Semi- and Un-Skilled Workforce,7a,Established but Challenged,7a2,Industry Associations
+E01026385,West Lindsey 005A,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b1,Ageing Rural Communities
+E01026386,West Lindsey 005B,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b1,Ageing Rural Communities
+E01026387,West Lindsey 001C,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026388,West Lindsey 007A,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026389,West Lindsey 003A,2,Suburbanites and Peri-Urbanites,2c,Ageing Communities,2c1,Communal Retirement Living
+E01026390,West Lindsey 003B,7,Semi- and Un-Skilled Workforce,7a,Established but Challenged,7a2,Industry Associations
+E01026391,West Lindsey 003C,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026392,West Lindsey 003D,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026393,West Lindsey 010A,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026394,West Lindsey 010B,5,Ethnically Diverse Suburb-an Professionals,5b,Suburban Professionals,5b1,Families in Multi-Ethnic Terraces
+E01026395,West Lindsey 010C,2,Suburbanites and Peri-Urbanites,2c,Ageing Communities,2c2,Ageing Independent Living
+E01026396,West Lindsey 009A,1,Retired Professionals,1a,Spacious Rural Living,1a2,Retirement Spacious Living
+E01026398,West Lindsey 009C,2,Suburbanites and Peri-Urbanites,2c,Ageing Communities,2c2,Ageing Independent Living
+E01026399,West Lindsey 005C,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026400,West Lindsey 009D,2,Suburbanites and Peri-Urbanites,2a,Inner Suburbs and Small Town Living,2a1,Younger Suburban Family Renters
+E01026401,West Lindsey 002B,1,Retired Professionals,1c,Established Mature Families,1c2,Burgeoning Mature Families
+E01026402,West Lindsey 002C,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b2,Rural Mix
+E01026403,West Lindsey 002D,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01026404,West Lindsey 007B,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b1,Ageing Rural Communities
+E01026405,West Lindsey 010D,1,Retired Professionals,1c,Established Mature Families,1c2,Burgeoning Mature Families
+E01026406,West Lindsey 010E,1,Retired Professionals,1c,Established Mature Families,1c1,Affluent Mature Families
+E01026407,West Lindsey 002E,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b1,Ageing Rural Communities
+E01026408,West Lindsey 002F,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b2,Rural Mix
+E01026409,West Lindsey 007C,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b1,Ageing Rural Communities
+E01026410,West Lindsey 007D,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b1,Ageing Rural Communities
+E01026411,West Lindsey 005D,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b1,Ageing Rural Communities
+E01026412,West Lindsey 008B,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b1,Ageing Rural Communities
+E01026413,West Lindsey 008C,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b2,Rural Mix
+E01026414,West Lindsey 008D,2,Suburbanites and Peri-Urbanites,2a,Inner Suburbs and Small Town Living,2a2,Settled Owner-Occupied Suburbs
+E01026415,West Lindsey 003E,2,Suburbanites and Peri-Urbanites,2a,Inner Suburbs and Small Town Living,2a2,Settled Owner-Occupied Suburbs
+E01026416,West Lindsey 001D,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b1,Ageing Rural Communities
+E01032683,West Lindsey 001G,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b1,Ageing Rural Communities
+E01032986,East Lindsey 004D,6,Baseline UK,6b,Legacy Industrial and Coastal Communities,6b1,Retired Seniors
+E01032987,East Lindsey 004E,7,Semi- and Un-Skilled Workforce,7a,Established but Challenged,7a2,Industry Associations
+E01032988,North Kesteven 013B,7,Semi- and Un-Skilled Workforce,7b,Young Families in Industrial Towns,7b2,Families and Later Life
+E01032989,North Kesteven 013C,2,Suburbanites and Peri-Urbanites,2a,Inner Suburbs and Small Town Living,2a1,Younger Suburban Family Renters
+E01032991,North Kesteven 014E,6,Baseline UK,6b,Legacy Industrial and Coastal Communities,6b1,Retired Seniors
+E01032992,North Kesteven 014F,1,Retired Professionals,1c,Established Mature Families,1c2,Burgeoning Mature Families
+E01032993,North Kesteven 013D,5,Ethnically Diverse Suburb-an Professionals,5b,Suburban Professionals,5b1,Families in Multi-Ethnic Terraces
+E01032994,North Kesteven 003H,1,Retired Professionals,1b,Small Town Suburbia,1b1,Younger Established Suburban Communities
+E01032995,South Holland 006F,6,Baseline UK,6b,Legacy Industrial and Coastal Communities,6b3,EU Singles
+E01032996,South Holland 006G,1,Retired Professionals,1a,Spacious Rural Living,1a2,Retirement Spacious Living
+E01032997,South Kesteven 011E,2,Suburbanites and Peri-Urbanites,2a,Inner Suburbs and Small Town Living,2a1,Younger Suburban Family Renters
+E01032998,South Kesteven 011F,2,Suburbanites and Peri-Urbanites,2c,Ageing Communities,2c2,Ageing Independent Living
+E01032999,South Kesteven 011G,1,Retired Professionals,1c,Established Mature Families,1c2,Burgeoning Mature Families
+E01034679,Boston 002F,7,Semi- and Un-Skilled Workforce,7a,Established but Challenged,7a2,Industry Associations
+E01034680,Boston 002G,6,Baseline UK,6b,Legacy Industrial and Coastal Communities,6b3,EU Singles
+E01034681,Boston 003E,6,Baseline UK,6b,Legacy Industrial and Coastal Communities,6b3,EU Singles
+E01034682,Boston 003F,6,Baseline UK,6b,Legacy Industrial and Coastal Communities,6b3,EU Singles
+E01034683,Boston 009E,2,Suburbanites and Peri-Urbanites,2b,Rural Amenity,2b2,Rural Mix
+E01034684,Boston 009F,2,Suburbanites and Peri-Urbanites,2a,Inner Suburbs and Small Town Living,2a1,Younger Suburban Family Renters
+E01034685,East Lindsey 012E,1,Retired Professionals,1a,Spacious Rural Living,1a2,Retirement Spacious Living
+E01034686,East Lindsey 012F,6,Baseline UK,6b,Legacy Industrial and Coastal Communities,6b2,Traditional Terraces
+E01034687,Lincoln 005E,6,Baseline UK,6c,Multicultural Inner Suburbs,6c1,Transient Communities
+E01034688,Lincoln 005F,3,Multicultural and Educated Urbanites,3a,Student Living and Professional Footholds,3a1,University Centric
+E01034689,Lincoln 007E,6,Baseline UK,6b,Legacy Industrial and Coastal Communities,6b2,Traditional Terraces
+E01034690,Lincoln 007F,2,Suburbanites and Peri-Urbanites,2a,Inner Suburbs and Small Town Living,2a1,Younger Suburban Family Renters
+E01034691,Lincoln 008E,3,Multicultural and Educated Urbanites,3a,Student Living and Professional Footholds,3a1,University Centric
+E01034692,Lincoln 008F,6,Baseline UK,6b,Legacy Industrial and Coastal Communities,6b3,EU Singles
+E01034693,North Kesteven 003I,2,Suburbanites and Peri-Urbanites,2a,Inner Suburbs and Small Town Living,2a1,Younger Suburban Family Renters
+E01034694,North Kesteven 003J,2,Suburbanites and Peri-Urbanites,2a,Inner Suburbs and Small Town Living,2a1,Younger Suburban Family Renters
+E01034695,North Kesteven 011F,2,Suburbanites and Peri-Urbanites,2a,Inner Suburbs and Small Town Living,2a1,Younger Suburban Family Renters
+E01034696,North Kesteven 011G,1,Retired Professionals,1c,Established Mature Families,1c2,Burgeoning Mature Families
+E01034697,South Holland 006H,2,Suburbanites and Peri-Urbanites,2a,Inner Suburbs and Small Town Living,2a1,Younger Suburban Family Renters
+E01034698,South Holland 006I,6,Baseline UK,6a,Challenged Communities,6a1,Suburban Housing Starters
+E01034699,South Holland 009F,6,Baseline UK,6b,Legacy Industrial and Coastal Communities,6b3,EU Singles
+E01034700,South Holland 009G,1,Retired Professionals,1b,Small Town Suburbia,1b1,Younger Established Suburban Communities
+E01034701,South Kesteven 004F,5,Ethnically Diverse Suburb-an Professionals,5b,Suburban Professionals,5b1,Families in Multi-Ethnic Terraces
+E01034702,South Kesteven 004G,1,Retired Professionals,1c,Established Mature Families,1c1,Affluent Mature Families
+E01034703,South Kesteven 010E,1,Retired Professionals,1a,Spacious Rural Living,1a2,Retirement Spacious Living
+E01034704,South Kesteven 010F,5,Ethnically Diverse Suburb-an Professionals,5b,Suburban Professionals,5b1,Families in Multi-Ethnic Terraces
+E01034705,South Kesteven 010G,2,Suburbanites and Peri-Urbanites,2a,Inner Suburbs and Small Town Living,2a1,Younger Suburban Family Renters
+E01034706,West Lindsey 009E,1,Retired Professionals,1a,Spacious Rural Living,1a1,Pre-Retirement Spacious Living
+E01034707,West Lindsey 009F,2,Suburbanites and Peri-Urbanites,2c,Ageing Communities,2c1,Communal Retirement Living

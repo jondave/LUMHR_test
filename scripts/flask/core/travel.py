@@ -216,4 +216,90 @@ def prepare_population_estimates(df: pd.DataFrame) -> pd.DataFrame:
     return work[present].drop_duplicates(subset=["LSOA_CODE"])
 
 
+def prepare_imd_2025(df: pd.DataFrame) -> pd.DataFrame:
+    work = df.copy()
+    code_col = [c for c in work.columns if "LSOA" in str(c).upper() and "CODE" in str(c).upper()][0]
+    rank_col = [c for c in work.columns if "RANK" in str(c).upper()][0]
+    decile_col = [c for c in work.columns if "DECILE" in str(c).upper()][0]
+
+    out = pd.DataFrame(
+        {
+            "LSOA_CODE": work[code_col].astype(str).str.strip(),
+            "IMD_2025_Rank": pd.to_numeric(work[rank_col], errors="coerce"),
+            "IMD_2025_Decile": pd.to_numeric(work[decile_col], errors="coerce"),
+        }
+    )
+    return out.drop_duplicates(subset=["LSOA_CODE"])
+
+
+def prepare_lsoac_classification(df: pd.DataFrame) -> pd.DataFrame:
+    work = df.copy()
+    code_col = [c for c in work.columns if "LSOA" in str(c).upper() and "CODE" in str(c).upper()][0]
+
+    out = pd.DataFrame(
+        {
+            "LSOA_CODE": work[code_col].astype(str).str.strip(),
+            "Supergroup_Code": work.get("Supergroup_Code", "").astype(str).str.strip(),
+            "Supergroup_Name": work.get("Supergroup_Name", "").astype(str).str.strip(),
+            "Group_Code": work.get("Group_Code", "").astype(str).str.strip(),
+            "Group_Name": work.get("Group_Name", "").astype(str).str.strip(),
+            "Subgroup_Code": work.get("Subgroup_Code", "").astype(str).str.strip(),
+            "Subgroup_Name": work.get("Subgroup_Name", "").astype(str).str.strip(),
+        }
+    )
+    return out.drop_duplicates(subset=["LSOA_CODE"])
+
+
+def prepare_ts003_household_composition(df: pd.DataFrame) -> pd.DataFrame:
+    work = df.copy()
+    code_col = [c for c in work.columns if "LSOA" in str(c).upper() and "CODE" in str(c).upper()][0]
+
+    total_hh = pd.to_numeric(work.get("Total_All_Households", 0), errors="coerce").fillna(0)
+    single_pensioner_count = pd.to_numeric(work.get("One-person household: Aged 66 years and over_Count", 0), errors="coerce").fillna(0)
+    single_pensioner_pct = pd.to_numeric(work.get("One-person household: Aged 66 years and over_Pct", 0), errors="coerce").fillna(0)
+    one_person_other_count = pd.to_numeric(work.get("One-person household: Other_Count", 0), errors="coerce").fillna(0)
+    one_person_other_pct = pd.to_numeric(work.get("One-person household: Other_Pct", 0), errors="coerce").fillna(0)
+    pensioner_couple_count = pd.to_numeric(work.get("Single family household: All aged 66 years and over_Count", 0), errors="coerce").fillna(0)
+    pensioner_couple_pct = pd.to_numeric(work.get("Single family household: All aged 66 years and over_Pct", 0), errors="coerce").fillna(0)
+    lone_parent_dep_count = pd.to_numeric(work.get("Single family household: Lone parent family: With dependent children_Count", 0), errors="coerce").fillna(0)
+    lone_parent_dep_pct = pd.to_numeric(work.get("Single family household: Lone parent family: With dependent children_Pct", 0), errors="coerce").fillna(0)
+    lone_parent_total_count = pd.to_numeric(work.get("Single family household: Lone parent family_Count", 0), errors="coerce").fillna(0)
+    lone_parent_total_pct = pd.to_numeric(work.get("Single family household: Lone parent family_Pct", 0), errors="coerce").fillna(0)
+
+    one_person_total_count = pd.to_numeric(work.get("One-person household_Count", 0), errors="coerce").fillna(0)
+    non_couple_count = one_person_total_count + lone_parent_total_count
+    valid_total = total_hh.replace(0, float("nan"))
+    non_couple_pct = (non_couple_count / valid_total) * 100.0
+
+    # Household vulnerability score combining solitary elderly, lone parents, and pensioner couples
+    hh_vuln_score = (
+        (single_pensioner_pct * 0.45)
+        + (lone_parent_dep_pct * 0.30)
+        + (pensioner_couple_pct * 0.25)
+    )
+
+    out = pd.DataFrame(
+        {
+            "LSOA_CODE": work[code_col].astype(str).str.strip(),
+            "Total_Households_2021": total_hh,
+            "Single_Pensioner_HH_Count": single_pensioner_count,
+            "Single_Pensioner_HH_Pct": single_pensioner_pct,
+            "One_Person_Other_HH_Count": one_person_other_count,
+            "One_Person_Other_HH_Pct": one_person_other_pct,
+            "Pensioner_Couple_HH_Count": pensioner_couple_count,
+            "Pensioner_Couple_HH_Pct": pensioner_couple_pct,
+            "Lone_Parent_Dep_Children_HH_Count": lone_parent_dep_count,
+            "Lone_Parent_Dep_Children_HH_Pct": lone_parent_dep_pct,
+            "Lone_Parent_Total_HH_Count": lone_parent_total_count,
+            "Lone_Parent_Total_HH_Pct": lone_parent_total_pct,
+            "Non_Couple_HH_Count": non_couple_count,
+            "Non_Couple_HH_Pct": non_couple_pct.fillna(0.0),
+            "Household_Vulnerability_Score": hh_vuln_score,
+        }
+    )
+    return out.drop_duplicates(subset=["LSOA_CODE"])
+
+
+
+
 

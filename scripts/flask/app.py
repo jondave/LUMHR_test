@@ -7,6 +7,7 @@ from flask import Flask, jsonify, render_template, request, send_from_directory
 
 from core.need_index import apply_need_index
 from core.access_index import apply_access_index
+from core.rural_risk_index import apply_rural_risk_index
 from core.samhi import SAMHI_YEARS, get_samhi_columns
 from data_loader import get_prepared_bundle_cached, resolve_base_dir
 
@@ -112,6 +113,14 @@ def access_gap_index_page() -> str:
         out_of_area_patients_fmt=f"{out_patients:,}",
         min_year=min(SAMHI_YEARS),
         max_year=max(SAMHI_YEARS),
+    )
+
+
+@app.get("/rural_risk_index")
+def rural_risk_index_page() -> str:
+    return render_template(
+        "rural_risk_index.html",
+        geojson_rel_path=GEOJSON_REL_PATH,
     )
 
 
@@ -659,6 +668,117 @@ def samhi_scores_api():
                 "mode": mode,
                 "from_year": from_year,
                 "to_year": to_year,
+            },
+        }
+    )
+
+
+@app.get("/api/rural_risk_scores")
+def rural_risk_scores_api():
+    try:
+        rural_weight = _parse_float_arg("w_rural", 15.0)
+        gp_pt_weight = _parse_float_arg("w_gp_pt", 15.0)
+        gp_car_weight = _parse_float_arg("w_gp_car", 15.0)
+        no_car_weight = _parse_float_arg("w_no_car", 15.0)
+        imd_weight = _parse_float_arg("w_imd", 15.0)
+        oac_weight = _parse_float_arg("w_oac", 10.0)
+        household_weight = _parse_float_arg("w_household", 15.0)
+        rural_weight = _parse_float_arg("w_rural", 14.3)
+        gp_pt_weight = _parse_float_arg("w_gp_pt", 14.3)
+        gp_car_weight = _parse_float_arg("w_gp_car", 14.3)
+        no_car_weight = _parse_float_arg("w_no_car", 14.3)
+        imd_weight = _parse_float_arg("w_imd", 14.3)
+        oac_weight = _parse_float_arg("w_oac", 14.3)
+        household_weight = _parse_float_arg("w_household", 14.2)
+    except ValueError as exc:
+        return jsonify({"error": str(exc)}), 400
+
+    scored = apply_rural_risk_index(
+        LSOA_METRICS,
+        rural_weight=rural_weight,
+        gp_pt_weight=gp_pt_weight,
+        gp_car_weight=gp_car_weight,
+        no_car_weight=no_car_weight,
+        imd_weight=imd_weight,
+        oac_weight=oac_weight,
+        household_weight=household_weight,
+    )
+
+    layers = {
+        "Rural_Risk_Index": _scores_to_dict(scored, "Rural_Risk_Index"),
+        "Rural_Isolation": _scores_to_dict(scored, "Rural_Isolation_Normalized"),
+        "GP_PT_Travel_Time": _scores_to_dict(scored, "GP_PT_Time"),
+        "GP_Car_Travel_Time": _scores_to_dict(scored, "GP_Car_Time"),
+        "No_Cars_Pct": _scores_to_dict(scored, "No_Cars_Pct"),
+        "IMD_2025_Decile": _scores_to_dict(scored, "IMD_2025_Decile"),
+        "IMD_2025_Rank": _scores_to_dict(scored, "IMD_2025_Rank"),
+        "LSOAC_Risk": _scores_to_dict(scored, "LSOAC_Risk_Normalized"),
+        "Household_Vulnerability": _scores_to_dict(scored, "Household_Vulnerability_Normalized"),
+        "Single_Pensioner_HH_Pct": _scores_to_dict(scored, "Single_Pensioner_HH_Pct"),
+        "Non_Couple_HH_Pct": _scores_to_dict(scored, "Non_Couple_HH_Pct"),
+        "Pensioner_Couple_HH_Pct": _scores_to_dict(scored, "Pensioner_Couple_HH_Pct"),
+        "Lone_Parent_HH_Pct": _scores_to_dict(scored, "Lone_Parent_Dep_Children_HH_Pct"),
+        "Pct_65plus": _scores_to_dict(scored, "Pct_65plus"),
+        "GP_Registration_Rate_Pct": _scores_to_dict(scored, "GP_Registration_Rate_Pct"),
+    }
+
+    lsoa_name_col = _get_lsoa_name_column(scored)
+    lsoa_details: dict[str, dict[str, object]] = {}
+    for row in scored.to_dict(orient="records"):
+        code = str(row.get("LSOA_CODE", "") or "")
+        if not code:
+            continue
+        lsoa_details[code] = {
+            "lsoa_name": str(row.get(lsoa_name_col, "") or "") if lsoa_name_col else "",
+            "rural_risk_index": _num_or_none(row.get("Rural_Risk_Index")),
+            "rural_isolation_score": _num_or_none(row.get("Rural_Isolation_Normalized")),
+            "ruc21nm": str(row.get("RUC21NM", "") or ""),
+            "gp_pt_time": _num_or_none(row.get("GP_PT_Time")),
+            "gp_car_time": _num_or_none(row.get("GP_Car_Time")),
+            "no_cars_pct": _num_or_none(row.get("No_Cars_Pct")),
+            "imd_2025_rank": _num_or_none(row.get("IMD_2025_Rank")),
+            "imd_2025_decile": _num_or_none(row.get("IMD_2025_Decile")),
+            "supergroup_code": str(row.get("Supergroup_Code", "") or ""),
+            "supergroup_name": str(row.get("Supergroup_Name", "") or ""),
+            "group_code": str(row.get("Group_Code", "") or ""),
+            "group_name": str(row.get("Group_Name", "") or ""),
+            "subgroup_code": str(row.get("Subgroup_Code", "") or ""),
+            "subgroup_name": str(row.get("Subgroup_Name", "") or ""),
+            "total_households_2021": _num_or_none(row.get("Total_Households_2021")),
+            "single_pensioner_hh_count": _num_or_none(row.get("Single_Pensioner_HH_Count")),
+            "single_pensioner_hh_pct": _num_or_none(row.get("Single_Pensioner_HH_Pct")),
+            "pensioner_couple_hh_count": _num_or_none(row.get("Pensioner_Couple_HH_Count")),
+            "pensioner_couple_hh_pct": _num_or_none(row.get("Pensioner_Couple_HH_Pct")),
+            "lone_parent_dep_hh_count": _num_or_none(row.get("Lone_Parent_Dep_Children_HH_Count")),
+            "lone_parent_dep_hh_pct": _num_or_none(row.get("Lone_Parent_Dep_Children_HH_Pct")),
+            "non_couple_hh_count": _num_or_none(row.get("Non_Couple_HH_Count")),
+            "non_couple_hh_pct": _num_or_none(row.get("Non_Couple_HH_Pct")),
+            "household_vulnerability_score": _num_or_none(row.get("Household_Vulnerability_Normalized")),
+            "ons_pop_total": _num_or_none(row.get("ONS_Pop_Total_2024")),
+            "ons_pop_18plus": _num_or_none(row.get("ONS_Pop_18plus")),
+            "ons_pop_65plus": _num_or_none(row.get("ONS_Pop_65plus")),
+            "ons_pop_0to17": _num_or_none(row.get("ONS_Pop_0to17")),
+            "pct_18plus": _num_or_none(row.get("Pct_18plus")),
+            "pct_65plus": _num_or_none(row.get("Pct_65plus")),
+            "pct_0to17": _num_or_none(row.get("Pct_0to17")),
+            "gp_registered_patients": _num_or_none(row.get("GP_Registered_Patients")),
+            "gp_registration_rate_pct": _num_or_none(row.get("GP_Registration_Rate_Pct")),
+            "registration_gap_est": _num_or_none(row.get("Registration_Gap_Est")),
+            "list_inflation_est": _num_or_none(row.get("List_Inflation_Est")),
+        }
+
+    return jsonify(
+        {
+            "layers": layers,
+            "lsoa_details": lsoa_details,
+            "weights": {
+                "rural_weight": rural_weight,
+                "gp_pt_weight": gp_pt_weight,
+                "gp_car_weight": gp_car_weight,
+                "no_car_weight": no_car_weight,
+                "imd_weight": imd_weight,
+                "oac_weight": oac_weight,
+                "household_weight": household_weight,
             },
         }
     )

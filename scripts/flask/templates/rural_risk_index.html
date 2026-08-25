@@ -1,0 +1,603 @@
+{% extends "base.html" %}
+
+{% block title %}Lincolnshire Rural Risk Index | LUMHR{% endblock %}
+
+{% block content %}
+<div class="page">
+  <aside class="sidebar">
+    <h1>Lincolnshire Rural Risk Index</h1>
+    <p class="muted">Multi-dimensional rural risk and vulnerability model across all 435 Lincolnshire LSOAs.</p>
+
+    <details class="control">
+      <summary><strong>Method Summary</strong></summary>
+      <p class="muted" style="margin-top:0.6rem;">
+        The <strong>Rural Risk Index</strong> combines six distinct dimensions of rural isolation, healthcare accessibility, transport vulnerability, deprivation, and geodemographic composition into a single composite score (0 to 1, where higher = higher cumulative risk).
+      </p>
+
+      <p class="muted" style="margin-top:0.45rem; margin-bottom:0.25rem;"><strong>Index vs Single Indicator:</strong></p>
+      <ul class="muted" style="margin-top:0; padding-left:1.1rem;">
+        <li><strong>Rural Isolation Score (Single Indicator):</strong> Measures purely physical settlement remoteness and distance from major urban centres based on DEFRA's 2021 Rural/Urban Classification (0 = Urban to 1 = Smaller remote rural). It does not factor in vehicle access, journey times to GP surgeries, or socio-economic deprivation.</li>
+        <li><strong>Rural Risk Index (Overall Composite):</strong> The overall weighted combination of all 7 indicators together, capturing cumulative vulnerability and practical service barriers for an area.</li>
+      </ul>
+
+      <p class="muted" style="margin-top:0.45rem; margin-bottom:0.25rem;"><strong>Indicators:</strong></p>
+      <ul class="muted" style="margin-top:0; padding-left:1.1rem;">
+        <li><strong>Rural Isolation:</strong> Graded score based on 2021 Rural/Urban Classification (smaller &amp; remote rural communities receive highest isolation impedance).</li>
+        <li><strong>GP Travel Time (PT / Walk):</strong> Min-max normalised journey time to GP surgeries by public transport / walking.</li>
+        <li><strong>GP Travel Time (Car):</strong> Min-max normalised journey time to GP surgeries by car.</li>
+        <li><strong>Car Non-Ownership:</strong> Min-max normalised percentage of households without access to a car or van (Census 2021).</li>
+        <li><strong>Deprivation (IMD 2025):</strong> Inverted relative national rank from the 2025 English Index of Multiple Deprivation (where rank 1 is most deprived in England).</li>
+        <li><strong>Geodemographic Profile (LSOAC 2021/2):</strong> Risk weight mapped from 2021/2 UK LSOA Subgroups (pinpointing deep rural retirement living, coastal seniors, and economically challenged communities).</li>
+        <li><strong>Household Composition:</strong> Min-max normalised vulnerability score combining solitary older adults (aged 66+ living alone), all-pensioner couples, and lone parent families (Census 2021 Table TS003).</li>
+      </ul>
+
+      <p class="muted" style="margin-top:0.45rem; margin-bottom:0.25rem;"><strong>Formula:</strong></p>
+      <ul class="muted" style="margin-top:0; padding-left:1.1rem;">
+        <li><strong>Rural Risk Index</strong> = (Rural_Isolation &times; w_rural) + (GP_PT_Travel &times; w_gp_pt) + (GP_Car_Travel &times; w_gp_car) + (No_Car &times; w_no_car) + (IMD_Deprivation &times; w_imd) + (LSOAC_Risk &times; w_oac) + (Household_Vuln &times; w_household)</li>
+      </ul>
+    </details>
+
+    <details class="control">
+      <summary><strong>Data Sources</strong></summary>
+      <ul class="muted" style="margin-top:0.6rem; padding-left:1.1rem;">
+        <li><a href="https://www.gov.uk/government/statistics/2021-rural-urban-classification" target="_blank" rel="noopener noreferrer">2021 Rural/Urban Classification of LSOAs (DEFRA / ONS)</a></li>
+        <li><a href="https://www.gov.uk/government/statistical-data-sets/journey-time-statistics-data-tables-jts" target="_blank" rel="noopener noreferrer">DfT Journey Time Statistics to GPs (Table JTS0505)</a></li>
+        <li><a href="https://www.ons.gov.uk/datasets/TS045/editions/2021/versions/4" target="_blank" rel="noopener noreferrer">ONS Census 2021: Car or Van Availability (Table TS045)</a></li>
+        <li><a href="https://www.ons.gov.uk/datasets/TS003/editions/2021/versions/3" target="_blank" rel="noopener noreferrer">ONS Census 2021: Household Composition (Table TS003)</a></li>
+        <li><a href="https://www.gov.uk/government/statistics/english-indices-of-deprivation-2025" target="_blank" rel="noopener noreferrer">English Indices of Deprivation 2025 (MHCLG IoD2025)</a></li>
+        <li><a href="https://data.geods.ac.uk/dataset/lsoac" target="_blank" rel="noopener noreferrer">UK LSOA Classification 2021/2 (GeoDS / University of Liverpool / ONS)</a></li>
+        <li><a href="https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/populationestimates/datasets/lowersuperoutputareamidyearpopulationestimates" target="_blank" rel="noopener noreferrer">LSOA Mid-Year Population Estimates (Mid-2024 SAPE, ONS)</a></li>
+        <li><a href="https://digital.nhs.uk/data-and-information/publications/statistical/patients-registered-at-a-gp-practice/july-2026" target="_blank" rel="noopener noreferrer">NHS Digital: Patients Registered at a GP Practice (July 2026)</a></li>
+      </ul>
+    </details>
+
+    <details class="control">
+      <summary><strong>LSOAC Geodemographic Risk Weights (Subgroups)</strong></summary>
+      <p class="muted" style="margin-top:0.6rem; margin-bottom:0.4rem;">
+        Vulnerability risk weights mapped across the 30 UK LSOA Classification Subgroups present in Lincolnshire (0 = lowest risk, 1 = highest risk):
+      </p>
+      <div style="max-height: 280px; overflow-y: auto; border: 1px solid #e4ecef; border-radius: 4px; padding: 4px 6px;">
+        <table style="width:100%; font-size:0.75rem; border-collapse:collapse;">
+          <thead>
+            <tr style="border-bottom:1px solid #d7e2e8; text-align:left;">
+              <th style="padding:3px 4px;">Subgroup</th>
+              <th style="padding:3px 4px; text-align:right;">Risk Score</th>
+              <th style="padding:3px 4px; text-align:right;">LSOAs (Lincs)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #f0f4f7;"><td style="padding:3px 4px;"><strong>8b1</strong>: Challenged Families</td><td style="padding:3px 4px; text-align:right; font-weight:600;">0.95</td><td style="padding:3px 4px; text-align:right;">1 (0.2%)</td></tr>
+            <tr style="border-bottom:1px solid #f0f4f7;"><td style="padding:3px 4px;"><strong>8b2</strong>: Retirement Pockets</td><td style="padding:3px 4px; text-align:right; font-weight:600;">0.88</td><td style="padding:3px 4px; text-align:right;">1 (0.2%)</td></tr>
+            <tr style="border-bottom:1px solid #f0f4f7;"><td style="padding:3px 4px;"><strong>7b1</strong>: Terraces in Transitional Towns</td><td style="padding:3px 4px; text-align:right; font-weight:600;">0.78</td><td style="padding:3px 4px; text-align:right;">32 (7.4%)</td></tr>
+            <tr style="border-bottom:1px solid #f0f4f7;"><td style="padding:3px 4px;"><strong>1a2</strong>: Retirement Spacious Living</td><td style="padding:3px 4px; text-align:right; font-weight:600;">0.76</td><td style="padding:3px 4px; text-align:right;">34 (7.8%)</td></tr>
+            <tr style="border-bottom:1px solid #f0f4f7;"><td style="padding:3px 4px;"><strong>7b2</strong>: Families and Later Life</td><td style="padding:3px 4px; text-align:right; font-weight:600;">0.75</td><td style="padding:3px 4px; text-align:right;">7 (1.6%)</td></tr>
+            <tr style="border-bottom:1px solid #f0f4f7;"><td style="padding:3px 4px;"><strong>7a2</strong>: Industry Associations</td><td style="padding:3px 4px; text-align:right; font-weight:600;">0.74</td><td style="padding:3px 4px; text-align:right;">42 (9.7%)</td></tr>
+            <tr style="border-bottom:1px solid #f0f4f7;"><td style="padding:3px 4px;"><strong>1a1</strong>: Pre-Retirement Spacious Living</td><td style="padding:3px 4px; text-align:right; font-weight:600;">0.68</td><td style="padding:3px 4px; text-align:right;">75 (17.2%)</td></tr>
+            <tr style="border-bottom:1px solid #f0f4f7;"><td style="padding:3px 4px;"><strong>6b1</strong>: Retired Seniors (Coastal)</td><td style="padding:3px 4px; text-align:right; font-weight:600;">0.68</td><td style="padding:3px 4px; text-align:right;">8 (1.8%)</td></tr>
+            <tr style="border-bottom:1px solid #f0f4f7;"><td style="padding:3px 4px;"><strong>2c1</strong>: Communal Retirement Living</td><td style="padding:3px 4px; text-align:right; font-weight:600;">0.65</td><td style="padding:3px 4px; text-align:right;">9 (2.1%)</td></tr>
+            <tr style="border-bottom:1px solid #f0f4f7;"><td style="padding:3px 4px;"><strong>1b2</strong>: Older Established Suburbs</td><td style="padding:3px 4px; text-align:right; font-weight:600;">0.65</td><td style="padding:3px 4px; text-align:right;">2 (0.5%)</td></tr>
+            <tr style="border-bottom:1px solid #f0f4f7;"><td style="padding:3px 4px;"><strong>6b2</strong>: Traditional Terraces</td><td style="padding:3px 4px; text-align:right; font-weight:600;">0.62</td><td style="padding:3px 4px; text-align:right;">3 (0.7%)</td></tr>
+            <tr style="border-bottom:1px solid #f0f4f7;"><td style="padding:3px 4px;"><strong>4a1</strong>: Diverse Service Workers</td><td style="padding:3px 4px; text-align:right; font-weight:600;">0.62</td><td style="padding:3px 4px; text-align:right;">1 (0.2%)</td></tr>
+            <tr style="border-bottom:1px solid #f0f4f7;"><td style="padding:3px 4px;"><strong>1b1</strong>: Younger Established Suburbs</td><td style="padding:3px 4px; text-align:right; font-weight:600;">0.58</td><td style="padding:3px 4px; text-align:right;">32 (7.4%)</td></tr>
+            <tr style="border-bottom:1px solid #f0f4f7;"><td style="padding:3px 4px;"><strong>6b3</strong>: EU Singles (Agri-Food)</td><td style="padding:3px 4px; text-align:right; font-weight:600;">0.58</td><td style="padding:3px 4px; text-align:right;">29 (6.7%)</td></tr>
+            <tr style="border-bottom:1px solid #f0f4f7;"><td style="padding:3px 4px;"><strong>6c1</strong>: Transient Communities</td><td style="padding:3px 4px; text-align:right; font-weight:600;">0.56</td><td style="padding:3px 4px; text-align:right;">5 (1.1%)</td></tr>
+            <tr style="border-bottom:1px solid #f0f4f7;"><td style="padding:3px 4px;"><strong>6a3</strong>: Diverse Families in Flats</td><td style="padding:3px 4px; text-align:right; font-weight:600;">0.55</td><td style="padding:3px 4px; text-align:right;">2 (0.5%)</td></tr>
+            <tr style="border-bottom:1px solid #f0f4f7;"><td style="padding:3px 4px;"><strong>2b1</strong>: Ageing Rural Communities</td><td style="padding:3px 4px; text-align:right; font-weight:600;">0.52</td><td style="padding:3px 4px; text-align:right;">50 (11.5%)</td></tr>
+            <tr style="border-bottom:1px solid #f0f4f7;"><td style="padding:3px 4px;"><strong>1c2</strong>: Burgeoning Mature Families</td><td style="padding:3px 4px; text-align:right; font-weight:600;">0.52</td><td style="padding:3px 4px; text-align:right;">10 (2.3%)</td></tr>
+            <tr style="border-bottom:1px solid #f0f4f7;"><td style="padding:3px 4px;"><strong>1c1</strong>: Affluent Mature Families</td><td style="padding:3px 4px; text-align:right; font-weight:600;">0.50</td><td style="padding:3px 4px; text-align:right;">9 (2.1%)</td></tr>
+            <tr style="border-bottom:1px solid #f0f4f7;"><td style="padding:3px 4px;"><strong>2c2</strong>: Ageing Independent Living</td><td style="padding:3px 4px; text-align:right; font-weight:600;">0.48</td><td style="padding:3px 4px; text-align:right;">13 (3.0%)</td></tr>
+            <tr style="border-bottom:1px solid #f0f4f7;"><td style="padding:3px 4px;"><strong>2a1</strong>: Younger Suburban Renters</td><td style="padding:3px 4px; text-align:right; font-weight:600;">0.45</td><td style="padding:3px 4px; text-align:right;">25 (5.7%)</td></tr>
+            <tr style="border-bottom:1px solid #f0f4f7;"><td style="padding:3px 4px;"><strong>6a1</strong>: Suburban Housing Starters</td><td style="padding:3px 4px; text-align:right; font-weight:600;">0.45</td><td style="padding:3px 4px; text-align:right;">1 (0.2%)</td></tr>
+            <tr style="border-bottom:1px solid #f0f4f7;"><td style="padding:3px 4px;"><strong>2b2</strong>: Rural Mix</td><td style="padding:3px 4px; text-align:right; font-weight:600;">0.42</td><td style="padding:3px 4px; text-align:right;">26 (6.0%)</td></tr>
+            <tr style="border-bottom:1px solid #f0f4f7;"><td style="padding:3px 4px;"><strong>2a3</strong>: Terraced Communities</td><td style="padding:3px 4px; text-align:right; font-weight:600;">0.42</td><td style="padding:3px 4px; text-align:right;">1 (0.2%)</td></tr>
+            <tr style="border-bottom:1px solid #f0f4f7;"><td style="padding:3px 4px;"><strong>5b1</strong>: Families in Multi-Ethnic Terraces</td><td style="padding:3px 4px; text-align:right; font-weight:600;">0.36</td><td style="padding:3px 4px; text-align:right;">4 (0.9%)</td></tr>
+            <tr style="border-bottom:1px solid #f0f4f7;"><td style="padding:3px 4px;"><strong>2a2</strong>: Settled Owner-Occupied Suburbs</td><td style="padding:3px 4px; text-align:right; font-weight:600;">0.35</td><td style="padding:3px 4px; text-align:right;">5 (1.1%)</td></tr>
+            <tr style="border-bottom:1px solid #f0f4f7;"><td style="padding:3px 4px;"><strong>5a1</strong>: Outer Suburb Asian Mix</td><td style="padding:3px 4px; text-align:right; font-weight:600;">0.32</td><td style="padding:3px 4px; text-align:right;">1 (0.2%)</td></tr>
+            <tr style="border-bottom:1px solid #f0f4f7;"><td style="padding:3px 4px;"><strong>5a3</strong>: Young Suburban Families</td><td style="padding:3px 4px; text-align:right; font-weight:600;">0.32</td><td style="padding:3px 4px; text-align:right;">1 (0.2%)</td></tr>
+            <tr style="border-bottom:1px solid #f0f4f7;"><td style="padding:3px 4px;"><strong>5b2</strong>: Established Multi-Ethnic Suburbs</td><td style="padding:3px 4px; text-align:right; font-weight:600;">0.28</td><td style="padding:3px 4px; text-align:right;">2 (0.5%)</td></tr>
+            <tr><td style="padding:3px 4px;"><strong>3a1</strong>: University Centric</td><td style="padding:3px 4px; text-align:right; font-weight:600;">0.25</td><td style="padding:3px 4px; text-align:right;">4 (0.9%)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+    <h2 style="font-size: 1.05rem; font-weight: 700; margin: 1rem 0 0.4rem; color: var(--text);">Weights:</h2>
+
+    <div class="control">
+      <label for="w_rural">Rural / Urban Isolation <output id="w_rural_val">14.3</output></label>
+      <input id="w_rural" type="range" min="0" max="100" step="0.1" value="14.3">
+    </div>
+
+    <div class="control">
+      <label for="w_gp_pt">GP Travel Time (PT / Walk) <output id="w_gp_pt_val">14.3</output></label>
+      <input id="w_gp_pt" type="range" min="0" max="100" step="0.1" value="14.3">
+    </div>
+
+    <div class="control">
+      <label for="w_gp_car">GP Travel Time (Car) <output id="w_gp_car_val">14.3</output></label>
+      <input id="w_gp_car" type="range" min="0" max="100" step="0.1" value="14.3">
+    </div>
+
+    <div class="control">
+      <label for="w_no_car">No Car Ownership (%) <output id="w_no_car_val">14.3</output></label>
+      <input id="w_no_car" type="range" min="0" max="100" step="0.1" value="14.3">
+    </div>
+
+    <div class="control">
+      <label for="w_imd">Deprivation (IMD 2025) <output id="w_imd_val">14.3</output></label>
+      <input id="w_imd" type="range" min="0" max="100" step="0.1" value="14.3">
+    </div>
+
+    <div class="control">
+      <label for="w_oac">Geodemographic Profile (LSOAC) <output id="w_oac_val">14.3</output></label>
+      <input id="w_oac" type="range" min="0" max="100" step="0.1" value="14.3">
+    </div>
+
+    <div class="control">
+      <label for="w_household">Household Composition / Solitary Living <output id="w_household_val">14.2</output></label>
+      <input id="w_household" type="range" min="0" max="100" step="0.1" value="14.2">
+    </div>
+
+    <div class="legend" id="weight_total"></div>
+    <div class="legend" id="effective_weights"></div>
+
+    <div class="legend" id="status">Loading Rural Risk Index and datasets...</div>
+
+    <div class="legend" style="margin-top:0.9rem;">
+      &copy; 2026 <a href="https://www.lincoln.ac.uk/" target="_blank" rel="noopener noreferrer">University of Lincoln</a><br>
+      <a href="https://lumhr.org.uk/" target="_blank" rel="noopener noreferrer">Lincolnshire Unit for Mental Health Research (LUMHR)</a><br>
+      Lincolnshire Rural Risk Index v1.0
+    </div>
+  </aside>
+
+  <section class="map-shell">
+    <div id="map"></div>
+  </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const geojsonUrl = "/datasets/{{ geojson_rel_path }}";
+  const GP_LOCATIONS_API = "/api/gp_locations";
+  const RURAL_RISK_API = "/api/rural_risk_scores";
+
+  let map;
+  let geojsonLayer;
+  let gpLayer;
+  let ruralLayerScores = {};
+  let lsoaDetails = {};
+  let currentLayerKey = "Rural_Risk_Index";
+  let minScore = 0;
+  let maxScore = 1;
+  let fillOpacity = 0.82;
+  const sliderIds = ["w_rural", "w_gp_pt", "w_gp_car", "w_no_car", "w_imd", "w_oac", "w_household"];
+
+  function getCode(feature) {
+    return feature?.properties?.CODE ?? feature?.properties?.LSOA21CD ?? feature?.properties?.lsoa21cd ?? feature?.properties?.LSOA_CODE ?? null;
+  }
+
+  function getActiveLayerScores() {
+    return ruralLayerScores[currentLayerKey] || {};
+  }
+
+  function getScaleForLayer(layerKey) {
+    if (layerKey === "IMD_2025_Decile") {
+      return "Viridis";
+    }
+    if (layerKey === "Pct_65plus" || layerKey === "GP_Registration_Rate_Pct") {
+      return "YlGnBu";
+    }
+    return "YlOrRd";
+  }
+
+  function styleFeature(feature) {
+    const code = getCode(feature);
+    const activeScores = getActiveLayerScores();
+    const score = code ? activeScores[code] : null;
+
+    let fillColor = "#d9d9d9";
+    if (score !== null && score !== undefined && Number.isFinite(score)) {
+      const span = (maxScore - minScore) || 1;
+      let t = Math.max(0, Math.min(1, (score - minScore) / span));
+
+      if (currentLayerKey === "IMD_2025_Decile") {
+        // Decile 1 is most deprived (high risk). Color Decile 1 dark purple/red, Decile 10 bright yellow.
+        t = 1.0 - Math.max(0, Math.min(1, (score - 1) / 9.0));
+      }
+
+      fillColor = chroma.scale(getScaleForLayer(currentLayerKey))(t).hex();
+    }
+
+    return {
+      color: "#4a4a4a",
+      weight: 0.5,
+      fillColor,
+      fillOpacity: fillOpacity
+    };
+  }
+
+  function formatLegendNumber(value) {
+    if (value === null || value === undefined || !Number.isFinite(value)) {
+      return "N/A";
+    }
+    return Math.abs(value) >= 100 ? value.toFixed(1) : value.toFixed(4);
+  }
+
+  function round1(val) {
+    return Math.round(val * 10) / 10;
+  }
+
+  function rebalanceWeights(changedId) {
+    const totalPoints = 100.0;
+    const values = {};
+    for (const id of sliderIds) {
+      values[id] = Math.max(0, Number(document.getElementById(id).value) || 0);
+    }
+
+    const changedVal = Math.max(0, Math.min(totalPoints, values[changedId]));
+    values[changedId] = changedVal;
+
+    const remaining = Math.max(0, totalPoints - changedVal);
+    const otherIds = sliderIds.filter(id => id !== changedId);
+    const otherSum = otherIds.reduce((acc, id) => acc + values[id], 0);
+
+    if (otherSum <= 0.0001) {
+      const equalShare = otherIds.length > 0 ? remaining / otherIds.length : 0;
+      for (const id of otherIds) {
+        values[id] = equalShare;
+      }
+    } else {
+      const scale = remaining / otherSum;
+      for (const id of otherIds) {
+        values[id] = values[id] * scale;
+      }
+    }
+
+    for (const id of sliderIds) {
+      values[id] = round1(values[id]);
+    }
+
+    const roundedTotal = sliderIds.reduce((acc, id) => acc + values[id], 0);
+    const diff = round1(totalPoints - roundedTotal);
+    const lastId = otherIds[otherIds.length - 1] ?? changedId;
+    values[lastId] = round1(values[lastId] + diff);
+
+    for (const id of sliderIds) {
+      document.getElementById(id).value = String(values[id]);
+      const valEl = document.getElementById(`${id}_val`);
+      if (valEl) valEl.textContent = values[id].toFixed(1);
+    }
+
+    return values;
+  }
+
+  function updateWeightsSummary() {
+    const values = Object.fromEntries(sliderIds.map((id) => [id, Math.max(0, Number(document.getElementById(id).value) || 0)]));
+    for (const id of sliderIds) {
+      const valEl = document.getElementById(`${id}_val`);
+      if (valEl) valEl.textContent = values[id].toFixed(1);
+    }
+
+    const sum = Object.values(values).reduce((a, b) => a + b, 0);
+
+    const totalEl = document.getElementById("weight_total");
+    const effEl = document.getElementById("effective_weights");
+
+    if (totalEl) totalEl.textContent = `Weight points total: ${sum.toFixed(1)}`;
+
+    if (effEl) {
+      if (sum <= 0) {
+        effEl.textContent = "Effective weights: all 7 indicators weighted equally (~14.3% each).";
+        return;
+      }
+      const eff = sliderIds.map(id => ((values[id] / sum) * 100).toFixed(1) + "%");
+      effEl.innerHTML =
+        `<strong>Effective weights:</strong><br>` +
+        `Rural: ${eff[0]} | GP (PT): ${eff[1]} | GP (Car): ${eff[2]} | No Car: ${eff[3]} | IMD: ${eff[4]} | LSOAC: ${eff[5]} | Household: ${eff[6]}`;
+    }
+  }
+
+  function computeActiveRange() {
+    const values = Object.values(getActiveLayerScores()).map(Number).filter(Number.isFinite);
+    minScore = values.length ? Math.min(...values) : 0;
+    maxScore = values.length ? Math.max(...values) : 1;
+  }
+
+  function updateColorBar() {
+    const bar = document.getElementById("map_colorbar_gradient");
+    const minEl = document.getElementById("map_colorbar_min");
+    const maxEl = document.getElementById("map_colorbar_max");
+    const titleEl = document.getElementById("map_colorbar_title");
+
+    if (!bar || !minEl || !maxEl || !titleEl) return;
+
+    const scaleName = getScaleForLayer(currentLayerKey);
+    const scale = chroma.scale(scaleName);
+    bar.style.background = `linear-gradient(to right, ${scale(0).hex()} 0%, ${scale(1).hex()} 100%)`;
+
+    const layerLabels = {
+      "Rural_Risk_Index": "Rural Risk Index (0 - 1)",
+      "Rural_Isolation": "Rural Isolation Score (0 - 1)",
+      "GP_PT_Travel_Time": "GP Travel Time (PT / Walk, min)",
+      "GP_Car_Travel_Time": "GP Travel Time (Car, min)",
+      "No_Cars_Pct": "Households with No Car (%)",
+      "IMD_2025_Decile": "IMD 2025 Decile (1 = Most Deprived)",
+      "LSOAC_Risk": "Geodemographic Risk (0 - 1)",
+      "Household_Vulnerability": "Household Isolation & Vulnerability (0 - 1)",
+      "Single_Pensioner_HH_Pct": "Single Older Adults (66+) Living Alone (%)",
+      "Non_Couple_HH_Pct": "Adults Not Living as a Couple (%)",
+      "Pensioner_Couple_HH_Pct": "All-Pensioner Couples (66+) (%)",
+      "Lone_Parent_HH_Pct": "Lone Parent Families with Dep Children (%)",
+      "Pct_65plus": "Older Adults 65+ (% ONS)",
+      "GP_Registration_Rate_Pct": "GP Registration Coverage (%)"
+    };
+
+    titleEl.textContent = layerLabels[currentLayerKey] || "Map Layer";
+    minEl.textContent = formatLegendNumber(minScore);
+    maxEl.textContent = formatLegendNumber(maxScore);
+  }
+
+  function applyActiveLayerStyle() {
+    computeActiveRange();
+    updateColorBar();
+    if (geojsonLayer) {
+      geojsonLayer.setStyle(styleFeature);
+      refreshTooltips();
+    }
+  }
+
+  function refreshTooltips() {
+    if (!geojsonLayer) return;
+    geojsonLayer.eachLayer(layer => {
+      const code = getCode(layer.feature);
+      const name = layer.feature?.properties?.NAME || "";
+      const detail = lsoaDetails[code] || {};
+
+      let popupHtml =
+        `<strong>LSOA:</strong> ${code}<br>` +
+        `<strong>LSOA Name:</strong> ${detail.lsoa_name || name || "N/A"}<br>` +
+        `<strong>Rural Risk Index:</strong> ${detail.rural_risk_index !== null && detail.rural_risk_index !== undefined ? detail.rural_risk_index.toFixed(4) : "N/A"}<br>` +
+        `<strong>Rural / Urban Classification:</strong> ${detail.ruc21nm || "N/A"}<br>` +
+        `<strong>Rural Isolation Score (0-1):</strong> ${detail.rural_isolation_score !== null && detail.rural_isolation_score !== undefined ? detail.rural_isolation_score.toFixed(2) : "N/A"}<br>` +
+        `<strong>GP Travel Time (PT / Walk):</strong> ${detail.gp_pt_time !== null && detail.gp_pt_time !== undefined ? detail.gp_pt_time.toFixed(1) + " min" : "N/A"}<br>` +
+        `<strong>GP Travel Time (Car):</strong> ${detail.gp_car_time !== null && detail.gp_car_time !== undefined ? detail.gp_car_time.toFixed(1) + " min" : "N/A"}<br>` +
+        `<strong>Households with No Car/Van:</strong> ${detail.no_cars_pct !== null && detail.no_cars_pct !== undefined ? detail.no_cars_pct.toFixed(1) + "%" : "N/A"}<br>` +
+        `<strong>IMD 2025 Decile:</strong> ${detail.imd_2025_decile !== null && detail.imd_2025_decile !== undefined ? detail.imd_2025_decile : "N/A"} (Rank: ${detail.imd_2025_rank ? detail.imd_2025_rank.toLocaleString() : "N/A"})<br>` +
+        `<strong>LSOAC Subgroup:</strong> ${detail.subgroup_code ? detail.subgroup_code + ': ' + (detail.subgroup_name || "N/A") : "N/A"}<br>` +
+        `<strong>LSOAC Group:</strong> ${detail.group_name || "N/A"}<br>` +
+        `<strong>LSOAC Supergroup:</strong> ${detail.supergroup_name || "N/A"}`;
+
+      if (detail.total_households_2021 !== null && detail.total_households_2021 !== undefined) {
+        popupHtml +=
+          `<hr style="margin:6px 0;">` +
+          `<strong>Household Composition (Census 2021):</strong><br>` +
+          `&bull; <strong>Total Households:</strong> ${Math.round(detail.total_households_2021).toLocaleString()}<br>` +
+          `&bull; <strong>Single Older Adults (66+) Living Alone:</strong> ${detail.single_pensioner_hh_pct !== null ? detail.single_pensioner_hh_pct.toFixed(1) + "%" : "N/A"}${detail.single_pensioner_hh_count !== null ? ` (${Math.round(detail.single_pensioner_hh_count)})` : ""}<br>` +
+          `&bull; <strong>All-Pensioner Couples (66+):</strong> ${detail.pensioner_couple_hh_pct !== null ? detail.pensioner_couple_hh_pct.toFixed(1) + "%" : "N/A"}${detail.pensioner_couple_hh_count !== null ? ` (${Math.round(detail.pensioner_couple_hh_count)})` : ""}<br>` +
+          `&bull; <strong>Lone Parent Families:</strong> ${detail.lone_parent_dep_hh_pct !== null ? detail.lone_parent_dep_hh_pct.toFixed(1) + "%" : "N/A"}${detail.lone_parent_dep_hh_count !== null ? ` (${Math.round(detail.lone_parent_dep_hh_count)})` : ""}<br>` +
+          `&bull; <strong>Adults Not Living as a Couple:</strong> ${detail.non_couple_hh_pct !== null ? detail.non_couple_hh_pct.toFixed(1) + "%" : "N/A"}`;
+      }
+
+      if (detail.ons_pop_total !== null && detail.ons_pop_total !== undefined) {
+        popupHtml +=
+          `<hr style="margin:6px 0;">` +
+          `<strong>Resident Population Estimate (ONS Mid-2024):</strong> ${Math.round(detail.ons_pop_total).toLocaleString()}<br>` +
+          `<strong>Adults 18+ (Estimate):</strong> ${detail.ons_pop_18plus !== null ? Math.round(detail.ons_pop_18plus).toLocaleString() : "N/A"}${detail.pct_18plus !== null ? ` (${detail.pct_18plus.toFixed(1)}%)` : ""}<br>` +
+          `<strong>Older Adults 65+ (Estimate):</strong> ${detail.ons_pop_65plus !== null ? Math.round(detail.ons_pop_65plus).toLocaleString() : "N/A"}${detail.pct_65plus !== null ? ` (${detail.pct_65plus.toFixed(1)}%)` : ""}<br>` +
+          `<strong>GP Registered Patients:</strong> ${detail.gp_registered_patients !== null ? Math.round(detail.gp_registered_patients).toLocaleString() : "N/A"}${detail.gp_registration_rate_pct !== null ? ` (${detail.gp_registration_rate_pct.toFixed(1)}% of ONS Estimate)` : ""}`;
+
+        if (detail.list_inflation_est && detail.list_inflation_est > 0) {
+          popupHtml += `<br><strong>Net Excess GP Registrations:</strong> +${Math.round(detail.list_inflation_est).toLocaleString()}`;
+        } else if (detail.registration_gap_est && detail.registration_gap_est > 0) {
+          popupHtml += `<br><strong>Unregistered / Cross-Border Difference:</strong> -${Math.round(detail.registration_gap_est).toLocaleString()}`;
+        }
+      }
+
+      layer.bindPopup(popupHtml, { maxWidth: 360 });
+      layer.setTooltipContent(`${code}${name ? ` | ${name}` : ""}`);
+    });
+  }
+
+  function addMapLegendControl() {
+    const legendControl = L.control({ position: "topright" });
+    legendControl.onAdd = function onAdd() {
+      const container = L.DomUtil.create("div", "leaflet-bar");
+      container.style.background = "#ffffff";
+      container.style.padding = "10px";
+      container.style.minWidth = "260px";
+      container.style.boxShadow = "0 2px 8px rgba(0,0,0,0.15)";
+      container.style.borderRadius = "6px";
+      container.style.border = "1px solid #d7e2e8";
+      container.innerHTML = `
+        <div style="font-weight:700; margin-bottom:6px;">Map Layers</div>
+        <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="Rural_Risk_Index" checked> Rural Risk Index</label>
+        <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="Rural_Isolation"> Rural Isolation Score</label>
+        <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="GP_PT_Travel_Time"> GP Travel Time (PT / Walk)</label>
+        <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="GP_Car_Travel_Time"> GP Travel Time (Car)</label>
+        <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="No_Cars_Pct"> Households with No Car (%)</label>
+        <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="IMD_2025_Decile"> IMD 2025 Decile</label>
+        <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="LSOAC_Risk"> Geodemographic Risk (LSOAC)</label>
+        <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="Household_Vulnerability"> Household Isolation &amp; Vulnerability</label>
+        <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="Single_Pensioner_HH_Pct"> Single Older Adults (66+) Alone (%)</label>
+        <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="Non_Couple_HH_Pct"> Adults Not Living as Couple (%)</label>
+        <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="Pensioner_Couple_HH_Pct"> All-Pensioner Couples (66+) (%)</label>
+        <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="Lone_Parent_HH_Pct"> Lone Parent Families (%)</label>
+        <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="Pct_65plus"> Older Adults (65+) %</label>
+        <label style="display:block; margin-bottom:8px;"><input type="radio" name="map_metric" value="GP_Registration_Rate_Pct"> GP Registration Coverage (%)</label>
+        <div style="border-top:1px solid #e4ecef; padding-top:8px; margin-top:6px;">
+          <div id="map_colorbar_title" style="font-weight:600; margin-bottom:4px;">Rural Risk Index</div>
+          <div id="map_colorbar_gradient" style="height:12px; border-radius:4px; border:1px solid #d0d9df;"></div>
+          <div style="display:flex; justify-content:space-between; font-size:11px; color:#4f5f69; margin-top:3px;">
+            <span id="map_colorbar_min">0.0000</span>
+            <span id="map_colorbar_max">1.0000</span>
+          </div>
+        </div>
+        <div style="border-top:1px solid #e4ecef; padding-top:8px; margin-top:6px;">
+          <label style="display:block;"><input id="map_show_gp_locations" type="checkbox" checked> GP Locations</label>
+        </div>
+        <div style="border-top:1px solid #e4ecef; padding-top:8px; margin-top:6px;">
+          <label for="map_opacity_slider" style="display:block; font-weight:600; margin-bottom:4px;">Overlay Transparency</label>
+          <input id="map_opacity_slider" type="range" min="0.1" max="1" step="0.05" value="0.82" style="width:100%;">
+          <div id="map_opacity_value" style="font-size:11px; color:#4f5f69; margin-top:2px;">Opacity: 0.82</div>
+        </div>
+      `;
+
+      L.DomEvent.disableClickPropagation(container);
+      L.DomEvent.disableScrollPropagation(container);
+      return container;
+    };
+
+    legendControl.addTo(map);
+
+    for (const radio of document.querySelectorAll('input[name="map_metric"]')) {
+      radio.addEventListener("change", () => {
+        currentLayerKey = radio.value;
+        applyActiveLayerStyle();
+      });
+    }
+
+    const gpCheckbox = document.getElementById("map_show_gp_locations");
+    if (gpCheckbox) {
+      gpCheckbox.addEventListener("change", () => {
+        if (!gpLayer) return;
+        if (gpCheckbox.checked) {
+          gpLayer.addTo(map);
+        } else {
+          map.removeLayer(gpLayer);
+        }
+      });
+    }
+
+    const opacitySlider = document.getElementById("map_opacity_slider");
+    const opacityValue = document.getElementById("map_opacity_value");
+    if (opacitySlider && opacityValue) {
+      opacitySlider.addEventListener("input", () => {
+        fillOpacity = Number(opacitySlider.value);
+        opacityValue.textContent = `Opacity: ${fillOpacity.toFixed(2)}`;
+        if (geojsonLayer) {
+          geojsonLayer.setStyle(styleFeature);
+        }
+      });
+    }
+  }
+
+  async function loadGPLocations() {
+    try {
+      const res = await fetch(GP_LOCATIONS_API);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      const gps = data.gp_locations || [];
+
+      gpLayer = L.layerGroup();
+      gps.forEach(gp => {
+        if (!gp.Lat || !gp.Lon) return;
+        const marker = L.circleMarker([gp.Lat, gp.Lon], {
+          radius: 5,
+          color: "#0f2d3a",
+          weight: 1.2,
+          fillColor: "#0284c7",
+          fillOpacity: 0.9
+        });
+        const popup =
+          `<strong>${gp.Practice_Name || "GP Practice"}</strong><br>` +
+          `<strong>Code:</strong> ${gp.PRACTICE_CODE || "N/A"}<br>` +
+          `<strong>Registered Patients:</strong> ${gp.NUMBER_OF_PATIENTS ? Math.round(gp.NUMBER_OF_PATIENTS).toLocaleString() : "N/A"}`;
+        marker.bindPopup(popup);
+        gpLayer.addLayer(marker);
+      });
+
+      gpLayer.addTo(map);
+    } catch (err) {
+      console.warn("Could not load GP locations:", err);
+    }
+  }
+
+  async function recalculateRuralRisk() {
+    const statusEl = document.getElementById("status");
+    try {
+      if (statusEl) statusEl.textContent = "Recalculating scores...";
+      const params = new URLSearchParams();
+      sliderIds.forEach(id => {
+        params.set(id, document.getElementById(id).value);
+      });
+
+      const res = await fetch(`${RURAL_RISK_API}?${params.toString()}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+
+      ruralLayerScores = data.layers || {};
+      lsoaDetails = data.lsoa_details || {};
+
+      applyActiveLayerStyle();
+      if (statusEl) statusEl.textContent = "Ready. 435 Lincolnshire LSOAs loaded.";
+    } catch (err) {
+      if (statusEl) statusEl.textContent = `Error: ${err.message}`;
+      console.error(err);
+    }
+  }
+
+  let debounceTimer = null;
+  function onSliderChange(e) {
+    rebalanceWeights(e.target.id);
+    updateWeightsSummary();
+
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(recalculateRuralRisk, 150);
+  }
+
+  async function initMap() {
+    map = L.map("map", { preferCanvas: true });
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 18,
+      attribution: "&copy; OpenStreetMap contributors"
+    }).addTo(map);
+
+    const lincolnshireBounds = [
+      [52.64022, -0.82065],
+      [53.61637, 0.35797]
+    ];
+    map.fitBounds(lincolnshireBounds, { animate: false });
+
+    addMapLegendControl();
+    updateWeightsSummary();
+
+    sliderIds.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener("input", onSliderChange);
+    });
+
+    await recalculateRuralRisk();
+
+    try {
+      const geoRes = await fetch(geojsonUrl);
+      if (!geoRes.ok) throw new Error(`HTTP ${geoRes.status}`);
+      const geoData = await geoRes.json();
+
+      geojsonLayer = L.geoJSON(geoData, {
+        style: styleFeature,
+        onEachFeature: (feature, layer) => {
+          layer.on({
+            mouseover: e => {
+              const l = e.target;
+              l.setStyle({ weight: 2.2, color: "#1e293b" });
+              l.bringToFront();
+            },
+            mouseout: e => {
+              geojsonLayer.resetStyle(e.target);
+            }
+          });
+        }
+      }).addTo(map);
+
+      applyActiveLayerStyle();
+    } catch (err) {
+      console.error("GeoJSON error:", err);
+    }
+
+    loadGPLocations();
+  }
+
+  window.addEventListener("DOMContentLoaded", initMap);
+</script>
+{% endblock %}

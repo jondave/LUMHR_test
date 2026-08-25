@@ -21,13 +21,13 @@
       </ul>
       <p class="muted" style="margin-top:0.45rem; margin-bottom:0.25rem;"><strong>Access Index:</strong></p>
       <ul class="muted" style="margin-top:0; padding-left:1.1rem;">
-        <li>MH002 and MH021 intervention rates and DEP004 intervention rate are min-max normalized to [0,1] (higher = better access).</li>
-        <li>Mental Health and Depression Overall PCA (exception) rates are min-max normalized then inverted (1 - normalized), since a higher exception rate reduces effective access.</li>
-        <li>GP and Hospital travel times (Public Transport/Walking and Car, 2019) are min-max normalized then inverted, since longer journeys reduce effective access.</li>
-        <li>Rural Access is derived from the ONS Rural Urban Classification (2021): each LSOA's remoteness category is mapped to an isolation scale from 0 (Urban: Nearer to a major town or city) to 5 (Smaller rural: Further from a major town or city), min-max normalized, then inverted so higher = better access.</li>
-        <li>Household Car/Van Availability is derived from ONS Census 2021 (TS045) across 5 categories (No cars: 0, 1 car: 1, 2 cars: 2, 3+ cars: 3), weighted to calculate average vehicles per household, and min-max normalized so higher = better transport access.</li>
-        <li>Digital Accessibility is derived from the Digital Exclusion Risk Index (DERI v1.6, GMCA): combines 10 indicators across Demography, Deprivation, and Broadband infrastructure into a 0–10 risk score, min-max normalized and inverted so higher = better digital access.</li>
-        <li>Access Index = (MH002_Normalized * w_mh002) + (MH021_Normalized * w_mh021) + (MH_PCA_Inverted * w_mh_pca) + (Dep_PCA_Inverted * w_dep_pca) + (DEP004_Normalized * w_dep004) + (GP_PT_Inverted * w_gp_pt) + (GP_Car_Inverted * w_gp_car) + (Hosp_PT_Inverted * w_hosp_pt) + (Hosp_Car_Inverted * w_hosp_car) + (Rural_Access * w_rural) + (Car_Access * w_car) + (Digital_Access * w_digital)</li>
+        <li>MH002 and MH021 intervention rates and DEP004 intervention rate are min-max normalised to [0,1] (higher = better access).</li>
+        <li>Mental Health and Depression Overall PCA (exception) rates are min-max normalised then inverted (1 - normalised), since a higher exception rate reduces effective access.</li>
+        <li>GP and Hospital travel times (Public Transport/Walking and Car, 2019) are min-max normalised then inverted, since longer journeys reduce effective access.</li>
+        <li>Rural Access is derived from the ONS Rural Urban Classification (2021): each LSOA's remoteness category is mapped to an isolation scale from 0 (Urban: Nearer to a major town or city) to 5 (Smaller rural: Further from a major town or city), min-max normalised, then inverted so higher = better access.</li>
+        <li>Household Car/Van Availability is derived from ONS Census 2021 (TS045) across 5 categories (No cars: 0, 1 car: 1, 2 cars: 2, 3+ cars: 3), weighted to calculate average vehicles per household, and min-max normalised so higher = better transport access.</li>
+        <li>Digital Accessibility is derived from the Digital Exclusion Risk Index (DERI v1.6, GMCA): combines 10 indicators across Demography, Deprivation, and Broadband infrastructure into a 0–10 risk score, min-max normalised and inverted so higher = better digital access.</li>
+        <li>Access Index = (MH002_Normalised * w_mh002) + (MH021_Normalised * w_mh021) + (MH_PCA_Inverted * w_mh_pca) + (Dep_PCA_Inverted * w_dep_pca) + (DEP004_Normalised * w_dep004) + (GP_PT_Inverted * w_gp_pt) + (GP_Car_Inverted * w_gp_car) + (Hosp_PT_Inverted * w_hosp_pt) + (Hosp_Car_Inverted * w_hosp_car) + (Rural_Access * w_rural) + (Car_Access * w_car) + (Digital_Access * w_digital)</li>
       </ul>
     </details>
 
