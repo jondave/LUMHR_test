@@ -171,6 +171,8 @@
   let minScore = 0;
   let maxScore = 1;
   let fillOpacity = 0.82;
+  let showUrban = true;
+  let showRural = true;
   const sliderIds = ["w_rural", "w_gp_pt", "w_gp_car", "w_no_car", "w_imd", "w_oac", "w_household"];
 
   function getCode(feature) {
@@ -193,6 +195,20 @@
 
   function styleFeature(feature) {
     const code = getCode(feature);
+    const detail = lsoaDetails[code] || {};
+    const isRural = detail.is_rural ?? (detail.ruc21nm ? detail.ruc21nm.toLowerCase().includes("rural") : false);
+    const isUrban = !isRural;
+
+    const isVisible = (isUrban && showUrban) || (isRural && showRural);
+    if (!isVisible) {
+      return {
+        color: "#cbd5e1",
+        weight: 0.35,
+        fillColor: "#e2e8f0",
+        fillOpacity: 0.22
+      };
+    }
+
     const activeScores = getActiveLayerScores();
     const score = code ? activeScores[code] : null;
 
@@ -437,6 +453,11 @@
           <label style="display:block;"><input id="map_show_gp_locations" type="checkbox" checked> GP Locations</label>
         </div>
         <div style="border-top:1px solid #e4ecef; padding-top:8px; margin-top:6px;">
+          <div style="font-weight:600; margin-bottom:4px; font-size:12px;">Filter Area Classification</div>
+          <label style="display:block; margin-bottom:3px; font-size:12px; cursor:pointer;"><input id="map_show_urban" type="checkbox" checked> Show Urban LSOAs (236)</label>
+          <label style="display:block; font-size:12px; cursor:pointer;"><input id="map_show_rural" type="checkbox" checked> Show Rural LSOAs (199)</label>
+        </div>
+        <div style="border-top:1px solid #e4ecef; padding-top:8px; margin-top:6px;">
           <label for="map_opacity_slider" style="display:block; font-weight:600; margin-bottom:4px;">Overlay Transparency</label>
           <input id="map_opacity_slider" type="range" min="0.1" max="1" step="0.05" value="0.82" style="width:100%;">
           <div id="map_opacity_value" style="font-size:11px; color:#4f5f69; margin-top:2px;">Opacity: 0.82</div>
@@ -466,6 +487,22 @@
         } else {
           map.removeLayer(gpLayer);
         }
+      });
+    }
+
+    const urbanCheckbox = document.getElementById("map_show_urban");
+    if (urbanCheckbox) {
+      urbanCheckbox.addEventListener("change", () => {
+        showUrban = urbanCheckbox.checked;
+        applyActiveLayerStyle();
+      });
+    }
+
+    const ruralCheckbox = document.getElementById("map_show_rural");
+    if (ruralCheckbox) {
+      ruralCheckbox.addEventListener("change", () => {
+        showRural = ruralCheckbox.checked;
+        applyActiveLayerStyle();
       });
     }
 

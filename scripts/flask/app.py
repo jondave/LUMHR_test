@@ -400,8 +400,7 @@ def access_scores_api():
             "hosp_pt_time": _num_or_none(row.get("Hosp_PT_Time")),
             "hosp_car_time": _num_or_none(row.get("Hosp_Car_Time")),
             "rural_access": _num_or_none(row.get("Rural_Access")),
-            "ruc21nm": str(row.get("RUC21NM", "") or ""),
-            "car_access": _num_or_none(row.get("Car_Access")),
+            "ruc21nm": ruc_text,
             "car_access_pct": _num_or_none(row.get("Car_Access_Pct")),
             "no_cars_pct": _num_or_none(row.get("No_Cars_Pct")),
             "one_car_pct": _num_or_none(row.get("One_Car_Pct")),
@@ -496,7 +495,7 @@ def access_gap_scores_api():
     combined["Access_Gap_Index"] = combined["Need_Index"] - combined["Access_Index"]
 
     pop_cols = [
-        "ONS_Pop_Total_2024",
+        "RUC21NM",
         "ONS_Pop_18plus",
         "ONS_Pop_65plus",
         "ONS_Pop_0to17",
@@ -529,12 +528,12 @@ def access_gap_scores_api():
         code = str(row.get("LSOA_CODE", "") or "")
         if not code:
             continue
-        lsoa_details[code] = {
+        ruc_text = str(row.get("RUC21NM", "") or "")
             "lsoa_name": str(row.get(lsoa_name_col, "") or "") if lsoa_name_col else "",
             "access_gap_index": _num_or_none(row.get("Access_Gap_Index")),
             "need_index": _num_or_none(row.get("Need_Index")),
             "access_index": _num_or_none(row.get("Access_Index")),
-            "ons_pop_total": _num_or_none(row.get("ONS_Pop_Total_2024")),
+            "ruc21nm": ruc_text,
             "ons_pop_18plus": _num_or_none(row.get("ONS_Pop_18plus")),
             "ons_pop_65plus": _num_or_none(row.get("ONS_Pop_65plus")),
             "ons_pop_0to17": _num_or_none(row.get("ONS_Pop_0to17")),
@@ -590,9 +589,8 @@ def samhi_scores_api():
         cols = ["LSOA_CODE", selected_col]
         if lsoa_name_col:
             cols.insert(1, lsoa_name_col)
-        pop_cols = ["ONS_Pop_Total_2024", "Pct_65plus", "Pct_18plus", "GP_Registered_Patients", "GP_Registration_Rate_Pct"]
+        pop_cols = ["RUC21NM", "Urban_rural_flag", "ONS_Pop_Total_2024", "Pct_65plus", "Pct_18plus", "GP_Registered_Patients", "GP_Registration_Rate_Pct"]
         cols.extend([c for c in pop_cols if c in LSOA_METRICS.columns])
-        out_df = LSOA_METRICS[cols].copy()
         out_df = out_df.rename(columns={selected_col: "score"})
 
         details: dict[str, dict[str, object]] = {}
@@ -600,11 +598,11 @@ def samhi_scores_api():
             code = str(row.get("LSOA_CODE", "") or "")
             if not code:
                 continue
-            details[code] = {
-                "lsoa_name": str(row.get(lsoa_name_col, "") or "") if lsoa_name_col else "",
+            ruc_text = str(row.get("RUC21NM", "") or "")
+            flag_text = str(row.get("Urban_rural_flag", "") or ("Rural" if "rural" in ruc_text.lower() else "Urban"))
                 "value": _num_or_none(row.get("score")),
-                "ons_pop_total": _num_or_none(row.get("ONS_Pop_Total_2024")),
-                "pct_65plus": _num_or_none(row.get("Pct_65plus")),
+                "ruc21nm": ruc_text,
+                "urban_rural_flag": flag_text,
                 "pct_18plus": _num_or_none(row.get("Pct_18plus")),
                 "gp_registered_patients": _num_or_none(row.get("GP_Registered_Patients")),
                 "gp_registration_rate_pct": _num_or_none(row.get("GP_Registration_Rate_Pct")),
@@ -635,10 +633,9 @@ def samhi_scores_api():
     cols = ["LSOA_CODE", from_col, to_col]
     if lsoa_name_col:
         cols.insert(1, lsoa_name_col)
-    pop_cols = ["ONS_Pop_Total_2024", "Pct_65plus", "Pct_18plus", "GP_Registered_Patients", "GP_Registration_Rate_Pct"]
+    pop_cols = ["RUC21NM", "Urban_rural_flag", "ONS_Pop_Total_2024", "Pct_65plus", "Pct_18plus", "GP_Registered_Patients", "GP_Registration_Rate_Pct"]
     cols.extend([c for c in pop_cols if c in LSOA_METRICS.columns])
     out_df = LSOA_METRICS[cols].copy()
-    out_df["from_value"] = pd.to_numeric(out_df[from_col], errors="coerce")
     out_df["to_value"] = pd.to_numeric(out_df[to_col], errors="coerce")
     out_df["score"] = out_df["to_value"] - out_df["from_value"]
 
@@ -647,14 +644,14 @@ def samhi_scores_api():
         code = str(row.get("LSOA_CODE", "") or "")
         if not code:
             continue
+        ruc_text = str(row.get("RUC21NM", "") or "")
+        flag_text = str(row.get("Urban_rural_flag", "") or ("Rural" if "rural" in ruc_text.lower() else "Urban"))
         details[code] = {
-            "lsoa_name": str(row.get(lsoa_name_col, "") or "") if lsoa_name_col else "",
-            "from_value": _num_or_none(row.get("from_value")),
             "to_value": _num_or_none(row.get("to_value")),
             "change": _num_or_none(row.get("score")),
-            "ons_pop_total": _num_or_none(row.get("ONS_Pop_Total_2024")),
-            "pct_65plus": _num_or_none(row.get("Pct_65plus")),
-            "pct_18plus": _num_or_none(row.get("Pct_18plus")),
+            "ruc21nm": ruc_text,
+            "urban_rural_flag": flag_text,
+            "is_rural": "rural" in ruc_text.lower(),
             "gp_registered_patients": _num_or_none(row.get("GP_Registered_Patients")),
             "gp_registration_rate_pct": _num_or_none(row.get("GP_Registration_Rate_Pct")),
         }
@@ -728,15 +725,14 @@ def rural_risk_scores_api():
         code = str(row.get("LSOA_CODE", "") or "")
         if not code:
             continue
+        ruc_text = str(row.get("RUC21NM", "") or "")
+        flag_text = str(row.get("Urban_rural_flag", "") or ("Rural" if "rural" in ruc_text.lower() else "Urban"))
         lsoa_details[code] = {
-            "lsoa_name": str(row.get(lsoa_name_col, "") or "") if lsoa_name_col else "",
-            "rural_risk_index": _num_or_none(row.get("Rural_Risk_Index")),
             "rural_isolation_score": _num_or_none(row.get("Rural_Isolation_Normalized")),
-            "ruc21nm": str(row.get("RUC21NM", "") or ""),
+            "ruc21nm": ruc_text,
+            "urban_rural_flag": flag_text,
+            "is_rural": "rural" in ruc_text.lower(),
             "gp_pt_time": _num_or_none(row.get("GP_PT_Time")),
-            "gp_car_time": _num_or_none(row.get("GP_Car_Time")),
-            "no_cars_pct": _num_or_none(row.get("No_Cars_Pct")),
-            "imd_2025_rank": _num_or_none(row.get("IMD_2025_Rank")),
             "imd_2025_decile": _num_or_none(row.get("IMD_2025_Decile")),
             "supergroup_code": str(row.get("Supergroup_Code", "") or ""),
             "supergroup_name": str(row.get("Supergroup_Name", "") or ""),

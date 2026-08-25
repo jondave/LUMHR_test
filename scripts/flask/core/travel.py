@@ -86,11 +86,19 @@ ISOLATION_SCALE = {
 def prepare_rural_urban(df: pd.DataFrame) -> pd.DataFrame:
     code_col = find_column(df, ["LSOA21CD", "LSOA_CODE"])
     name_col = find_column(df, ["RUC21NM"])
+    flag_col = find_column(df, ["Urban_rural_flag", "Flag", "UrbanRuralFlag", "Urban_Rural_Flag"], required=False)
+
+    ruc_series = df[name_col].astype(str).str.strip()
+    if flag_col and flag_col in df.columns:
+        flag_series = df[flag_col].astype(str).str.strip().str.capitalize()
+    else:
+        flag_series = ruc_series.map(lambda x: "Rural" if "rural" in str(x).lower() else "Urban")
 
     out = pd.DataFrame(
         {
             "LSOA_CODE": df[code_col].map(normalize_code),
-            "RUC21NM": df[name_col].astype(str).str.strip(),
+            "RUC21NM": ruc_series,
+            "Urban_rural_flag": flag_series,
         }
     )
     out = out[out["LSOA_CODE"].ne("")].copy()
