@@ -234,6 +234,8 @@ def need_scores_api():
         "SMI_Prevalence_Pct",
         "Antidepressant_Items_Per_Patient",
         "SAMHI_Selected",
+        "RUC21NM",
+        "Urban_rural_flag",
         "ONS_Pop_Total_2024",
         "ONS_Pop_18plus",
         "ONS_Pop_65plus",
@@ -254,6 +256,8 @@ def need_scores_api():
         code = str(row.get("LSOA_CODE", "") or "")
         if not code:
             continue
+        ruc_text = str(row.get("RUC21NM", "") or "")
+        flag_text = str(row.get("Urban_rural_flag", "") or ("Rural" if "rural" in ruc_text.lower() else "Urban"))
         lsoa_details[code] = {
             "lsoa_name": str(row.get(lsoa_name_col, "") or "") if lsoa_name_col else "",
             "need_index": _num_or_none(row.get("Need_Index")),
@@ -261,6 +265,9 @@ def need_scores_api():
             "smi_prevalence_pct": _num_or_none(row.get("SMI_Prevalence_Pct")),
             "antidepressant_items_per_patient": _num_or_none(row.get("Antidepressant_Items_Per_Patient")),
             "samhi_selected": _num_or_none(row.get("SAMHI_Selected")),
+            "ruc21nm": ruc_text,
+            "urban_rural_flag": flag_text,
+            "is_rural": "rural" in ruc_text.lower(),
             "ons_pop_total": _num_or_none(row.get("ONS_Pop_Total_2024")),
             "ons_pop_18plus": _num_or_none(row.get("ONS_Pop_18plus")),
             "ons_pop_65plus": _num_or_none(row.get("ONS_Pop_65plus")),
