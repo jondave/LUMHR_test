@@ -376,6 +376,7 @@ def access_scores_api():
         "LSOA_CODE",
         "Access_Index",
         "RUC21NM",
+        "Urban_rural_flag",
         *required_cols,
         *extra_detail_cols,
     ]
@@ -387,6 +388,8 @@ def access_scores_api():
         code = str(row.get("LSOA_CODE", "") or "")
         if not code:
             continue
+        ruc_text = str(row.get("RUC21NM", "") or "")
+        flag_text = str(row.get("Urban_rural_flag", "") or ("Rural" if "rural" in ruc_text.lower() else "Urban"))
         lsoa_details[code] = {
             "lsoa_name": str(row.get(lsoa_name_col, "") or "") if lsoa_name_col else "",
             "access_index": _num_or_none(row.get("Access_Index")),
@@ -401,6 +404,9 @@ def access_scores_api():
             "hosp_car_time": _num_or_none(row.get("Hosp_Car_Time")),
             "rural_access": _num_or_none(row.get("Rural_Access")),
             "ruc21nm": ruc_text,
+            "urban_rural_flag": flag_text,
+            "is_rural": "rural" in ruc_text.lower(),
+            "car_access": _num_or_none(row.get("Car_Access")),
             "car_access_pct": _num_or_none(row.get("Car_Access_Pct")),
             "no_cars_pct": _num_or_none(row.get("No_Cars_Pct")),
             "one_car_pct": _num_or_none(row.get("One_Car_Pct")),
@@ -529,11 +535,16 @@ def access_gap_scores_api():
         if not code:
             continue
         ruc_text = str(row.get("RUC21NM", "") or "")
+        flag_text = str(row.get("Urban_rural_flag", "") or ("Rural" if "rural" in ruc_text.lower() else "Urban"))
+        lsoa_details[code] = {
             "lsoa_name": str(row.get(lsoa_name_col, "") or "") if lsoa_name_col else "",
             "access_gap_index": _num_or_none(row.get("Access_Gap_Index")),
             "need_index": _num_or_none(row.get("Need_Index")),
             "access_index": _num_or_none(row.get("Access_Index")),
             "ruc21nm": ruc_text,
+            "urban_rural_flag": flag_text,
+            "is_rural": "rural" in ruc_text.lower(),
+            "ons_pop_total": _num_or_none(row.get("ONS_Pop_Total_2024")),
             "ons_pop_18plus": _num_or_none(row.get("ONS_Pop_18plus")),
             "ons_pop_65plus": _num_or_none(row.get("ONS_Pop_65plus")),
             "ons_pop_0to17": _num_or_none(row.get("ONS_Pop_0to17")),
@@ -591,6 +602,7 @@ def samhi_scores_api():
             cols.insert(1, lsoa_name_col)
         pop_cols = ["RUC21NM", "Urban_rural_flag", "ONS_Pop_Total_2024", "Pct_65plus", "Pct_18plus", "GP_Registered_Patients", "GP_Registration_Rate_Pct"]
         cols.extend([c for c in pop_cols if c in LSOA_METRICS.columns])
+        out_df = LSOA_METRICS[cols].copy()
         out_df = out_df.rename(columns={selected_col: "score"})
 
         details: dict[str, dict[str, object]] = {}
@@ -600,9 +612,14 @@ def samhi_scores_api():
                 continue
             ruc_text = str(row.get("RUC21NM", "") or "")
             flag_text = str(row.get("Urban_rural_flag", "") or ("Rural" if "rural" in ruc_text.lower() else "Urban"))
+            details[code] = {
+                "lsoa_name": str(row.get(lsoa_name_col, "") or "") if lsoa_name_col else "",
                 "value": _num_or_none(row.get("score")),
                 "ruc21nm": ruc_text,
                 "urban_rural_flag": flag_text,
+                "is_rural": "rural" in ruc_text.lower(),
+                "ons_pop_total": _num_or_none(row.get("ONS_Pop_Total_2024")),
+                "pct_65plus": _num_or_none(row.get("Pct_65plus")),
                 "pct_18plus": _num_or_none(row.get("Pct_18plus")),
                 "gp_registered_patients": _num_or_none(row.get("GP_Registered_Patients")),
                 "gp_registration_rate_pct": _num_or_none(row.get("GP_Registration_Rate_Pct")),
@@ -636,6 +653,7 @@ def samhi_scores_api():
     pop_cols = ["RUC21NM", "Urban_rural_flag", "ONS_Pop_Total_2024", "Pct_65plus", "Pct_18plus", "GP_Registered_Patients", "GP_Registration_Rate_Pct"]
     cols.extend([c for c in pop_cols if c in LSOA_METRICS.columns])
     out_df = LSOA_METRICS[cols].copy()
+    out_df["from_value"] = pd.to_numeric(out_df[from_col], errors="coerce")
     out_df["to_value"] = pd.to_numeric(out_df[to_col], errors="coerce")
     out_df["score"] = out_df["to_value"] - out_df["from_value"]
 
@@ -647,11 +665,16 @@ def samhi_scores_api():
         ruc_text = str(row.get("RUC21NM", "") or "")
         flag_text = str(row.get("Urban_rural_flag", "") or ("Rural" if "rural" in ruc_text.lower() else "Urban"))
         details[code] = {
+            "lsoa_name": str(row.get(lsoa_name_col, "") or "") if lsoa_name_col else "",
+            "from_value": _num_or_none(row.get("from_value")),
             "to_value": _num_or_none(row.get("to_value")),
             "change": _num_or_none(row.get("score")),
             "ruc21nm": ruc_text,
             "urban_rural_flag": flag_text,
             "is_rural": "rural" in ruc_text.lower(),
+            "ons_pop_total": _num_or_none(row.get("ONS_Pop_Total_2024")),
+            "pct_65plus": _num_or_none(row.get("Pct_65plus")),
+            "pct_18plus": _num_or_none(row.get("Pct_18plus")),
             "gp_registered_patients": _num_or_none(row.get("GP_Registered_Patients")),
             "gp_registration_rate_pct": _num_or_none(row.get("GP_Registration_Rate_Pct")),
         }
