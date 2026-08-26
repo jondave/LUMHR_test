@@ -155,9 +155,9 @@
     "MH_PCA_Access_Pct": "Mental Health PCA (SMI Exceptions) (%)",
     "Dep_PCA_Access_Pct": "Depression PCA (Exceptions) (%)",
     "DEP004_Access_Pct": "DEP004 (Depression Review) Coverage (%)",
-    "GP_PT_Time": "GP Travel Time (Public Transport / Walk, min)",
+    "GP_PT_Time": "GP Travel Time (PT / Walk, min)",
     "GP_Car_Time": "GP Travel Time (Car, min)",
-    "Hosp_PT_Time": "Hospital Travel Time (Public Transport / Walk, min)",
+    "Hosp_PT_Time": "Hospital Travel Time (PT / Walk, min)",
     "Hosp_Car_Time": "Hospital Travel Time (Car, min)",
     "Rural_Access": "Rural Access (0-1, higher = better)",
     "Car_Access": "Household Car/Van Availability (0-1, higher = better)",
@@ -174,7 +174,7 @@
     return accessLayerScores[currentLayerKey] || {};
   }
 
-  function getScaleForLayer() {
+  function getScaleForLayer(layerKey = currentLayerKey) {
     return "YlGnBu";
   }
 
@@ -319,9 +319,10 @@
         popupHtml +=
           `<hr style="margin:6px 0;">` +
           `<strong>Resident Population Estimate (ONS Mid-2024):</strong> ${Math.round(detail.ons_pop_total).toLocaleString()}<br>` +
-          `<strong>Adults 18+ (Estimate):</strong> ${detail.ons_pop_18plus !== null ? Math.round(detail.ons_pop_18plus).toLocaleString() : "N/A"}${detail.pct_18plus !== null ? ` (${detail.pct_18plus.toFixed(1)}%)` : ""}<br>` +
-          `<strong>Older Adults 65+ (Estimate):</strong> ${detail.ons_pop_65plus !== null ? Math.round(detail.ons_pop_65plus).toLocaleString() : "N/A"}${detail.pct_65plus !== null ? ` (${detail.pct_65plus.toFixed(1)}%)` : ""}<br>` +
-          `<strong>GP Registered Patients:</strong> ${detail.gp_registered_patients !== null ? Math.round(detail.gp_registered_patients).toLocaleString() : "N/A"}${detail.gp_registration_rate_pct !== null ? ` (${detail.gp_registration_rate_pct.toFixed(1)}% of ONS Estimate)` : ""}`;
+          `<strong>Adults 18+ (Estimate):</strong> ${detail.ons_pop_18plus !== null && detail.ons_pop_18plus !== undefined ? Math.round(detail.ons_pop_18plus).toLocaleString() : "N/A"}${detail.pct_18plus !== null && detail.pct_18plus !== undefined ? ` (${detail.pct_18plus.toFixed(1)}%)` : ""}<br>` +
+          `<strong>Older Adults 65+ (Estimate):</strong> ${detail.ons_pop_65plus !== null && detail.ons_pop_65plus !== undefined ? Math.round(detail.ons_pop_65plus).toLocaleString() : "N/A"}${detail.pct_65plus !== null && detail.pct_65plus !== undefined ? ` (${detail.pct_65plus.toFixed(1)}%)` : ""}<br>` +
+          `<strong>GP Registered Patients:</strong> ${detail.gp_registered_patients !== null && detail.gp_registered_patients !== undefined ? Math.round(detail.gp_registered_patients).toLocaleString() : "N/A"}<br>` +
+          `<strong>GP Registration Coverage (%):</strong> ${detail.gp_registration_rate_pct !== null && detail.gp_registration_rate_pct !== undefined ? detail.gp_registration_rate_pct.toFixed(1) + "%" : "N/A"}`;
 
         if (detail.list_inflation_est && detail.list_inflation_est > 0) {
           popupHtml += `<br><strong>Net Excess GP Registrations:</strong> +${Math.round(detail.list_inflation_est).toLocaleString()}`;
@@ -343,13 +344,18 @@
     }
     const markers = await resp.json();
 
+    const gpIcon = L.divIcon({
+      className: "gp-pin-icon",
+      html: '<div style="width:10px;height:10px;background:#219ebc;border:1.5px solid #023047;border-radius:50%;box-shadow:0 0 3px rgba(0,0,0,0.5);cursor:pointer;"></div>',
+      iconSize: [10, 10],
+      iconAnchor: [5, 5],
+      popupAnchor: [0, -6]
+    });
+
     for (const gp of markers) {
-      const marker = L.circleMarker([gp.lat, gp.lon], {
-        radius: 4,
-        color: "#023047",
-        weight: 1,
-        fillColor: "#219ebc",
-        fillOpacity: 0.9,
+      const marker = L.marker([gp.lat, gp.lon], {
+        icon: gpIcon,
+        riseOnHover: true
       });
       const popup =
         `<strong>${gp.practice_name || "Unknown Practice"}</strong><br>` +
@@ -404,7 +410,7 @@
       return;
     }
 
-    const scale = chroma.scale(getScaleForLayer());
+    const scale = chroma.scale(getScaleForLayer(currentLayerKey));
     bar.style.background = `linear-gradient(to right, ${scale(0).hex()} 0%, ${scale(1).hex()} 100%)`;
 
     titleEl.textContent = layerLabels[currentLayerKey] || "Map Layer";
@@ -430,13 +436,15 @@
         <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="MH_PCA_Access_Pct"> Mental Health PCA (SMI Exceptions)</label>
         <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="Dep_PCA_Access_Pct"> Depression PCA (Exceptions)</label>
         <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="DEP004_Access_Pct"> DEP004 (Depression Review)</label>
-        <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="GP_PT_Time"> GP Travel Time (PT/Walk)</label>
+        <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="GP_PT_Time"> GP Travel Time (PT / Walk)</label>
         <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="GP_Car_Time"> GP Travel Time (Car)</label>
-        <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="Hosp_PT_Time"> Hospital Travel Time (PT/Walk)</label>
+        <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="Hosp_PT_Time"> Hospital Travel Time (PT / Walk)</label>
         <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="Hosp_Car_Time"> Hospital Travel Time (Car)</label>
         <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="Rural_Access"> Rural Access</label>
         <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="Car_Access"> Household Car/Van Availability</label>
-        <label style="display:block; margin-bottom:8px;"><input type="radio" name="map_metric" value="Digital_Access"> Digital Accessibility (DERI)</label>
+        <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="Digital_Access"> Digital Accessibility (DERI)</label>
+        <label style="display:block; margin-bottom:4px;"><input type="radio" name="map_metric" value="Pct_65plus"> Older Adults (65+) %</label>
+        <label style="display:block; margin-bottom:8px;"><input type="radio" name="map_metric" value="GP_Registration_Rate_Pct"> GP Registration Coverage (%)</label>
         <div style="border-top:1px solid #e4ecef; padding-top:8px; margin-top:6px;">
           <div id="map_colorbar_title" style="font-weight:600; margin-bottom:4px;">Access Index</div>
           <div id="map_colorbar_gradient" style="height:12px; border-radius:4px; border:1px solid #d0d9df;"></div>

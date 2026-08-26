@@ -338,13 +338,21 @@
           popupHtml +=
             `<hr style="margin:6px 0;">` +
             `<strong>Resident Population Estimate (ONS Mid-2024):</strong> ${Math.round(details.ons_pop_total).toLocaleString()}<br>` +
-            `<strong>Older Adults 65+ (Estimate):</strong> ${details.pct_65plus !== null ? `${details.pct_65plus.toFixed(1)}%` : "N/A"}<br>` +
-            `<strong>GP Registered Patients:</strong> ${details.gp_registered_patients !== null ? Math.round(details.gp_registered_patients).toLocaleString() : "N/A"}${details.gp_registration_rate_pct !== null ? ` (${details.gp_registration_rate_pct.toFixed(1)}% of ONS Estimate)` : ""}`;
+            `<strong>Adults 18+ (Estimate):</strong> ${details.ons_pop_18plus !== null && details.ons_pop_18plus !== undefined ? Math.round(details.ons_pop_18plus).toLocaleString() : "N/A"}${details.pct_18plus !== null && details.pct_18plus !== undefined ? ` (${details.pct_18plus.toFixed(1)}%)` : ""}<br>` +
+            `<strong>Older Adults 65+ (Estimate):</strong> ${details.ons_pop_65plus !== null && details.ons_pop_65plus !== undefined ? Math.round(details.ons_pop_65plus).toLocaleString() : "N/A"}${details.pct_65plus !== null && details.pct_65plus !== undefined ? ` (${details.pct_65plus.toFixed(1)}%)` : ""}<br>` +
+            `<strong>GP Registered Patients:</strong> ${details.gp_registered_patients !== null && details.gp_registered_patients !== undefined ? Math.round(details.gp_registered_patients).toLocaleString() : "N/A"}<br>` +
+            `<strong>GP Registration Coverage (%):</strong> ${details.gp_registration_rate_pct !== null && details.gp_registration_rate_pct !== undefined ? details.gp_registration_rate_pct.toFixed(1) + "%" : "N/A"}`;
+
+          if (details.list_inflation_est && details.list_inflation_est > 0) {
+            popupHtml += `<br><strong>Net Excess GP Registrations:</strong> +${Math.round(details.list_inflation_est).toLocaleString()}`;
+          } else if (details.registration_gap_est && details.registration_gap_est > 0) {
+            popupHtml += `<br><strong>Unregistered / Cross-Border Difference:</strong> -${Math.round(details.registration_gap_est).toLocaleString()}`;
+          }
         }
 
         layer.bindPopup(popupHtml, { maxWidth: 360 });
         layer.setTooltipContent(`${code}${name ? ` | ${name}` : ""}`);
-    });
+      });
     }
 
   function updateYearLabels() {

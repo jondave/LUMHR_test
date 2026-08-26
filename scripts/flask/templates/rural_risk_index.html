@@ -333,19 +333,19 @@
     bar.style.background = `linear-gradient(to right, ${scale(0).hex()} 0%, ${scale(1).hex()} 100%)`;
 
     const layerLabels = {
-      "Rural_Risk_Index": "Rural Risk Index (0 - 1)",
-      "Rural_Isolation": "Rural Isolation Score (0 - 1)",
+      "Rural_Risk_Index": "Rural Risk Index",
+      "Rural_Isolation": "Rural Isolation Score",
       "GP_PT_Travel_Time": "GP Travel Time (PT / Walk, min)",
       "GP_Car_Travel_Time": "GP Travel Time (Car, min)",
       "No_Cars_Pct": "Households with No Car (%)",
       "IMD_2025_Decile": "IMD 2025 Decile (1 = Most Deprived)",
-      "LSOAC_Risk": "Geodemographic Risk (0 - 1)",
-      "Household_Vulnerability": "Household Isolation & Vulnerability (0 - 1)",
+      "LSOAC_Risk": "Geodemographic Risk (LSOAC)",
+      "Household_Vulnerability": "Household Isolation & Vulnerability",
       "Single_Pensioner_HH_Pct": "Single Older Adults (66+) Living Alone (%)",
       "Non_Couple_HH_Pct": "Adults Not Living as a Couple (%)",
       "Pensioner_Couple_HH_Pct": "All-Pensioner Couples (66+) (%)",
       "Lone_Parent_HH_Pct": "Lone Parent Families with Dep Children (%)",
-      "Pct_65plus": "Older Adults 65+ (% ONS)",
+      "Pct_65plus": "Older Adults (65+) %",
       "GP_Registration_Rate_Pct": "GP Registration Coverage (%)"
     };
 
@@ -399,9 +399,10 @@
         popupHtml +=
           `<hr style="margin:6px 0;">` +
           `<strong>Resident Population Estimate (ONS Mid-2024):</strong> ${Math.round(detail.ons_pop_total).toLocaleString()}<br>` +
-          `<strong>Adults 18+ (Estimate):</strong> ${detail.ons_pop_18plus !== null ? Math.round(detail.ons_pop_18plus).toLocaleString() : "N/A"}${detail.pct_18plus !== null ? ` (${detail.pct_18plus.toFixed(1)}%)` : ""}<br>` +
-          `<strong>Older Adults 65+ (Estimate):</strong> ${detail.ons_pop_65plus !== null ? Math.round(detail.ons_pop_65plus).toLocaleString() : "N/A"}${detail.pct_65plus !== null ? ` (${detail.pct_65plus.toFixed(1)}%)` : ""}<br>` +
-          `<strong>GP Registered Patients:</strong> ${detail.gp_registered_patients !== null ? Math.round(detail.gp_registered_patients).toLocaleString() : "N/A"}${detail.gp_registration_rate_pct !== null ? ` (${detail.gp_registration_rate_pct.toFixed(1)}% of ONS Estimate)` : ""}`;
+          `<strong>Adults 18+ (Estimate):</strong> ${detail.ons_pop_18plus !== null && detail.ons_pop_18plus !== undefined ? Math.round(detail.ons_pop_18plus).toLocaleString() : "N/A"}${detail.pct_18plus !== null && detail.pct_18plus !== undefined ? ` (${detail.pct_18plus.toFixed(1)}%)` : ""}<br>` +
+          `<strong>Older Adults 65+ (Estimate):</strong> ${detail.ons_pop_65plus !== null && detail.ons_pop_65plus !== undefined ? Math.round(detail.ons_pop_65plus).toLocaleString() : "N/A"}${detail.pct_65plus !== null && detail.pct_65plus !== undefined ? ` (${detail.pct_65plus.toFixed(1)}%)` : ""}<br>` +
+          `<strong>GP Registered Patients:</strong> ${detail.gp_registered_patients !== null && detail.gp_registered_patients !== undefined ? Math.round(detail.gp_registered_patients).toLocaleString() : "N/A"}<br>` +
+          `<strong>GP Registration Coverage (%):</strong> ${detail.gp_registration_rate_pct !== null && detail.gp_registration_rate_pct !== undefined ? detail.gp_registration_rate_pct.toFixed(1) + "%" : "N/A"}`;
 
         if (detail.list_inflation_est && detail.list_inflation_est > 0) {
           popupHtml += `<br><strong>Net Excess GP Registrations:</strong> +${Math.round(detail.list_inflation_est).toLocaleString()}`;
@@ -480,14 +481,7 @@
 
     const gpCheckbox = document.getElementById("map_show_gp_locations");
     if (gpCheckbox) {
-      gpCheckbox.addEventListener("change", () => {
-        if (!gpLayer) return;
-        if (gpCheckbox.checked) {
-          gpLayer.addTo(map);
-        } else {
-          map.removeLayer(gpLayer);
-        }
-      });
+      gpCheckbox.addEventListener("change", syncGpLayerVisibility);
     }
 
     const urbanCheckbox = document.getElementById("map_show_urban");
@@ -519,34 +513,51 @@
     }
   }
 
-  async function loadGPLocations() {
+  async function loadGpLayer() {
     try {
+      gpLayer = L.layerGroup();
       const res = await fetch(GP_LOCATIONS_API);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-      const gps = data.gp_locations || [];
+      const markers = await res.json();
+      const gps = Array.isArray(markers) ? markers : (markers.gp_locations || []);
 
-      gpLayer = L.layerGroup();
-      gps.forEach(gp => {
-        if (!gp.Lat || !gp.Lon) return;
-        const marker = L.circleMarker([gp.Lat, gp.Lon], {
-          radius: 5,
-          color: "#0f2d3a",
-          weight: 1.2,
-          fillColor: "#0284c7",
-          fillOpacity: 0.9
-        });
-        const popup =
-          `<strong>${gp.Practice_Name || "GP Practice"}</strong><br>` +
-          `<strong>Code:</strong> ${gp.PRACTICE_CODE || "N/A"}<br>` +
-          `<strong>Registered Patients:</strong> ${gp.NUMBER_OF_PATIENTS ? Math.round(gp.NUMBER_OF_PATIENTS).toLocaleString() : "N/A"}`;
-        marker.bindPopup(popup);
-        gpLayer.addLayer(marker);
+      const gpIcon = L.divIcon({
+        className: "gp-pin-icon",
+        html: '<div style="width:10px;height:10px;background:#219ebc;border:1.5px solid #023047;border-radius:50%;box-shadow:0 0 3px rgba(0,0,0,0.5);cursor:pointer;"></div>',
+        iconSize: [10, 10],
+        iconAnchor: [5, 5],
+        popupAnchor: [0, -6]
       });
 
-      gpLayer.addTo(map);
+      for (const gp of gps) {
+        const lat = Number(gp.lat ?? gp.Lat);
+        const lon = Number(gp.lon ?? gp.Lon);
+        if (!Number.isFinite(lat) || !Number.isFinite(lon)) continue;
+
+        const marker = L.marker([lat, lon], {
+          icon: gpIcon,
+          riseOnHover: true
+        });
+        const popup =
+          `<strong>${gp.practice_name || gp.Practice_Name || "GP Practice"}</strong><br>` +
+          `<strong>Code:</strong> ${gp.practice_code || gp.PRACTICE_CODE || "N/A"}<br>` +
+          `<strong>Total Registered Patients:</strong> ${gp.patients !== null && gp.patients !== undefined ? Math.round(gp.patients).toLocaleString() : (gp.NUMBER_OF_PATIENTS ? Math.round(gp.NUMBER_OF_PATIENTS).toLocaleString() : "N/A")}`;
+        marker.bindPopup(popup);
+        gpLayer.addLayer(marker);
+      }
     } catch (err) {
       console.warn("Could not load GP locations:", err);
+    }
+  }
+
+  function syncGpLayerVisibility() {
+    if (!gpLayer) return;
+    const checkbox = document.getElementById("map_show_gp_locations");
+    const show = checkbox ? checkbox.checked : true;
+    if (show) {
+      gpLayer.addTo(map);
+    } else {
+      map.removeLayer(gpLayer);
     }
   }
 
@@ -632,7 +643,8 @@
       console.error("GeoJSON error:", err);
     }
 
-    loadGPLocations();
+    await loadGpLayer();
+    syncGpLayerVisibility();
   }
 
   window.addEventListener("DOMContentLoaded", initMap);
