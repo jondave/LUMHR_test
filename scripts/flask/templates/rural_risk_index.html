@@ -412,7 +412,11 @@
       }
 
       layer.bindPopup(popupHtml, { maxWidth: 360 });
-      layer.setTooltipContent(`${code}${name ? ` | ${name}` : ""}`);
+      if (layer.getTooltip()) {
+        layer.setTooltipContent(`${code}${name ? ` | ${name}` : ""}`);
+      } else {
+        layer.bindTooltip(`${code}${name ? ` | ${name}` : ""}`);
+      }
     });
   }
 
@@ -625,11 +629,13 @@
       geojsonLayer = L.geoJSON(geoData, {
         style: styleFeature,
         onEachFeature: (feature, layer) => {
+          const code = getCode(feature) ?? "Unknown";
+          const name = feature?.properties?.NAME ?? "";
+          layer.bindTooltip(`${code}${name ? ` | ${name}` : ""}`);
           layer.on({
             mouseover: e => {
               const l = e.target;
               l.setStyle({ weight: 2.2, color: "#1e293b" });
-              l.bringToFront();
             },
             mouseout: e => {
               geojsonLayer.resetStyle(e.target);
