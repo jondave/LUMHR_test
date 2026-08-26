@@ -3,7 +3,7 @@
 This dataset provides 2021 Census estimates from the Office for National Statistics (ONS) on **Household Composition** (Table TS003) for all **435 Lower Layer Super Output Areas (2021 LSOAs)** in Lincolnshire.
 
 ## Source Dataset
-* **Source**: Office for National Statistics (ONS) / Nomis
+* **Source**: [Office for National Statistics (ONS) - Census 2021 Table TS003](https://www.ons.gov.uk/datasets/TS003/editions/2021/versions/3) / Nomis
 * **Table**: TS003 - Household composition
 * **Census Year**: 2021
 * **Geography**: 2021 Lower Layer Super Output Areas (LSOAs)

@@ -1,3 +1,3 @@
-# Open Perscribing Data
+# OpenPrescribing Data
 
-[Open Perscribing Data Lincolnshire Antidepressant Drugs](https://openprescribing.net/analyse/#org=practice&orgIds=71E&numIds=4.3&denom=nothing&selectedTab=map)
+* **Source**: [OpenPrescribing - Lincolnshire ICB (71E) Antidepressant Prescribing](https://openprescribing.net/analyse/#org=practice&orgIds=71E&numIds=4.3&denom=nothing&selectedTab=map)
