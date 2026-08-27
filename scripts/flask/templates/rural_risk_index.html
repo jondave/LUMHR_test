@@ -251,8 +251,8 @@
       let t = Math.max(0, Math.min(1, (score - minScore) / span));
 
       if (currentLayerKey === "IMD_2025_Decile") {
-        // Decile 1 is most deprived (high risk). Color Decile 1 dark purple/red, Decile 10 bright yellow.
-        t = 1.0 - Math.max(0, Math.min(1, (score - 1) / 9.0));
+        // Decile 1 is most deprived (Viridis scale 0 = dark purple), Decile 10 is least deprived (Viridis scale 1 = bright yellow)
+        t = Math.max(0, Math.min(1, (score - 1) / 9.0));
       }
 
       fillColor = chroma.scale(getScaleForLayer(currentLayerKey))(t).hex();
