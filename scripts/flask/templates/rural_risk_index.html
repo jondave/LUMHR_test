@@ -1,12 +1,21 @@
 {% extends "base.html" %}
 
 {% block title %}Lincolnshire Rural Risk Index | LUMHR{% endblock %}
+{% block body_class %}map-layout{% endblock %}
 
 {% block content %}
 <div class="page">
-  <aside class="sidebar">
-    <h1>Lincolnshire Rural Risk Index</h1>
+  <div class="sidebar-backdrop" id="sidebar_backdrop"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h1>Rural Risk Index</h1>
+      <button class="sidebar-close-btn" id="sidebar_close_btn" type="button" title="Close Controls">&times;</button>
+    </div>
     <p class="muted">Multi-dimensional rural risk and vulnerability model across all 435 Lincolnshire LSOAs.</p>
+
+    <div class="quick-actions-bar">
+      <button class="btn-action-sm" id="btn_reset_weights" type="button" title="Reset all 7 indicator weights equally">↺ Reset Weights (~14.3% each)</button>
+    </div>
 
     <details class="control">
       <summary><strong>Method Summary</strong></summary>
@@ -56,7 +65,7 @@
       <p class="muted" style="margin-top:0.6rem; margin-bottom:0.4rem;">
         Vulnerability risk weights mapped across the 30 UK LSOA Classification Subgroups present in Lincolnshire (0 = lowest risk, 1 = highest risk):
       </p>
-      <div style="max-height: 280px; overflow-y: auto; border: 1px solid #e4ecef; border-radius: 4px; padding: 4px 6px;">
+      <div style="max-height: 240px; overflow-y: auto; border: 1px solid #e4ecef; border-radius: 4px; padding: 4px 6px;">
         <table style="width:100%; font-size:0.75rem; border-collapse:collapse;">
           <thead>
             <tr style="border-bottom:1px solid #d7e2e8; text-align:left;">
@@ -101,40 +110,61 @@
       </div>
     </details>
 
-    <h2 style="font-size: 1.05rem; font-weight: 700; margin: 1rem 0 0.4rem; color: var(--text);">Weights:</h2>
+    <h2 style="font-size: 1rem; font-weight: 700; margin: 0.6rem 0 0.35rem; color: var(--text);">Weights:</h2>
 
     <div class="control">
-      <label for="w_rural">Rural / Urban Isolation <output id="w_rural_val">14.3</output></label>
+      <div class="control-header">
+        <label for="w_rural">Rural / Urban Isolation</label>
+        <output id="w_rural_val">14.3</output>
+      </div>
       <input id="w_rural" type="range" min="0" max="100" step="0.1" value="14.3">
     </div>
 
     <div class="control">
-      <label for="w_gp_pt">GP Travel Time (PT / Walk) <output id="w_gp_pt_val">14.3</output></label>
+      <div class="control-header">
+        <label for="w_gp_pt">GP Travel Time (PT / Walk)</label>
+        <output id="w_gp_pt_val">14.3</output>
+      </div>
       <input id="w_gp_pt" type="range" min="0" max="100" step="0.1" value="14.3">
     </div>
 
     <div class="control">
-      <label for="w_gp_car">GP Travel Time (Car) <output id="w_gp_car_val">14.3</output></label>
+      <div class="control-header">
+        <label for="w_gp_car">GP Travel Time (Car)</label>
+        <output id="w_gp_car_val">14.3</output>
+      </div>
       <input id="w_gp_car" type="range" min="0" max="100" step="0.1" value="14.3">
     </div>
 
     <div class="control">
-      <label for="w_no_car">No Car Ownership (%) <output id="w_no_car_val">14.3</output></label>
+      <div class="control-header">
+        <label for="w_no_car">No Car Ownership (%)</label>
+        <output id="w_no_car_val">14.3</output>
+      </div>
       <input id="w_no_car" type="range" min="0" max="100" step="0.1" value="14.3">
     </div>
 
     <div class="control">
-      <label for="w_imd">Deprivation (IMD 2025) <output id="w_imd_val">14.3</output></label>
+      <div class="control-header">
+        <label for="w_imd">Deprivation (IMD 2025)</label>
+        <output id="w_imd_val">14.3</output>
+      </div>
       <input id="w_imd" type="range" min="0" max="100" step="0.1" value="14.3">
     </div>
 
     <div class="control">
-      <label for="w_oac">Geodemographic Profile (LSOAC) <output id="w_oac_val">14.3</output></label>
+      <div class="control-header">
+        <label for="w_oac">Geodemographic Profile (LSOAC)</label>
+        <output id="w_oac_val">14.3</output>
+      </div>
       <input id="w_oac" type="range" min="0" max="100" step="0.1" value="14.3">
     </div>
 
     <div class="control">
-      <label for="w_household">Household Composition / Solitary Living <output id="w_household_val">14.2</output></label>
+      <div class="control-header">
+        <label for="w_household">Household Isolation / Solitary Living</label>
+        <output id="w_household_val">14.2</output>
+      </div>
       <input id="w_household" type="range" min="0" max="100" step="0.1" value="14.2">
     </div>
 
@@ -143,7 +173,7 @@
 
     <div class="legend" id="status">Loading Rural Risk Index and datasets...</div>
 
-    <div class="legend" style="margin-top:0.9rem;">
+    <div class="legend" style="margin-top:0.75rem;">
       &copy; 2026 <a href="https://www.lincoln.ac.uk/" target="_blank" rel="noopener noreferrer">University of Lincoln</a><br>
       <a href="https://lumhr.org.uk/" target="_blank" rel="noopener noreferrer">Lincolnshire Unit for Mental Health Research (LUMHR)</a><br>
       Lincolnshire Rural Risk Index v1.0
@@ -151,6 +181,9 @@
   </aside>
 
   <section class="map-shell">
+    <button class="mobile-sidebar-toggle" id="mobile_sidebar_toggle" type="button">
+      ⚙️ Weights &amp; Controls <span class="btn-badge">7</span>
+    </button>
     <div id="map"></div>
   </section>
 </div>
@@ -598,7 +631,57 @@
     debounceTimer = setTimeout(recalculateRuralRisk, 150);
   }
 
+  function setupMobileDrawer() {
+    const sidebar = document.getElementById("sidebar");
+    const backdrop = document.getElementById("sidebar_backdrop");
+    const toggleBtn = document.getElementById("mobile_sidebar_toggle");
+    const closeBtn = document.getElementById("sidebar_close_btn");
+
+    function openDrawer() {
+      sidebar.classList.add("open");
+      backdrop.classList.add("active");
+    }
+
+    function closeDrawer() {
+      sidebar.classList.remove("open");
+      backdrop.classList.remove("active");
+      if (map) {
+        map.invalidateSize();
+      }
+    }
+
+    if (toggleBtn) toggleBtn.addEventListener("click", openDrawer);
+    if (closeBtn) closeBtn.addEventListener("click", closeDrawer);
+    if (backdrop) backdrop.addEventListener("click", closeDrawer);
+
+    window.addEventListener("resize", () => {
+      if (map) {
+        map.invalidateSize();
+      }
+    });
+  }
+
+  function setupResetWeights() {
+    const btn = document.getElementById("btn_reset_weights");
+    if (btn) {
+      btn.addEventListener("click", async () => {
+        const equalVal = (100.0 / sliderIds.length).toFixed(1);
+        for (const id of sliderIds) {
+          const el = document.getElementById(id);
+          if (el) el.value = equalVal;
+        }
+        const lastEl = document.getElementById(sliderIds[sliderIds.length - 1]);
+        if (lastEl) lastEl.value = (100.0 - (Number(equalVal) * (sliderIds.length - 1))).toFixed(1);
+        updateWeightsSummary();
+        await recalculateRuralRisk();
+      });
+    }
+  }
+
   async function initMap() {
+    setupMobileDrawer();
+    setupResetWeights();
+
     map = L.map("map", { preferCanvas: true });
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       maxZoom: 18,

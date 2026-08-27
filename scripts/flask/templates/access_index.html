@@ -1,12 +1,21 @@
 {% extends "base.html" %}
 
 {% block title %}Lincolnshire Mental Health Access Index | LUMHR{% endblock %}
+{% block body_class %}map-layout{% endblock %}
 
 {% block content %}
 <div class="page">
-  <aside class="sidebar">
-    <h1>Lincolnshire Mental Health Access Index</h1>
+  <div class="sidebar-backdrop" id="sidebar_backdrop"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h1>Mental Health Access Index</h1>
+      <button class="sidebar-close-btn" id="sidebar_close_btn" type="button" title="Close Controls">&times;</button>
+    </div>
     <p class="muted">Adjust weights to recalculate LSOA access indices.</p>
+
+    <div class="quick-actions-bar">
+      <button class="btn-action-sm" id="btn_reset_weights" type="button" title="Reset all 12 indicators to equal weights">↺ Reset Weights (8.3% each)</button>
+    </div>
 
     <details class="control">
       <summary><strong>Method Summary</strong></summary>
@@ -44,65 +53,105 @@
       </ul>
     </details>
 
-    <h2 style="font-size: 1.05rem; font-weight: 700; margin: 1rem 0 0.4rem; color: var(--text);">Weights:</h2>
+    <div style="font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--accent); margin: 0.6rem 0 0.3rem;">Clinical Quality (QOF)</div>
 
     <div class="control">
-      <label for="mh002">MH002 (SMI Care Plan) <output id="mh002_val">8.3</output></label>
+      <div class="control-header">
+        <label for="mh002">MH002 (SMI Care Plan)</label>
+        <output id="mh002_val">8.3</output>
+      </div>
       <input id="mh002" type="range" min="0" max="100" step="0.1" value="8.3">
     </div>
 
     <div class="control">
-      <label for="mh021">MH021 (SMI Health Check) <output id="mh021_val">8.3</output></label>
+      <div class="control-header">
+        <label for="mh021">MH021 (SMI Health Check)</label>
+        <output id="mh021_val">8.3</output>
+      </div>
       <input id="mh021" type="range" min="0" max="100" step="0.1" value="8.3">
     </div>
 
     <div class="control">
-      <label for="mh_pca">Mental Health PCA (SMI Exceptions) <output id="mh_pca_val">8.3</output></label>
+      <div class="control-header">
+        <label for="mh_pca">Mental Health PCA (Exceptions)</label>
+        <output id="mh_pca_val">8.3</output>
+      </div>
       <input id="mh_pca" type="range" min="0" max="100" step="0.1" value="8.3">
     </div>
 
     <div class="control">
-      <label for="dep_pca">Depression PCA (Exceptions) <output id="dep_pca_val">8.3</output></label>
+      <div class="control-header">
+        <label for="dep_pca">Depression PCA (Exceptions)</label>
+        <output id="dep_pca_val">8.3</output>
+      </div>
       <input id="dep_pca" type="range" min="0" max="100" step="0.1" value="8.3">
     </div>
 
     <div class="control">
-      <label for="dep004">DEP004 (Depression Review) <output id="dep004_val">8.3</output></label>
+      <div class="control-header">
+        <label for="dep004">DEP004 (Depression Review)</label>
+        <output id="dep004_val">8.3</output>
+      </div>
       <input id="dep004" type="range" min="0" max="100" step="0.1" value="8.3">
     </div>
 
+    <div style="font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--accent); margin: 0.6rem 0 0.3rem;">Physical Travel Times (DfT)</div>
+
     <div class="control">
-      <label for="gp_pt">GP Travel Time (PT / Walk) <output id="gp_pt_val">8.3</output></label>
+      <div class="control-header">
+        <label for="gp_pt">GP Travel Time (PT / Walk)</label>
+        <output id="gp_pt_val">8.3</output>
+      </div>
       <input id="gp_pt" type="range" min="0" max="100" step="0.1" value="8.3">
     </div>
 
     <div class="control">
-      <label for="gp_car">GP Travel Time (Car) <output id="gp_car_val">8.3</output></label>
+      <div class="control-header">
+        <label for="gp_car">GP Travel Time (Car)</label>
+        <output id="gp_car_val">8.3</output>
+      </div>
       <input id="gp_car" type="range" min="0" max="100" step="0.1" value="8.3">
     </div>
 
     <div class="control">
-      <label for="hosp_pt">Hospital Travel Time (PT / Walk) <output id="hosp_pt_val">8.3</output></label>
+      <div class="control-header">
+        <label for="hosp_pt">Hospital Travel Time (PT / Walk)</label>
+        <output id="hosp_pt_val">8.3</output>
+      </div>
       <input id="hosp_pt" type="range" min="0" max="100" step="0.1" value="8.3">
     </div>
 
     <div class="control">
-      <label for="hosp_car">Hospital Travel Time (Car) <output id="hosp_car_val">8.3</output></label>
+      <div class="control-header">
+        <label for="hosp_car">Hospital Travel Time (Car)</label>
+        <output id="hosp_car_val">8.3</output>
+      </div>
       <input id="hosp_car" type="range" min="0" max="100" step="0.1" value="8.3">
     </div>
 
+    <div style="font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--accent); margin: 0.6rem 0 0.3rem;">Rural, Vehicle &amp; Digital Access</div>
+
     <div class="control">
-      <label for="rural">Rural Access <output id="rural_val">8.3</output></label>
+      <div class="control-header">
+        <label for="rural">Rural Access (ONS RUC)</label>
+        <output id="rural_val">8.3</output>
+      </div>
       <input id="rural" type="range" min="0" max="100" step="0.1" value="8.3">
     </div>
 
     <div class="control">
-      <label for="car">Car / Van Availability <output id="car_val">8.3</output></label>
+      <div class="control-header">
+        <label for="car">Car / Van Availability (Census)</label>
+        <output id="car_val">8.3</output>
+      </div>
       <input id="car" type="range" min="0" max="100" step="0.1" value="8.3">
     </div>
 
     <div class="control">
-      <label for="digital">Digital Accessibility (DERI) <output id="digital_val">8.7</output></label>
+      <div class="control-header">
+        <label for="digital">Digital Accessibility (DERI)</label>
+        <output id="digital_val">8.7</output>
+      </div>
       <input id="digital" type="range" min="0" max="100" step="0.1" value="8.7">
     </div>
 
@@ -111,14 +160,14 @@
 
     <div class="legend" id="status">Loading map and initial scores...</div>
 
-    <div class="legend" style="margin-top:0.8rem;">
+    <div class="legend" style="margin-top:0.6rem;">
       The GP registration data includes out-of-Lincolnshire LSOAs that are not in the boundary file.
       Distinct out-of-area LSOAs: {{ out_of_area_lsoa_count_fmt }}.
       Patient records in those LSOAs: {{ out_of_area_patients_fmt }}.
       They are retained in GP allocation weights but excluded from Lincolnshire map polygons.
     </div>
 
-    <div class="legend" style="margin-top:0.9rem;">
+    <div class="legend" style="margin-top:0.75rem;">
       &copy; 2026 <a href="https://www.lincoln.ac.uk/" target="_blank" rel="noopener noreferrer">University of Lincoln</a><br>
       <a href="https://lumhr.org.uk/" target="_blank" rel="noopener noreferrer">Lincolnshire Unit for Mental Health Research (LUMHR)</a><br>
       Lincolnshire Mental Health Access Index v1.0
@@ -126,6 +175,9 @@
   </aside>
 
   <section class="map-shell">
+    <button class="mobile-sidebar-toggle" id="mobile_sidebar_toggle" type="button">
+      ⚙️ Weights &amp; Controls <span class="btn-badge">12</span>
+    </button>
     <div id="map"></div>
   </section>
 </div>
@@ -537,9 +589,57 @@
     document.getElementById("status").textContent = `Updated ${activeCount} LSOA scores.`;
   }
 
+  function setupMobileDrawer() {
+    const sidebar = document.getElementById("sidebar");
+    const backdrop = document.getElementById("sidebar_backdrop");
+    const toggleBtn = document.getElementById("mobile_sidebar_toggle");
+    const closeBtn = document.getElementById("sidebar_close_btn");
+
+    function openDrawer() {
+      sidebar.classList.add("open");
+      backdrop.classList.add("active");
+    }
+
+    function closeDrawer() {
+      sidebar.classList.remove("open");
+      backdrop.classList.remove("active");
+      if (map) {
+        map.invalidateSize();
+      }
+    }
+
+    if (toggleBtn) toggleBtn.addEventListener("click", openDrawer);
+    if (closeBtn) closeBtn.addEventListener("click", closeDrawer);
+    if (backdrop) backdrop.addEventListener("click", closeDrawer);
+
+    window.addEventListener("resize", () => {
+      if (map) {
+        map.invalidateSize();
+      }
+    });
+  }
+
+  function setupResetWeights() {
+    const btn = document.getElementById("btn_reset_weights");
+    if (btn) {
+      btn.addEventListener("click", async () => {
+        const equalVal = (100.0 / sliderIds.length).toFixed(1);
+        for (const id of sliderIds) {
+          document.getElementById(id).value = equalVal;
+        }
+        document.getElementById(sliderIds[sliderIds.length - 1]).value = (100.0 - (Number(equalVal) * (sliderIds.length - 1))).toFixed(1);
+        updateWeightText();
+        await updateMap();
+      });
+    }
+  }
+
   const lincolnshireBounds = [[52.64022, -0.82065], [53.61637, 0.35797]];
 
   async function init() {
+    setupMobileDrawer();
+    setupResetWeights();
+
     map = L.map("map", {
       zoomControl: true,
       preferCanvas: true

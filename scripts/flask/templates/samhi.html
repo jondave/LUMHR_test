@@ -1,16 +1,19 @@
 {% extends "base.html" %}
 
 {% block title %}Lincolnshire SAMHI | LUMHR{% endblock %}
+{% block body_class %}map-layout{% endblock %}
 
 {% block content %}
 <div class="page">
-  <aside class="sidebar">
-    <h1>Lincolnshire SAMHI</h1>
+  <div class="sidebar-backdrop" id="sidebar_backdrop"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h1>Lincolnshire SAMHI</h1>
+      <button class="sidebar-close-btn" id="sidebar_close_btn" type="button" title="Close Controls">&times;</button>
+    </div>
     <p class="muted">
       The <strong><a href="https://pldr.org/dataset/small-area-mental-health-index-samhi-2noyv" target="_blank" rel="noopener noreferrer">Small Area Mental Health Index (SAMHI)</a></strong>
       estimates the relative level of mental health need for each Lower Layer Super Output Area (LSOA) in England.
-      It combines several indicators associated with mental health need into a single standardised index,
-      allowing comparisons between neighbourhoods and across years.
     </p>
 
     <details class="control">
@@ -41,7 +44,7 @@
     </details>
 
     <div class="control">
-      <label>Analysis Mode</label>
+      <label style="font-weight:600; font-size:0.86rem; margin-bottom:0.3rem; display:block;">Analysis Mode</label>
       <div class="radio-group" id="analysis_mode_group">
         <label><input type="radio" name="analysis_mode" value="Single Year" checked> Single Year</label>
         <label><input type="radio" name="analysis_mode" value="Change Between Years"> Change Between Years</label>
@@ -49,35 +52,44 @@
     </div>
 
     <div class="control">
-      <label>Mode</label>
+      <label style="font-weight:600; font-size:0.86rem; margin-bottom:0.3rem; display:block;">Metric Mode</label>
       <div class="radio-group" id="mode_group">
-        <label><input type="radio" name="mode" value="Index" checked> Index</label>
-        <label><input type="radio" name="mode" value="Decile"> Decile</label>
+        <label><input type="radio" name="mode" value="Index" checked> Index (Continuous)</label>
+        <label><input type="radio" name="mode" value="Decile"> Decile (1-10)</label>
       </div>
     </div>
 
     <div class="control" id="year_control">
-      <label for="year">Year <output id="year_val">{{ default_year }}</output></label>
+      <div class="control-header">
+        <label for="year">Year</label>
+        <output id="year_val">{{ default_year }}</output>
+      </div>
       <input id="year" type="range" min="{{ min_year }}" max="{{ max_year }}" step="1" value="{{ default_year }}">
     </div>
 
     <div class="control" id="from_year_control" style="display:none;">
-      <label for="from_year">From Year <output id="from_year_val">{{ min_year }}</output></label>
+      <div class="control-header">
+        <label for="from_year">From Year</label>
+        <output id="from_year_val">{{ min_year }}</output>
+      </div>
       <input id="from_year" type="range" min="{{ min_year }}" max="{{ max_year }}" step="1" value="{{ min_year }}">
     </div>
 
     <div class="control" id="to_year_control" style="display:none;">
-      <label for="to_year">To Year <output id="to_year_val">{{ max_year }}</output></label>
+      <div class="control-header">
+        <label for="to_year">To Year</label>
+        <output id="to_year_val">{{ max_year }}</output>
+      </div>
       <input id="to_year" type="range" min="{{ min_year }}" max="{{ max_year }}" step="1" value="{{ max_year }}">
     </div>
 
-    <div class="control">
-      <button id="play_pause" type="button">Play</button>
+    <div class="control" style="background:transparent; border:none; padding:0;">
+      <button id="play_pause" type="button">▶ Play Timeline Animation</button>
     </div>
 
     <div class="legend" id="status">Loading map and initial SAMHI scores...</div>
 
-    <div class="legend" style="margin-top:0.9rem;">
+    <div class="legend" style="margin-top:0.75rem;">
       &copy; 2026 <a href="https://www.lincoln.ac.uk/" target="_blank" rel="noopener noreferrer">University of Lincoln</a><br>
       <a href="https://lumhr.org.uk/" target="_blank" rel="noopener noreferrer">Lincolnshire Unit for Mental Health Research (LUMHR)</a><br>
       Lincolnshire Mental Health Need Index v1.0
@@ -85,6 +97,9 @@
   </aside>
 
   <section class="map-shell">
+    <button class="mobile-sidebar-toggle" id="mobile_sidebar_toggle" type="button">
+      ⚙️ Years &amp; Controls
+    </button>
     <div id="map"></div>
   </section>
 </div>
@@ -426,9 +441,41 @@
     startPlayback();
   }
 
+  function setupMobileDrawer() {
+    const sidebar = document.getElementById("sidebar");
+    const backdrop = document.getElementById("sidebar_backdrop");
+    const toggleBtn = document.getElementById("mobile_sidebar_toggle");
+    const closeBtn = document.getElementById("sidebar_close_btn");
+
+    function openDrawer() {
+      sidebar.classList.add("open");
+      backdrop.classList.add("active");
+    }
+
+    function closeDrawer() {
+      sidebar.classList.remove("open");
+      backdrop.classList.remove("active");
+      if (map) {
+        map.invalidateSize();
+      }
+    }
+
+    if (toggleBtn) toggleBtn.addEventListener("click", openDrawer);
+    if (closeBtn) closeBtn.addEventListener("click", closeDrawer);
+    if (backdrop) backdrop.addEventListener("click", closeDrawer);
+
+    window.addEventListener("resize", () => {
+      if (map) {
+        map.invalidateSize();
+      }
+    });
+  }
+
   const lincolnshireBounds = [[52.64022, -0.82065], [53.61637, 0.35797]];
 
   async function init() {
+    setupMobileDrawer();
+
     map = L.map("map", {
       zoomControl: true,
       preferCanvas: true

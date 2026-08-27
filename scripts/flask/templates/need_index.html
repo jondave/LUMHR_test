@@ -1,12 +1,21 @@
 {% extends "base.html" %}
 
 {% block title %}Lincolnshire Mental Health Need Index | LUMHR{% endblock %}
+{% block body_class %}map-layout{% endblock %}
 
 {% block content %}
 <div class="page">
-  <aside class="sidebar">
-    <h1>Lincolnshire Mental Health Need Index</h1>
+  <div class="sidebar-backdrop" id="sidebar_backdrop"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h1>Mental Health Need Index</h1>
+      <button class="sidebar-close-btn" id="sidebar_close_btn" type="button" title="Close Controls">&times;</button>
+    </div>
     <p class="muted">Adjust weights to recalculate LSOA need indices.</p>
+
+    <div class="quick-actions-bar">
+      <button class="btn-action-sm" id="btn_reset_weights" type="button" title="Reset all 4 indicator weights equally">↺ Reset Weights (25% each)</button>
+    </div>
 
     <details class="control">
       <summary><strong>Method Summary</strong></summary>
@@ -39,30 +48,45 @@
       </ul>
     </details>
 
-    <h2 style="font-size: 1.05rem; font-weight: 700; margin: 1rem 0 0.4rem; color: var(--text);">Weights:</h2>
+    <h2 style="font-size: 1rem; font-weight: 700; margin: 0.6rem 0 0.35rem; color: var(--text);">Weights:</h2>
 
     <div class="control">
-      <label for="dep">Depression Prevalence (%) <output id="dep_val">25.0</output></label>
+      <div class="control-header">
+        <label for="dep">Depression Prevalence (%)</label>
+        <output id="dep_val">25.0</output>
+      </div>
       <input id="dep" type="range" min="0" max="100" step="0.1" value="25.0">
     </div>
 
     <div class="control">
-      <label for="smi">SMI Prevalence (%) <output id="smi_val">25.0</output></label>
+      <div class="control-header">
+        <label for="smi">SMI Prevalence (%)</label>
+        <output id="smi_val">25.0</output>
+      </div>
       <input id="smi" type="range" min="0" max="100" step="0.1" value="25.0">
     </div>
 
     <div class="control">
-      <label for="prescribing">Antidepressant Items / Patient <output id="prescribing_val">25.0</output></label>
+      <div class="control-header">
+        <label for="prescribing">Antidepressant Items / Patient</label>
+        <output id="prescribing_val">25.0</output>
+      </div>
       <input id="prescribing" type="range" min="0" max="100" step="0.1" value="25.0">
     </div>
 
     <div class="control">
-      <label for="samhi">SAMHI Index <output id="samhi_val">25.0</output></label>
+      <div class="control-header">
+        <label for="samhi">SAMHI Index</label>
+        <output id="samhi_val">25.0</output>
+      </div>
       <input id="samhi" type="range" min="0" max="100" step="0.1" value="25.0">
     </div>
 
     <div class="control">
-      <label for="samhi_year">SAMHI Year <output id="samhi_year_val">2022</output></label>
+      <div class="control-header">
+        <label for="samhi_year">SAMHI Year</label>
+        <output id="samhi_year_val">2022</output>
+      </div>
       <input id="samhi_year" type="range" min="2011" max="2022" step="1" value="2022">
     </div>
 
@@ -71,14 +95,14 @@
 
     <div class="legend" id="status">Loading map and initial scores...</div>
 
-    <div class="legend" style="margin-top:0.8rem;">
+    <div class="legend" style="margin-top:0.6rem;">
       The GP registration data includes out-of-Lincolnshire LSOAs that are not in the boundary file.
       Distinct out-of-area LSOAs: {{ out_of_area_lsoa_count_fmt }}.
       Patient records in those LSOAs: {{ out_of_area_patients_fmt }}.
       They are retained in GP allocation weights but excluded from Lincolnshire map polygons.
     </div>
 
-    <div class="legend" style="margin-top:0.9rem;">
+    <div class="legend" style="margin-top:0.75rem;">
       &copy; 2026 <a href="https://www.lincoln.ac.uk/" target="_blank" rel="noopener noreferrer">University of Lincoln</a><br>
       <a href="https://lumhr.org.uk/" target="_blank" rel="noopener noreferrer">Lincolnshire Unit for Mental Health Research (LUMHR)</a><br>
       Lincolnshire Mental Health Need Index v1.0
@@ -86,6 +110,9 @@
   </aside>
 
   <section class="map-shell">
+    <button class="mobile-sidebar-toggle" id="mobile_sidebar_toggle" type="button">
+      ⚙️ Weights &amp; Controls <span class="btn-badge">4</span>
+    </button>
     <div id="map"></div>
   </section>
 </div>
@@ -520,9 +547,55 @@
     document.getElementById("status").textContent = `Updated ${activeCount} LSOA scores.`;
   }
 
+  function setupMobileDrawer() {
+    const sidebar = document.getElementById("sidebar");
+    const backdrop = document.getElementById("sidebar_backdrop");
+    const toggleBtn = document.getElementById("mobile_sidebar_toggle");
+    const closeBtn = document.getElementById("sidebar_close_btn");
+
+    function openDrawer() {
+      sidebar.classList.add("open");
+      backdrop.classList.add("active");
+    }
+
+    function closeDrawer() {
+      sidebar.classList.remove("open");
+      backdrop.classList.remove("active");
+      if (map) {
+        map.invalidateSize();
+      }
+    }
+
+    if (toggleBtn) toggleBtn.addEventListener("click", openDrawer);
+    if (closeBtn) closeBtn.addEventListener("click", closeDrawer);
+    if (backdrop) backdrop.addEventListener("click", closeDrawer);
+
+    window.addEventListener("resize", () => {
+      if (map) {
+        map.invalidateSize();
+      }
+    });
+  }
+
+  function setupResetWeights() {
+    const btn = document.getElementById("btn_reset_weights");
+    if (btn) {
+      btn.addEventListener("click", async () => {
+        for (const id of sliderIds) {
+          document.getElementById(id).value = "25.0";
+        }
+        updateWeightText();
+        await updateMap();
+      });
+    }
+  }
+
   const lincolnshireBounds = [[52.64022, -0.82065], [53.61637, 0.35797]];
 
   async function init() {
+    setupMobileDrawer();
+    setupResetWeights();
+
     map = L.map("map", {
       zoomControl: true,
       preferCanvas: true
